@@ -6,15 +6,19 @@ Wikiplastic is a collaborative website to browse and map plastic usage in shops,
 
 The steps below will walk you through setting up a development environment.
 
-### Install dependencies
+### Install Observe API
+
+The website needs a running instance of [Observe API](https://github.com/developmentseed/observe-api). Please refer to the [Config files](#config-files) section if the API instance has a different hostname than specified at [config/defaults.js](app/assets/scripts/config/defaults.js).
+
+### Install modules dependencies
 
 Requirements:
 
-- [Git](https://git-scm.com)
+- [git](https://git-scm.com)
 - [nvm](https://github.com/creationix/nvm)
 - [yarn](https://yarnpkg.com/docs/install)
 
-Clone this repository locally and activate required Node.js version:
+[Clone this repository locally](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository) and activate required Node.js version:
 
 ```
 nvm install
