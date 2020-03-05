@@ -32,7 +32,7 @@ class App extends Component {
       <Page className={c('page', className)}>
         <GlobalLoading />
         <MetaTags title={`${title}${appTitle} `} description={appDescription} />
-        <PageHeader pageTitle='Wikiplastic' />
+        <PageHeader pageTitle='Plastic Watch' />
         <PageBody role='main'>
           {children}
         </PageBody>

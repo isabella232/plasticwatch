@@ -135,8 +135,8 @@ class PageHeader extends React.Component {
         <PageHeadInner>
           <PageTitle>
             <Link to='/' title='Go to homepage'>
+              <span>OCEANA</span>
               {this.props.pageTitle}
-              <span>Home</span>
             </Link>
           </PageTitle>
           <PageNav>
