@@ -1,9 +1,9 @@
 import { rgba, tint } from 'polished';
 
 let color = {
-  base: '#133C55',
-  primary: '#6579FC',
-  secondary: '#CE1042'
+  base: '#142B58',
+  primary: '#0686E5',
+  secondary: '#00A3DA'
 };
 
 color = {
@@ -31,7 +31,7 @@ const type = {
     size: '1rem',
     line: '1.5',
     color: tint(0.16, color.base),
-    family: '"Roboto", sans-serif',
+    family: '"Lato", sans-serif',
     style: 'normal',
     weight: 400,
     light: 300,
@@ -41,9 +41,9 @@ const type = {
     black: 900
   },
   heading: {
-    family: '"Roboto", sans-serif',
+    family: '"Lato", sans-serif',
     style: 'normal',
-    weight: 500,
+    weight: 700,
     light: 300,
     regular: 400,
     medium: 500,

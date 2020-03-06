@@ -35,7 +35,6 @@ const baseStyles = css`
     font-family: ${themeVal('type.base.family')};
     font-weight: ${themeVal('type.base.weight')};
     font-style: ${themeVal('type.base.style')};
-    min-width: ${themeVal('layout.min')};
     letter-spacing: 0.1px;
   }
   /* Links
