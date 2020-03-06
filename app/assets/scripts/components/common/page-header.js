@@ -10,12 +10,16 @@ import { multiply } from '../../styles/utils/math';
 import { stackSkin } from '../../styles/skins';
 import collecticon from '../../styles/collecticons';
 import { filterComponentProps } from '../../utils';
+
+import media from '../../styles/utils/media-queries';
+
 const _rgba = stylizeFunction(rgba);
 
 const PageHead = styled.header`
   ${stackSkin()}
-  position: relative;
-  z-index: 10;
+  position: sticky;
+  top: 0;
+  z-index: 1004;
   display: flex;
   overflow: hidden;
 `;
@@ -40,7 +44,6 @@ const PageTitle = styled.h1`
   background-color: ${themeVal('color.primary')};
   padding: 1rem 2rem;
   margin: -1rem 0;
-  letter-spacing: 0.2rem;
   font-weight: ${themeVal('type.heading.black')};
   svg {
     margin-right: 0.5rem;
@@ -48,7 +51,7 @@ const PageTitle = styled.h1`
   a {
     color: inherit;
     display: flex;
-    padding: 0 2rem 0.5rem;
+    padding: 0.5rem;
     &:active {
       transform: none;
     }
@@ -57,9 +60,14 @@ const PageTitle = styled.h1`
     font-size: 0.575rem;
     font-weight: ${themeVal('type.heading.light')};
     position: absolute;
+    letter-spacing: 0.1rem;
     bottom: 0.125rem;
-    left: 6.5rem;
   }
+  ${media.mediumUp`
+    a {
+      padding: 0 2rem 0.5rem;
+    }
+  `}
 `;
 
 const PageNav = styled.nav`
@@ -69,14 +77,16 @@ const PageNav = styled.nav`
 
 const GlobalMenu = styled.ul`
   display: flex;
-  flex-flow: row nowrap;
-  justify-content: center;
-  margin: 0;
-  list-style: none;
+  ${media.mediumUp`
+    flex-flow: row nowrap;
+    justify-content: center;
+    margin: 0;
+    list-style: none;
 
-  > * {
-    margin: 0 0 0 ${multiply(themeVal('layout.space'), 2)};
-  }
+    > * {
+      margin: 0 0 0 ${multiply(themeVal('layout.space'), 2)};
+    }
+  `}
 `;
 
 const GlobalMenuLink = styled.a.attrs({
@@ -136,7 +146,7 @@ class PageHeader extends React.Component {
           <PageTitle>
             <Link to='/' title='Go to homepage'>
               <span>OCEANA</span>
-              {this.props.pageTitle}
+              Plastic Watch
             </Link>
           </PageTitle>
           <PageNav>
@@ -146,10 +156,10 @@ class PageHeader extends React.Component {
                   as={NavLinkFilter}
                   exact
                   to='/map'
-                  useIcon='chart-line'
+                  useIcon='map'
                   title='Go to the map'
                 >
-                  <span>Map</span>
+                  <span>Explore</span>
                 </GlobalMenuLink>
               </li>
               <li>
@@ -157,10 +167,10 @@ class PageHeader extends React.Component {
                   as={NavLinkFilter}
                   exact
                   to='/places'
-                  useIcon='chart-line'
-                  title='View places page'
+                  useIcon='chart-pie'
+                  title='View trends page'
                 >
-                  <span>Places</span>
+                  <span>Trends</span>
                 </GlobalMenuLink>
               </li>
               {isLogged && (
@@ -170,7 +180,7 @@ class PageHeader extends React.Component {
                       as={NavLinkFilter}
                       exact
                       to='/surveys'
-                      useIcon='chart-line'
+                      useIcon='page-tick'
                       title='View surveys page'
                     >
                       <span>Surveys</span>
@@ -181,7 +191,7 @@ class PageHeader extends React.Component {
                       as={NavLinkFilter}
                       exact
                       to='/users'
-                      useIcon='user'
+                      useIcon='user-group'
                       title='View users page'
                     >
                       <span>Users</span>

@@ -11,12 +11,18 @@ import PageFooter from './page-footer';
 import GlobalLoading from '../common/global-loading';
 
 import { appTitle, appDescription } from '../../config';
+import media from '../../styles/utils/media-queries';
+import { mediaRanges } from '../../styles/theme/theme';
 
 const Page = styled.div`
   display: grid;
   height: 100vh;
   max-height: 100vh;
-  grid-template-rows: 4rem 1fr;
+  grid-template-rows: 4rem 1fr 4rem;
+
+  ${media.mediumUp`
+    grid-template-rows: 4rem 1fr;
+  `}
 `;
 
 const PageBody = styled.main`
@@ -25,18 +31,38 @@ const PageBody = styled.main`
 `;
 
 class App extends Component {
+  constructor (props) {
+    super(props);
+
+    this.state = {
+      isMobile: window.innerWidth < mediaRanges.medium[0]
+    };
+
+    this.onDocResize = this.onDocResize.bind(this);
+  }
+  async componentDidMount () {
+    window.addEventListener('resize', this.onDocResize);
+  }
+
+  onDocResize (e) {
+    const isMobile = window.innerWidth < mediaRanges.medium[0];
+    if (this.state.isMobile !== isMobile) {
+      this.setState({ isMobile });
+    }
+  }
+
   render () {
-    const { pageTitle, className, hideFooter, children } = this.props;
+    const { pageTitle, className, children } = this.props;
     const title = pageTitle ? `${pageTitle} — ` : '';
     return (
       <Page className={c('page', className)}>
         <GlobalLoading />
         <MetaTags title={`${title}${appTitle} `} description={appDescription} />
-        <PageHeader pageTitle='Plastic Watch' />
+        <PageHeader pageTitle='Plastic Watch' isMobile={this.state.isMobile} />
         <PageBody role='main'>
           {children}
         </PageBody>
-        <PageFooter isHidden={hideFooter} credits='Made with 🧡 by Development Seed' />
+        <PageFooter isHidden={!this.state.isMobile} credits='Made with 🧡 by Development Seed' />
       </Page>
     );
   }
