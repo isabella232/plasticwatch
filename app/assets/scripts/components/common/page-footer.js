@@ -149,7 +149,6 @@ class PageFooter extends React.Component {
 }
 
 PageFooter.propTypes = {
-  credits: PropTypes.string,
   isHidden: PropTypes.bool
 };
 

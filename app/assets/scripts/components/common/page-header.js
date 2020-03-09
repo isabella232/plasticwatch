@@ -219,7 +219,6 @@ class PageHeader extends React.Component {
 }
 
 PageHeader.propTypes = {
-  pageTitle: T.string,
   authenticatedUser: T.object
 };
 

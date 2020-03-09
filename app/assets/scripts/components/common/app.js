@@ -70,7 +70,6 @@ class App extends Component {
 
 App.propTypes = {
   className: PropTypes.string,
-  hideFooter: PropTypes.bool,
   pageTitle: PropTypes.string,
   children: PropTypes.node
 };
