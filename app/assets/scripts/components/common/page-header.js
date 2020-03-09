@@ -13,6 +13,12 @@ import { filterComponentProps } from '../../utils';
 
 import media from '../../styles/utils/media-queries';
 
+import * as authActions from '../../redux/actions/auth';
+
+import { environment, apiUrl, appPathname } from '../../config';
+
+import { showGlobalLoading, hideGlobalLoading } from '../common/global-loading';
+
 const _rgba = stylizeFunction(rgba);
 
 const PageHead = styled.header`
@@ -130,16 +136,45 @@ const propsToFilter = ['variation', 'size', 'hideText', 'useIcon', 'active'];
 const NavLinkFilter = filterComponentProps(NavLink, propsToFilter);
 
 class PageHeader extends React.Component {
-  render () {
-    let isLogged = false;
-    const { isReady, hasError, getData } = this.props.authenticatedUser;
-    if (isReady() && !hasError()) {
-      const user = getData();
-      if (user.osmId) {
-        isLogged = true;
-      }
-    }
+  async componentDidMount () {
+    // Expose function in window object. This will be called from the popup
+    // in order to pass the access token at the final OAuth step.
+    window.authenticate = async accessToken => {
+      showGlobalLoading();
+      await this.props.authenticate(accessToken);
+      hideGlobalLoading();
+    };
+  }
 
+  componentWillUnmount () {
+    // Remove exposed authenticated function when page is unmounted
+    delete window.authenticate;
+  }
+
+  async login () {
+    // Setting for popup window, parsed into DOMString
+    const w = 600;
+    const h = 550;
+    const settings = [
+      ['width', w],
+      ['height', h],
+      ['left', screen.width / 2 - w / 2],
+      ['top', screen.height / 2 - h / 2]
+    ]
+      .map(function (x) {
+        return x.join('=');
+      })
+      .join(',');
+
+    // Open API login route in popup window to start OAuth
+    window.open(
+      `${apiUrl}/login?redirect=${window.location.origin}${appPathname}/login/redirect`,
+      'oauth_window',
+      settings
+    );
+  }
+
+  render () {
     return (
       <PageHead>
         <PageHeadInner>
@@ -151,6 +186,17 @@ class PageHeader extends React.Component {
           </PageTitle>
           <PageNav>
             <GlobalMenu>
+              <li>
+                <GlobalMenuLink
+                  as={NavLinkFilter}
+                  exact
+                  to='/about'
+                  useIcon='chart-pie'
+                  title='View about page'
+                >
+                  <span>About</span>
+                </GlobalMenuLink>
+              </li>
               <li>
                 <GlobalMenuLink
                   as={NavLinkFilter}
@@ -173,7 +219,7 @@ class PageHeader extends React.Component {
                   <span>Trends</span>
                 </GlobalMenuLink>
               </li>
-              {isLogged && (
+              {this.props.isLoggedIn ? (
                 <>
                   <li>
                     <GlobalMenuLink
@@ -186,6 +232,8 @@ class PageHeader extends React.Component {
                       <span>Surveys</span>
                     </GlobalMenuLink>
                   </li>
+                  {
+                    this.props.isAdmin &&
                   <li>
                     <GlobalMenuLink
                       as={NavLinkFilter}
@@ -197,6 +245,7 @@ class PageHeader extends React.Component {
                       <span>Users</span>
                     </GlobalMenuLink>
                   </li>
+                  }
                   <li>
                     <GlobalMenuLink
                       as={NavLinkFilter}
@@ -209,6 +258,17 @@ class PageHeader extends React.Component {
                     </GlobalMenuLink>
                   </li>
                 </>
+              ) : (
+                <li>
+                  <GlobalMenuLink
+                    useIcon='login'
+                    size='xlarge'
+                    variation='primary-raised-dark'
+                    onClick={() => this.login()}
+                  >
+                    Login
+                  </GlobalMenuLink>
+                </li>
               )}
             </GlobalMenu>
           </PageNav>
@@ -218,18 +278,34 @@ class PageHeader extends React.Component {
   }
 }
 
-PageHeader.propTypes = {
-  authenticatedUser: T.object
-};
+if (environment !== 'production') {
+  PageHeader.propTypes = {
+    authenticate: T.func,
+    isLoggedIn: T.bool,
+    isAdmin: T.bool
+  };
+}
 
 function mapStateToProps (state) {
+  const { isReady, hasError, getData } = wrapApiResult(state.authenticatedUser);
+  let isLoggedIn = false;
+  let isAdmin = false;
+
+  if (isReady() && !hasError()) {
+    isLoggedIn = true;
+    isAdmin = getData().isAdmin;
+  }
+
   return {
-    authenticatedUser: wrapApiResult(state.authenticatedUser)
+    isLoggedIn,
+    isAdmin
   };
 }
 
 function dispatcher (dispatch) {
-  return {};
+  return {
+    authenticate: (...args) => dispatch(authActions.authenticate(...args))
+  };
 }
 
 export default connect(mapStateToProps, dispatcher)(PageHeader);
