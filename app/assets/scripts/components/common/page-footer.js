@@ -3,7 +3,6 @@ import styled, { css } from 'styled-components';
 import { rgba } from 'polished';
 import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { wrapApiResult } from '../../redux/utils';
 import { environment } from '../../config';
 
 import { visuallyHidden } from '../../styles/helpers';
