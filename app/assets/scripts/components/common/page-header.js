@@ -1,10 +1,12 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { PropTypes as T } from 'prop-types';
 import { rgba } from 'polished';
 import { connect } from 'react-redux';
-import { wrapApiResult } from '../../redux/utils';
 import { Link, NavLink } from 'react-router-dom';
+
+import { wrapApiResult } from '../../redux/utils';
+import { visuallyHidden } from '../../styles/helpers';
 import { themeVal, stylizeFunction } from '../../styles/utils/general';
 import { multiply } from '../../styles/utils/math';
 import { stackSkin } from '../../styles/skins';
@@ -28,6 +30,10 @@ const PageHead = styled.header`
   z-index: 1004;
   display: flex;
   overflow: hidden;
+  background-color: ${themeVal('color.primary')};
+  ${media.mediumUp`
+    background-color: ${themeVal('color.surface')};
+  `}
 `;
 
 const PageHeadInner = styled.div`
@@ -43,7 +49,7 @@ const PageHeadInner = styled.div`
 
 const PageTitle = styled.h1`
   font-size: 1.25rem;
-  font-family: ${themeVal('type.heading.family')};
+  font-family: ${themeVal('type.base.family')};
   line-height: 2rem;
   text-transform: uppercase;
   color: white;
@@ -57,7 +63,7 @@ const PageTitle = styled.h1`
   a {
     color: inherit;
     display: flex;
-    padding: 0.5rem;
+    padding: 0 0 0.5rem;
     &:active {
       transform: none;
     }
@@ -93,6 +99,11 @@ const GlobalMenu = styled.ul`
       margin: 0 0 0 ${multiply(themeVal('layout.space'), 2)};
     }
   `}
+  /* Add visually hidden if mobile */
+  ${({ isHidden }) => isHidden &&
+   css`
+      ${visuallyHidden()}
+    `}
 `;
 
 const GlobalMenuLink = styled.a.attrs({
@@ -104,7 +115,9 @@ const GlobalMenuLink = styled.a.attrs({
   border-radius: 0.25rem;
   text-align: center;
   transition: all 0.24s ease 0s;
-  font-weight: ${themeVal('type.base.regular')};
+  font-weight: ${themeVal('type.base.light')};
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
   &::before {
     ${({ useIcon }) => collecticon(useIcon)}
     margin-right: 0.5rem;
@@ -122,7 +135,6 @@ const GlobalMenuLink = styled.a.attrs({
   }
   &.active {
     color: ${themeVal('color.link')};
-    font-weight: ${themeVal('type.base.medium')};
     background: ${_rgba(themeVal('color.link'), 0.08)};
     &::after {
       opacity: 1;
@@ -180,12 +192,12 @@ class PageHeader extends React.Component {
         <PageHeadInner>
           <PageTitle>
             <Link to='/' title='Go to homepage'>
-              <span>OCEANA</span>
-              Plastic Watch
+              OCEANA
+              <span>Plastic<strong>Watch</strong></span>
             </Link>
           </PageTitle>
           <PageNav>
-            <GlobalMenu>
+            <GlobalMenu isHidden={this.props.isMobile}>
               <li>
                 <GlobalMenuLink
                   as={NavLinkFilter}
@@ -282,7 +294,8 @@ if (environment !== 'production') {
   PageHeader.propTypes = {
     authenticate: T.func,
     isLoggedIn: T.bool,
-    isAdmin: T.bool
+    isAdmin: T.bool,
+    isMobile: T.bool
   };
 }
 

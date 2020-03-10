@@ -41,7 +41,7 @@ const type = {
     black: 900
   },
   heading: {
-    family: '"Lato", sans-serif',
+    family: '"Roboto Condensed", sans-serif',
     style: 'normal',
     weight: 700,
     light: 300,
