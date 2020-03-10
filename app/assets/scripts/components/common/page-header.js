@@ -100,8 +100,9 @@ const GlobalMenu = styled.ul`
     }
   `}
   /* Add visually hidden if mobile */
-  ${({ isHidden }) => isHidden &&
-   css`
+  ${({ isHidden }) =>
+    isHidden &&
+    css`
       ${visuallyHidden()}
     `}
 `;
@@ -148,6 +149,14 @@ const propsToFilter = ['variation', 'size', 'hideText', 'useIcon', 'active'];
 const NavLinkFilter = filterComponentProps(NavLink, propsToFilter);
 
 class PageHeader extends React.Component {
+  constructor (props) {
+    super(props);
+
+    this.state = {
+      isMobileMenuOpened: false
+    };
+  }
+
   async componentDidMount () {
     // Expose function in window object. This will be called from the popup
     // in order to pass the access token at the final OAuth step.
@@ -186,66 +195,70 @@ class PageHeader extends React.Component {
     );
   }
 
-  render () {
+  renderNav () {
+    const { isMobile } = this.props;
     return (
-      <PageHead>
-        <PageHeadInner>
-          <PageTitle>
-            <Link to='/' title='Go to homepage'>
-              OCEANA
-              <span>Plastic<strong>Watch</strong></span>
-            </Link>
-          </PageTitle>
-          <PageNav>
-            <GlobalMenu isHidden={this.props.isMobile}>
-              <li>
-                <GlobalMenuLink
-                  as={NavLinkFilter}
-                  exact
-                  to='/about'
-                  useIcon='chart-pie'
-                  title='View about page'
-                >
-                  <span>About</span>
-                </GlobalMenuLink>
-              </li>
-              <li>
-                <GlobalMenuLink
-                  as={NavLinkFilter}
-                  exact
-                  to='/map'
-                  useIcon='map'
-                  title='Go to the map'
-                >
-                  <span>Explore</span>
-                </GlobalMenuLink>
-              </li>
-              <li>
-                <GlobalMenuLink
-                  as={NavLinkFilter}
-                  exact
-                  to='/places'
-                  useIcon='chart-pie'
-                  title='View trends page'
-                >
-                  <span>Trends</span>
-                </GlobalMenuLink>
-              </li>
-              {this.props.isLoggedIn ? (
-                <>
-                  <li>
-                    <GlobalMenuLink
-                      as={NavLinkFilter}
-                      exact
-                      to='/surveys'
-                      useIcon='page-tick'
-                      title='View surveys page'
-                    >
-                      <span>Surveys</span>
-                    </GlobalMenuLink>
-                  </li>
-                  {
-                    this.props.isAdmin &&
+      <GlobalMenu>
+        {isMobile ? (
+          <li>
+            <GlobalMenuLink
+              useIcon='hamburger-menu'
+              title='View about page'
+              onClick={() =>
+                this.setState(prevState => {
+                  return { isMobileMenuOpened: !prevState.isMobileMenuOpened };
+                })}
+            />
+          </li>
+        ) : (
+          <>
+            <li>
+              <GlobalMenuLink
+                as={NavLinkFilter}
+                exact
+                to='/about'
+                useIcon='chart-pie'
+                title='View about page'
+              >
+                <span>About</span>
+              </GlobalMenuLink>
+            </li>
+            <li>
+              <GlobalMenuLink
+                as={NavLinkFilter}
+                exact
+                to='/map'
+                useIcon='map'
+                title='Go to the map'
+              >
+                <span>Explore</span>
+              </GlobalMenuLink>
+            </li>
+            <li>
+              <GlobalMenuLink
+                as={NavLinkFilter}
+                exact
+                to='/places'
+                useIcon='chart-pie'
+                title='View trends page'
+              >
+                <span>Trends</span>
+              </GlobalMenuLink>
+            </li>
+            {this.props.isLoggedIn ? (
+              <>
+                <li>
+                  <GlobalMenuLink
+                    as={NavLinkFilter}
+                    exact
+                    to='/surveys'
+                    useIcon='page-tick'
+                    title='View surveys page'
+                  >
+                    <span>Surveys</span>
+                  </GlobalMenuLink>
+                </li>
+                {this.props.isAdmin && (
                   <li>
                     <GlobalMenuLink
                       as={NavLinkFilter}
@@ -257,34 +270,64 @@ class PageHeader extends React.Component {
                       <span>Users</span>
                     </GlobalMenuLink>
                   </li>
-                  }
-                  <li>
-                    <GlobalMenuLink
-                      as={NavLinkFilter}
-                      exact
-                      useIcon='logout'
-                      to='/logout'
-                      title='Proceed to logout'
-                    >
-                      <span>Logout</span>
-                    </GlobalMenuLink>
-                  </li>
-                </>
-              ) : (
+                )}
                 <li>
                   <GlobalMenuLink
-                    useIcon='login'
-                    size='xlarge'
-                    variation='primary-raised-dark'
-                    onClick={() => this.login()}
+                    as={NavLinkFilter}
+                    exact
+                    useIcon='logout'
+                    to='/logout'
+                    title='Proceed to logout'
                   >
-                    Login
+                    <span>Logout</span>
                   </GlobalMenuLink>
                 </li>
-              )}
-            </GlobalMenu>
-          </PageNav>
+              </>
+            ) : (
+              <li>
+                <GlobalMenuLink
+                  useIcon='login'
+                  size='xlarge'
+                  variation='primary-raised-dark'
+                  onClick={() => this.login()}
+                >
+                  Login
+                </GlobalMenuLink>
+              </li>
+            )}
+          </>
+        )}
+      </GlobalMenu>
+    );
+  }
+
+  renderMobileNav () {
+    return (
+      <ul>
+        <li>Survey</li>
+        <li>Users</li>
+        <li>Login</li>
+        <li>Logout</li>
+      </ul>
+    );
+  }
+
+  render () {
+    const { isMobileMenuOpened } = this.state;
+    return (
+      <PageHead>
+        <PageHeadInner>
+          <PageTitle>
+            <Link to='/' title='Go to homepage'>
+              OCEANA
+              <span>
+                Plastic<strong>Watch</strong>
+              </span>
+            </Link>
+          </PageTitle>
+          <PageNav>{this.renderNav()}</PageNav>
         </PageHeadInner>
+        {isMobileMenuOpened && this.renderMobileNav()}
       </PageHead>
     );
   }
