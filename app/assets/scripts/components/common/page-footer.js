@@ -4,6 +4,7 @@ import { rgba } from 'polished';
 import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { wrapApiResult } from '../../redux/utils';
+import { environment } from '../../config';
 
 import { visuallyHidden } from '../../styles/helpers';
 import PropTypes from 'prop-types';
@@ -23,8 +24,9 @@ const PageFoot = styled.footer`
   z-index: 10002;
 
   /* Visually hidden */
-  ${({ isHidden }) => isHidden &&
-   css`
+  ${({ isHidden }) =>
+    isHidden &&
+    css`
       ${visuallyHidden()}
     `}
 `;
@@ -50,7 +52,7 @@ const FooterMenu = styled.ul`
   margin: 0;
   list-style: none;
 
-  >li {
+  > li {
     width: 4rem;
   }
 `;
@@ -102,8 +104,9 @@ const NavLinkFilter = filterComponentProps(NavLink, propsToFilter);
 
 class PageFooter extends React.Component {
   render () {
+    const { isMobile } = this.props;
     return (
-      <PageFoot isHidden={this.props.isHidden}>
+      <PageFoot isHidden={isMobile}>
         <PageFootInner>
           <PageNav>
             <FooterMenu>
@@ -148,14 +151,14 @@ class PageFooter extends React.Component {
   }
 }
 
-PageFooter.propTypes = {
-  isHidden: PropTypes.bool
-};
+if (environment !== 'production') {
+  PageFooter.propTypes = {
+    isMobile: PropTypes.bool
+  };
+}
 
 function mapStateToProps (state) {
-  return {
-    authenticatedUser: wrapApiResult(state.authenticatedUser)
-  };
+  return {};
 }
 
 function dispatcher (dispatch) {

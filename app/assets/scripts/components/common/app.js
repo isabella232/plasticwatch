@@ -59,10 +59,11 @@ class App extends Component {
         <GlobalLoading />
         <MetaTags title={`${title}${appTitle} `} description={appDescription} />
         <PageHeader pageTitle='Plastic Watch' isMobile={this.state.isMobile} />
-        <PageBody role='main'>
-          {children}
-        </PageBody>
-        <PageFooter isHidden={!this.state.isMobile} credits='Made with 🧡 by Development Seed' />
+        <PageBody role='main'>{children}</PageBody>
+        <PageFooter
+          isMobile={!this.state.isMobile}
+          credits='Made with 🧡 by Development Seed'
+        />
       </Page>
     );
   }
@@ -82,7 +83,4 @@ function dispatcher (dispatch) {
   return {};
 }
 
-export default connect(
-  mapStateToProps,
-  dispatcher
-)(App);
+export default connect(mapStateToProps, dispatcher)(App);
