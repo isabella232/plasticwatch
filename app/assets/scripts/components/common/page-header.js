@@ -29,11 +29,14 @@ const PageHead = styled.header`
   top: 0;
   z-index: 1004;
   display: flex;
-  overflow: hidden;
   background-color: ${themeVal('color.primary')};
   ${media.mediumUp`
+    overflow: hidden;
     background-color: ${themeVal('color.surface')};
   `}
+  a {
+    text-decoration: none;
+  }
 `;
 
 const PageHeadInner = styled.div`
@@ -42,9 +45,6 @@ const PageHeadInner = styled.div`
   align-items: center;
   justify-content: space-between;
   min-width: 100%;
-  a {
-    text-decoration: none;
-  }
 `;
 
 const PageTitle = styled.h1`
@@ -54,7 +54,7 @@ const PageTitle = styled.h1`
   text-transform: uppercase;
   color: white;
   background-color: ${themeVal('color.primary')};
-  padding: 1rem 2rem;
+  padding: 0 2rem;
   margin: -1rem 0;
   font-weight: ${themeVal('type.heading.black')};
   svg {
@@ -76,6 +76,7 @@ const PageTitle = styled.h1`
     bottom: 0.125rem;
   }
   ${media.mediumUp`
+    padding: 1rem 2rem;
     a {
       padding: 0 2rem 0.5rem;
     }
@@ -105,6 +106,50 @@ const GlobalMenu = styled.ul`
     css`
       ${visuallyHidden()}
     `}
+  /* Make hamburger menu white*/
+  ${media.smallDown`
+    a:first-of-type {
+      &::before {
+        color: white;
+      }
+    }
+  `}
+`;
+
+const MobileMenu = styled.ul`
+  position: fixed;
+  right: 0;
+  top: 4em;
+  background: white;
+  padding: 2.25rem;
+  z-index: 30;
+  height: 90vh;
+  width: 75vw;
+  box-shadow: 0 16px 48px -16px ${themeVal('color.shadow')};
+  
+  a {
+    font-weight: ${themeVal('type.base.weight')};
+    text-align: right;
+    &.active {
+      color: ${themeVal('color.primary')};
+    }
+  }
+  &::before {
+    content: '';
+    position: fixed;
+    top: 4rem;
+    bottom: 0;
+    left: 0;
+    right: 75vw;
+    background: ${themeVal('color.smoke')};
+    opacity: 1;
+    z-index: -1;
+  }
+  & > li:last-of-type {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid ${themeVal('color.smoke')};
+  }
 `;
 
 const GlobalMenuLink = styled.a.attrs({
@@ -119,11 +164,13 @@ const GlobalMenuLink = styled.a.attrs({
   font-weight: ${themeVal('type.base.light')};
   text-transform: uppercase;
   letter-spacing: 0.05rem;
+  justify-content: flex-end;
   &::before {
     ${({ useIcon }) => collecticon(useIcon)}
     margin-right: 0.5rem;
     position: relative;
     top: -1px;
+    color: inherit;
   }
   &,
   &:visited {
@@ -132,11 +179,15 @@ const GlobalMenuLink = styled.a.attrs({
   &:hover {
     color: ${themeVal('color.link')};
     opacity: 1;
-    background: ${_rgba(themeVal('color.link'), 0.08)};
+    ${media.mediumUp`
+      background: ${_rgba(themeVal('color.link'), 0.08)};
+    `}
   }
   &.active {
     color: ${themeVal('color.link')};
-    background: ${_rgba(themeVal('color.link'), 0.08)};
+    ${media.mediumUp`
+      background: ${_rgba(themeVal('color.link'), 0.08)};
+    `}
     &::after {
       opacity: 1;
     }
@@ -202,8 +253,8 @@ class PageHeader extends React.Component {
         {isMobile ? (
           <li>
             <GlobalMenuLink
-              useIcon='hamburger-menu'
-              title='View about page'
+              useIcon={!this.state.isMobileMenuOpened ? 'hamburger-menu' : 'xmark'}
+              title='View menu'
               onClick={() =>
                 this.setState(prevState => {
                   return { isMobileMenuOpened: !prevState.isMobileMenuOpened };
@@ -303,12 +354,69 @@ class PageHeader extends React.Component {
 
   renderMobileNav () {
     return (
-      <ul>
-        <li>Survey</li>
-        <li>Users</li>
-        <li>Login</li>
-        <li>Logout</li>
-      </ul>
+      <MobileMenu>
+        <li>
+          <GlobalMenuLink
+            as={NavLinkFilter}
+            exact
+            to='/about'
+            useIcon='circle-information'
+            title='View about page'
+          >
+            <span>About</span>
+          </GlobalMenuLink>
+        </li>
+        {this.props.isLoggedIn ? (
+          <>
+            <li>
+              <GlobalMenuLink
+                as={NavLinkFilter}
+                exact
+                to='/surveys'
+                useIcon='page-tick'
+                title='View surveys page'
+              >
+                <span>Surveys</span>
+              </GlobalMenuLink>
+            </li>
+            {this.props.isAdmin && (
+              <li>
+                <GlobalMenuLink
+                  as={NavLinkFilter}
+                  exact
+                  to='/users'
+                  useIcon='user-group'
+                  title='View users page'
+                >
+                  <span>Users</span>
+                </GlobalMenuLink>
+              </li>
+            )}
+            <li>
+              <GlobalMenuLink
+                as={NavLinkFilter}
+                exact
+                useIcon='logout'
+                to='/logout'
+                title='Proceed to logout'
+              >
+                <span>Logout</span>
+              </GlobalMenuLink>
+            </li>
+          </>
+        ) : (
+          <li>
+            <GlobalMenuLink
+              useIcon='login'
+              size='xlarge'
+              variation='primary-raised-dark'
+              onClick={() => this.login()}
+            >
+              Login
+            </GlobalMenuLink>
+          </li>
+        )}
+      </MobileMenu>
     );
   }
 
