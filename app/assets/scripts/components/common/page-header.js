@@ -4,6 +4,7 @@ import { PropTypes as T } from 'prop-types';
 import { rgba } from 'polished';
 import { connect } from 'react-redux';
 import { Link, NavLink } from 'react-router-dom';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
 import { wrapApiResult } from '../../redux/utils';
 import { visuallyHidden } from '../../styles/helpers';
@@ -29,10 +30,10 @@ const PageHead = styled.header`
   top: 0;
   z-index: 1004;
   display: flex;
-  background-color: ${themeVal('color.primary')};
+  background: linear-gradient(175deg, ${themeVal('color.secondary')}, ${themeVal('color.base')});
   ${media.mediumUp`
     overflow: hidden;
-    background-color: ${themeVal('color.surface')};
+    background: ${themeVal('color.surface')};
   `}
   a {
     text-decoration: none;
@@ -53,7 +54,6 @@ const PageTitle = styled.h1`
   line-height: 2rem;
   text-transform: uppercase;
   color: white;
-  background-color: ${themeVal('color.primary')};
   padding: 0 2rem;
   margin: -1rem 0;
   font-weight: ${themeVal('type.heading.black')};
@@ -77,6 +77,7 @@ const PageTitle = styled.h1`
   }
   ${media.mediumUp`
     padding: 1rem 2rem;
+    background: linear-gradient(175deg, ${themeVal('color.secondary')}, ${themeVal('color.base')});
     a {
       padding: 0 2rem 0.5rem;
     }
@@ -115,9 +116,19 @@ const GlobalMenu = styled.ul`
     }
   `}
 `;
+const transitions = {
+  left: {
+    start: () => css`
+      transform: translate(100vw , 0);
+    `,
+    end: () => css`
+      transform: translate(0, 0);
+    `
+  }
+};
 
 const MobileMenu = styled.ul`
-  position: fixed;
+  position: absolute;
   right: 0;
   top: 4em;
   background: white;
@@ -125,10 +136,10 @@ const MobileMenu = styled.ul`
   z-index: 30;
   height: 90vh;
   width: 75vw;
-  box-shadow: 0 16px 48px -16px ${themeVal('color.shadow')};
+  box-shadow: -16px 0 48px -16px ${themeVal('color.shadow')};
+  transition: all 0.24s ease;
   
   a {
-    font-weight: ${themeVal('type.base.weight')};
     text-align: right;
     &.active {
       color: ${themeVal('color.primary')};
@@ -144,11 +155,28 @@ const MobileMenu = styled.ul`
     background: ${themeVal('color.smoke')};
     opacity: 1;
     z-index: -1;
+    transition: all 0.24s ease 0s;
   }
   & > li:last-of-type {
     margin-top: 1rem;
     padding-top: 1rem;
     border-top: 1px solid ${themeVal('color.smoke')};
+  }
+
+  &.mobile-menu-enter {
+    ${transitions.left.start}
+  }
+
+  &.mobile-menu-enter-active {
+    ${transitions.left.end}
+  }
+
+  &.mobile-menu-exit {
+    ${transitions.left.end}
+  }
+
+  &.mobile-menu-exit-active {
+    ${transitions.left.start}
   }
 `;
 
@@ -161,7 +189,8 @@ const GlobalMenuLink = styled.a.attrs({
   border-radius: 0.25rem;
   text-align: center;
   transition: all 0.24s ease 0s;
-  font-weight: ${themeVal('type.base.light')};
+  font-weight: ${themeVal('type.base.weight')};
+  font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 0.05rem;
   justify-content: flex-end;
@@ -169,7 +198,6 @@ const GlobalMenuLink = styled.a.attrs({
     ${({ useIcon }) => collecticon(useIcon)}
     margin-right: 0.5rem;
     position: relative;
-    top: -1px;
     color: inherit;
   }
   &,
@@ -268,7 +296,7 @@ class PageHeader extends React.Component {
                 as={NavLinkFilter}
                 exact
                 to='/about'
-                useIcon='chart-pie'
+                useIcon='circle-information'
                 title='View about page'
               >
                 <span>About</span>
@@ -435,7 +463,18 @@ class PageHeader extends React.Component {
           </PageTitle>
           <PageNav>{this.renderNav()}</PageNav>
         </PageHeadInner>
-        {isMobileMenuOpened && this.renderMobileNav()}
+        <TransitionGroup component={null}>
+          {isMobileMenuOpened && (
+            <CSSTransition
+              in={this.state.isMobileMenuOpened}
+              unmountOnExit={true}
+              classNames='mobile-menu'
+              timeout={300}
+            >
+              {this.renderMobileNav()}
+            </CSSTransition>
+          )}
+        </TransitionGroup>
       </PageHead>
     );
   }
