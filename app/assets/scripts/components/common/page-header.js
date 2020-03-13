@@ -328,7 +328,7 @@ class PageHeader extends React.Component {
               <GlobalMenuLink
                 as={NavLinkFilter}
                 exact
-                to='/places'
+                to='/trends'
                 useIcon='chart-pie'
                 title='View trends page'
               >
