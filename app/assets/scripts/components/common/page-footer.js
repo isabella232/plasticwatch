@@ -124,8 +124,12 @@ class PageFooter extends React.Component {
                 <FooterMenuLink
                   as={NavLinkFilter}
                   exact
-                  to='/places'
+                  to='/explore?viewAs=list'
                   useIcon='list'
+                  isActive={(match, { pathname, search }) =>
+                    match &&
+                    pathname === '/explore' &&
+                    search.indexOf('viewAs=list') > -1}
                   title='Go to the list'
                 >
                   <span>List</span>
@@ -135,8 +139,12 @@ class PageFooter extends React.Component {
                 <FooterMenuLink
                   as={NavLinkFilter}
                   exact
-                  to='/map'
+                  to='/explore'
                   useIcon='map'
+                  isActive={(match, { pathname, search }) =>
+                    match &&
+                    pathname === '/explore' &&
+                    search.indexOf('viewAs=list') === -1}
                   title='Go to the map'
                 >
                   <span>Map</span>
