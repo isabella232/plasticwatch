@@ -1,11 +1,9 @@
-import React, { Component } from "react";
-import styled from "styled-components";
-import { Link } from "react-router-dom";
+import React, { Component } from 'react';
+import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
-import { stackSkin, cardSkin } from "../../../styles/skins";
-import media from "../../../styles/utils/media-queries";
-
-
+import { stackSkin, cardSkin } from '../../../styles/skins';
+import media from '../../../styles/utils/media-queries';
 
 const InpageBody = styled.div`
   ${stackSkin()};
@@ -26,27 +24,27 @@ const InpageBody = styled.div`
 
 const places = [
   {
-    id: "node/111"
+    id: 'node/111'
   },
   {
-    id: "node/112"
+    id: 'node/112'
   },
   {
-    id: "node/113"
+    id: 'node/113'
   },
   {
-    id: "node/114"
+    id: 'node/114'
   }
 ];
 
 export default class PlacesIndex extends Component {
-  render() {
+  render () {
     return (
       <InpageBody>
         <h1>Places</h1>
         <ul>
-          {places.map((p, i) => (
-            <li key={i}>
+          {places.map((p) => (
+            <li key={p.id}>
               <Link to={`/explore/${p.id}`}>{p.id}</Link>
             </li>
           ))}

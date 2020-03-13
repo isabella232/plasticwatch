@@ -1,9 +1,9 @@
-import React, { Component } from "react";
-import styled from "styled-components";
-import { Link } from "react-router-dom";
+import React, { Component } from 'react';
+import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
-import { stackSkin, cardSkin } from "../../../styles/skins";
-import media from "../../../styles/utils/media-queries";
+import { stackSkin, cardSkin } from '../../../styles/skins';
+import media from '../../../styles/utils/media-queries';
 
 const InpageBody = styled.div`
   ${stackSkin()};
@@ -23,10 +23,10 @@ const InpageBody = styled.div`
 `;
 
 export default class PlacesView extends Component {
-  render() {
+  render () {
     return (
       <InpageBody>
-        <Link to={`/explore`}>Return to places index</Link>
+        <Link to='/explore'>Return to places index</Link>
 
         <div>A single place</div>
       </InpageBody>
