@@ -16,9 +16,9 @@ import GlobalStyles from './styles/global';
 
 // Views
 import Home from './components/home';
+import Explore from './components/explore';
 import Auth from './components/auth';
 import UsersIndex from './components/users';
-import MapView from './components/map';
 import PlacesIndex from './components/places';
 import SurveysIndex from './components/surveys';
 import UhOh from './components/uhoh';
@@ -36,10 +36,11 @@ const Root = () => (
           <GlobalStyles />
           <Switch>
             <Route exact path='/' component={Home} />
+            <Route exact path='/explore' component={Explore} />
+            <Route path='/explore/:id' component={Explore} />
             <Route exact path='/login/redirect' component={Auth} />
             <Route exact path='/login' component={Auth} />
             <Route exact path='/logout' component={Auth} />
-            <Route exact path='/map' component={MapView} />
             <Route exact path='/places' component={PlacesIndex} />
             <Route exact path='/surveys' component={SurveysIndex} />
             <Route exact path='/users' component={UsersIndex} />
