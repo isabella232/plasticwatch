@@ -317,9 +317,9 @@ class PageHeader extends React.Component {
               <GlobalMenuLink
                 as={NavLinkFilter}
                 exact
-                to='/map'
+                to='/explore'
                 useIcon='map'
-                title='Go to the map'
+                title='Go to the explore view'
               >
                 <span>Explore</span>
               </GlobalMenuLink>
