@@ -4,6 +4,7 @@ import FormLabel from './label';
 import FormToolbar from './toolbar';
 import collecticon from '../collecticons';
 import { themeVal } from '../utils/general';
+import Button from '../button/button';
 
 export const FilterToolbar = styled(FormToolbar)`
   align-items: flex-end;
@@ -40,4 +41,12 @@ export const InputIcon = styled(FormLabel)`
 export const FilterLabel = styled(FormLabel)`
   font-size: 0.875rem;
   font-weight: ${themeVal('type.base.regular')};
+`;
+
+export const FilterButton = styled(Button)`
+  text-transform: none;
+  box-shadow: none;
+  font-size: 0.875rem;
+  font-weight: ${themeVal('type.base.regular')};
+  border: 1px solid ${themeVal('color.smoke')};
 `;
