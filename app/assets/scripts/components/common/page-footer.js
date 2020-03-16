@@ -2,11 +2,8 @@ import React from 'react';
 import styled, { css } from 'styled-components';
 import { rgba } from 'polished';
 import { NavLink } from 'react-router-dom';
-import { connect } from 'react-redux';
-import { wrapApiResult } from '../../redux/utils';
 
 import { visuallyHidden } from '../../styles/helpers';
-import PropTypes from 'prop-types';
 import { themeVal, stylizeFunction } from '../../styles/utils/general';
 import collecticon from '../../styles/collecticons';
 import { filterComponentProps } from '../../utils';
@@ -23,8 +20,9 @@ const PageFoot = styled.footer`
   z-index: 10002;
 
   /* Visually hidden */
-  ${({ isHidden }) => isHidden &&
-   css`
+  ${({ isHidden }) =>
+    isHidden &&
+    css`
       ${visuallyHidden()}
     `}
 `;
@@ -50,7 +48,7 @@ const FooterMenu = styled.ul`
   margin: 0;
   list-style: none;
 
-  >li {
+  > li {
     width: 4rem;
   }
 `;
@@ -103,7 +101,7 @@ const NavLinkFilter = filterComponentProps(NavLink, propsToFilter);
 class PageFooter extends React.Component {
   render () {
     return (
-      <PageFoot isHidden={this.props.isHidden}>
+      <PageFoot>
         <PageFootInner>
           <PageNav>
             <FooterMenu>
@@ -122,8 +120,12 @@ class PageFooter extends React.Component {
                 <FooterMenuLink
                   as={NavLinkFilter}
                   exact
-                  to='/places'
+                  to='/explore?viewAs=list'
                   useIcon='list'
+                  isActive={(match, { pathname, search }) =>
+                    match &&
+                    pathname === '/explore' &&
+                    search.indexOf('viewAs=list') > -1}
                   title='Go to the list'
                 >
                   <span>List</span>
@@ -133,8 +135,12 @@ class PageFooter extends React.Component {
                 <FooterMenuLink
                   as={NavLinkFilter}
                   exact
-                  to='/map'
+                  to='/explore'
                   useIcon='map'
+                  isActive={(match, { pathname, search }) =>
+                    match &&
+                    pathname === '/explore' &&
+                    search.indexOf('viewAs=list') === -1}
                   title='Go to the map'
                 >
                   <span>Map</span>
@@ -148,18 +154,4 @@ class PageFooter extends React.Component {
   }
 }
 
-PageFooter.propTypes = {
-  isHidden: PropTypes.bool
-};
-
-function mapStateToProps (state) {
-  return {
-    authenticatedUser: wrapApiResult(state.authenticatedUser)
-  };
-}
-
-function dispatcher (dispatch) {
-  return {};
-}
-
-export default connect(mapStateToProps, dispatcher)(PageFooter);
+export default PageFooter;

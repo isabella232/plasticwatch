@@ -14,18 +14,19 @@ import history from './utils/history';
 
 import GlobalStyles from './styles/global';
 
-// Views
 import Home from './components/home';
+import About from './components/about';
+import Explore from './components/explore';
+import Trends from './components/trends';
 import Auth from './components/auth';
 import UsersIndex from './components/users';
-import MapView from './components/map';
-import PlacesIndex from './components/places';
 import SurveysIndex from './components/surveys';
 import UhOh from './components/uhoh';
-import ErrorBoundary from './fatal-error-boundary';
 import ConfirmationPrompt from './components/common/confirmation-prompt';
-import { ToastContainerCustom } from './components/common/toasts';
 import ProfileListener from './components/common/profile-listener';
+
+import ErrorBoundary from './fatal-error-boundary';
+import { ToastContainerCustom } from './components/common/toasts';
 
 // Root component. Used by the router.
 const Root = () => (
@@ -36,11 +37,13 @@ const Root = () => (
           <GlobalStyles />
           <Switch>
             <Route exact path='/' component={Home} />
+            <Route exact path='/about' component={About} />
+            <Route exact path='/trends' component={Trends} />
+            <Route exact path='/explore' component={Explore} />
+            <Route path='/explore/:id' component={Explore} />
             <Route exact path='/login/redirect' component={Auth} />
             <Route exact path='/login' component={Auth} />
             <Route exact path='/logout' component={Auth} />
-            <Route exact path='/map' component={MapView} />
-            <Route exact path='/places' component={PlacesIndex} />
             <Route exact path='/surveys' component={SurveysIndex} />
             <Route exact path='/users' component={UsersIndex} />
             <Route path='*' component={UhOh} />
