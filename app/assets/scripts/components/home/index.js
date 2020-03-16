@@ -6,7 +6,7 @@ import media from '../../styles/utils/media-queries';
 
 import App from '../common/app';
 import Introduction from './introduction';
-import Map from '../common/Map';
+import Map from '../common/map';
 
 const Wrapper = styled.div`
   display: grid;
