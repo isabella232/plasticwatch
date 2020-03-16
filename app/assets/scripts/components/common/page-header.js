@@ -30,7 +30,11 @@ const PageHead = styled.header`
   top: 0;
   z-index: 1004;
   display: flex;
-  background: linear-gradient(175deg, ${themeVal('color.secondary')}, ${themeVal('color.base')});
+  background: linear-gradient(
+    175deg,
+    ${themeVal('color.secondary')},
+    ${themeVal('color.base')}
+  );
   ${media.mediumUp`
     overflow: hidden;
     background: ${themeVal('color.surface')};
@@ -77,7 +81,9 @@ const PageTitle = styled.h1`
   }
   ${media.mediumUp`
     padding: 1rem 2rem;
-    background: linear-gradient(175deg, ${themeVal('color.secondary')}, ${themeVal('color.base')});
+    background: linear-gradient(175deg, ${themeVal(
+    'color.secondary'
+  )}, ${themeVal('color.base')});
     a {
       padding: 0 2rem 0.5rem;
     }
@@ -119,7 +125,7 @@ const GlobalMenu = styled.ul`
 const transitions = {
   left: {
     start: () => css`
-      transform: translate(100vw , 0);
+      transform: translate(100vw, 0);
     `,
     end: () => css`
       transform: translate(0, 0);
@@ -138,7 +144,7 @@ const MobileMenu = styled.ul`
   width: 75vw;
   box-shadow: -16px 0 48px -16px ${themeVal('color.shadow')};
   transition: all 0.24s ease;
-  
+
   a {
     text-align: right;
     &.active {
@@ -146,7 +152,7 @@ const MobileMenu = styled.ul`
     }
   }
   &::before {
-    content: '';
+    content: "";
     position: fixed;
     top: 4rem;
     bottom: 0;
@@ -281,7 +287,9 @@ class PageHeader extends React.Component {
         {isMobile ? (
           <li>
             <GlobalMenuLink
-              useIcon={!this.state.isMobileMenuOpened ? 'hamburger-menu' : 'xmark'}
+              useIcon={
+                !this.state.isMobileMenuOpened ? 'hamburger-menu' : 'xmark'
+              }
               title='View menu'
               onClick={() =>
                 this.setState(prevState => {
@@ -319,6 +327,8 @@ class PageHeader extends React.Component {
                 exact
                 to='/explore'
                 useIcon='map'
+                isActive={(match, { pathname, search }) =>
+                  pathname && pathname.indexOf('/explore') === 0}
                 title='Go to the explore view'
               >
                 <span>Explore</span>
