@@ -60,10 +60,9 @@ class App extends Component {
         <MetaTags title={`${title}${appTitle} `} description={appDescription} />
         <PageHeader pageTitle='Plastic Watch' isMobile={this.state.isMobile} />
         <PageBody role='main'>{children}</PageBody>
-        <PageFooter
-          isMobile={!this.state.isMobile}
-          credits='Made with 🧡 by Development Seed'
-        />
+        {this.state.isMobile && (
+          <PageFooter credits='Made with 🧡 by Development Seed' />
+        )}
       </Page>
     );
   }

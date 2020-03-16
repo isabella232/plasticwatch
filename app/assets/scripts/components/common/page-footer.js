@@ -2,11 +2,8 @@ import React from 'react';
 import styled, { css } from 'styled-components';
 import { rgba } from 'polished';
 import { NavLink } from 'react-router-dom';
-import { connect } from 'react-redux';
-import { environment } from '../../config';
 
 import { visuallyHidden } from '../../styles/helpers';
-import PropTypes from 'prop-types';
 import { themeVal, stylizeFunction } from '../../styles/utils/general';
 import collecticon from '../../styles/collecticons';
 import { filterComponentProps } from '../../utils';
@@ -103,9 +100,8 @@ const NavLinkFilter = filterComponentProps(NavLink, propsToFilter);
 
 class PageFooter extends React.Component {
   render () {
-    const { isMobile } = this.props;
     return (
-      <PageFoot isHidden={isMobile}>
+      <PageFoot>
         <PageFootInner>
           <PageNav>
             <FooterMenu>
@@ -158,18 +154,4 @@ class PageFooter extends React.Component {
   }
 }
 
-if (environment !== 'production') {
-  PageFooter.propTypes = {
-    isMobile: PropTypes.bool
-  };
-}
-
-function mapStateToProps (state) {
-  return {};
-}
-
-function dispatcher (dispatch) {
-  return {};
-}
-
-export default connect(mapStateToProps, dispatcher)(PageFooter);
+export default PageFooter;
