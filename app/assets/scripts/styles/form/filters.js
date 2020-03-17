@@ -10,7 +10,7 @@ export const FilterToolbar = styled(FormToolbar)`
   align-items: flex-end;
 
   & input {
-    max-width: 11rem;
+    max-width: 24rem;
   }
   & > * {
     margin-right: 1rem;
@@ -25,14 +25,15 @@ export const InputWrapper = styled.div`
 `;
 
 export const InputWithIcon = styled(FormInput)`
-  padding-right: 1.25rem;
+  padding: 1rem 1.5rem;
+  background: #FFFFFF;
 `;
 
 export const InputIcon = styled(FormLabel)`
   &::after {
     ${({ useIcon }) => collecticon(useIcon)}
     position: absolute;
-    right: 0.25rem;
+    left: 0.5rem;
     top: 50%;
     opacity: 0.64;
   }

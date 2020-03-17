@@ -320,13 +320,13 @@ class Sandbox extends React.Component {
                       <FormLabel>Restaurant Packaging Options</FormLabel>
                     </FormGroupHeader>
                     <FormHelper>
-                        <FormHelperMessage>
-                          Does the restaurant offer non-plastic take-away packaging options?
-                        </FormHelperMessage>
-                      </FormHelper>
+                      <FormHelperMessage>
+                        Does the restaurant offer non-plastic take-away packaging options?
+                      </FormHelperMessage>
+                    </FormHelper>
                     <FormGroupBody>
                       <FormCheckableGroup>
-                          <FormCheckable
+                        <FormCheckable
                           textPlacement='right'
                           checked={undefined}
                           type='radio'
@@ -348,8 +348,8 @@ class Sandbox extends React.Component {
                     </FormGroupBody>
                   </FormGroup>
                   <FormGroup>
-                  <FormGroupHeader>
-                    <FormLabel htmlFor='textarea-1'>
+                    <FormGroupHeader>
+                      <FormLabel htmlFor='textarea-1'>
                         Description of restaurant packaging
                       </FormLabel>
                     </FormGroupHeader>
@@ -373,12 +373,12 @@ class Sandbox extends React.Component {
               <InnerPanel>
                 <h2>Washington DC</h2>
                 <p>1776 restaurants surveyed</p>
-                <div></div>
                 <p>75% of 2,377 restaurants on OpenStreetMap</p>
                 <h3>81%</h3>
                 <p>1438 Surveyed
-                    Washington DC Restaurants 
-                    offer plastic-free options</p>
+                    Washington DC Restaurants
+                    offer plastic-free options
+                </p>
                 <PanelStats>
                   <PanelStat>
                     1776

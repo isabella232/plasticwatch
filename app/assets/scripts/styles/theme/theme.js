@@ -3,13 +3,15 @@ import { rgba, tint } from 'polished';
 let color = {
   base: '#142B58',
   primary: '#0686E5',
-  secondary: '#00A3DA'
+  secondary: '#0A66A5'
 };
 
 color = {
   ...color,
-  background: '#FFFFFF',
+  background: rgba(tint(0.8, color.primary), 0.2),
   surface: '#FFFFFF',
+  baseMed: tint(0.3, color.base),
+  baseLight: tint(0.7, color.base),
   mist: rgba(color.base, 0.04),
   shadow: rgba(color.base, 0.12),
   smoke: rgba(color.base, 0.16),
