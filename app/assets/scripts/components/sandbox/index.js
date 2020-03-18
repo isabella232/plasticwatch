@@ -6,10 +6,8 @@ import { connect } from 'react-redux';
 import { rgba } from 'polished';
 
 import App from '../common/app';
-import SidePanel from '../../components/home/SidePanel';
-import Map from '../../components/home/Map';
+import Map from '../common/map';
 import media from '../../styles/utils/media-queries';
-import InfoButton from '../../components/common/info-button';
 
 import { themeVal, stylizeFunction } from '../../styles/utils/general';
 import collecticon from '../../styles/collecticons';
@@ -21,6 +19,7 @@ import {
   InpageHeadline,
   InpageTitle,
   InpageBody,
+  InpageBodyFluid,
   InpageBodyInner,
   InpageBackLink
 } from '../common/inpage';
@@ -34,7 +33,6 @@ import {
   FormGroupBody
 } from '../../styles/form/group';
 import FormLabel from '../../styles/form/label';
-import FormInput from '../../styles/form/input';
 import { FormCheckable, FormCheckableGroup } from '../../styles/form/checkable';
 import FormTextarea from '../../styles/form/textarea';
 import {
@@ -50,12 +48,12 @@ import {
   FilterButton
 } from '../../styles/form/filters';
 
-import DataTable from '../../styles/table'; 
+import DataTable from '../../styles/table';
 import { cardSkin } from '../../styles/skins';
 
 const _rgba = stylizeFunction(rgba);
 
-const Wrapper = styled.div`
+const SidebarWrapper = styled.div`
   display: grid;
   height: 100%;
   grid-template-columns: 100vw;
@@ -85,6 +83,19 @@ const Panel = styled.section`
   position: relative; /* Likely change to fixed within grid */
   background: ${themeVal('color.background')};
   ${media.mediumUp`
+    padding: 2rem;
+  `}
+`;
+
+const MobileCard = styled.article`
+  ${cardSkin()};
+  border-radius: 0.5rem;
+  padding: ${themeVal('layout.space')};
+  position: relative;
+  margin: 1rem auto -1rem;
+  ${media.mediumUp`
+    margin: 0 auto;
+    border-radius: initial;
     padding: 2rem;
   `}
 `;
@@ -227,7 +238,7 @@ const PanelStat = styled.h2`
 class Sandbox extends React.Component {
   render () {
     return (
-      <App pageTitle='Sandbox' hideFooter>
+      <App pageTitle='Sandbox'>
         <Inpage>
           <InpageHeader />
           <InpageBody>
@@ -260,7 +271,7 @@ class Sandbox extends React.Component {
                 <ResultsItem>
                   <Place>
                     <PlaceHeader>
-                      <PlaceTitle>Scott's Salads</PlaceTitle>
+                      <PlaceTitle>Scott&apos;s Salads</PlaceTitle>
                       <PlaceType>Cafe</PlaceType>
                     </PlaceHeader>
                     <PlaceRating>
@@ -273,7 +284,7 @@ class Sandbox extends React.Component {
                 <ResultsItem>
                   <Place>
                     <PlaceHeader>
-                      <PlaceTitle>Bob's Burgers</PlaceTitle>
+                      <PlaceTitle>Bob&apos;s Burgers</PlaceTitle>
                       <PlaceType>Restaurant</PlaceType>
                     </PlaceHeader>
                     <PlaceRating>
@@ -289,7 +300,7 @@ class Sandbox extends React.Component {
                 <InnerPanel>
                   <PlaceMeta>
                     <PlaceHeader>
-                      <PlaceTitle>Bob's Burgers</PlaceTitle>
+                      <PlaceTitle>Bob&apos;s Burgers</PlaceTitle>
                       <PlaceType>Restaurant</PlaceType>
                       <Map />
                     </PlaceHeader>
@@ -313,8 +324,8 @@ class Sandbox extends React.Component {
               </Panel>
               <InnerPanel>
                 <Form>
-                  <FormLegend>Place Name</FormLegend>
-                  <PlaceTitle>Bob's Burgers</PlaceTitle>
+                  <FormLegend>Name</FormLegend>
+                  <PlaceTitle>Bob&apos;s Burgers</PlaceTitle>
                   <FormGroup>
                     <FormGroupHeader>
                       <FormLabel>Restaurant Packaging Options</FormLabel>
@@ -365,9 +376,11 @@ class Sandbox extends React.Component {
                     variation='primary-raised-dark'
                     size='large'
                     type='submit'
+                    data-tip='You must be logged in to submit surveys'
                   >
                     Submit
                   </Button>
+                  <ReactTooltip effect='solid' className='type-primary' />
                 </Form>
               </InnerPanel>
               <InnerPanel>
@@ -429,8 +442,20 @@ class Sandbox extends React.Component {
                 </DataTable>
               </InnerPanel>
             </InpageBodyInner>
+            <InpageBodyFluid>
+              <MobileCard>
+                <h1>Test Mobile Card</h1>
+                <p>The MobileCard is nested in an InpageBodyFluid component. This renders as a full-width card on mobile, intended to be hideable below the footer. On desktop this renders as a normal card</p>
+              </MobileCard>
+            </InpageBodyFluid>
           </InpageBody>
         </Inpage>
+        <SidebarWrapper>
+          <MobileCard>
+            <h1>Test Mobile Card in Sidebar Wrapper</h1>
+            <p>The MobileCard is nested in an InpageBodyFluid component. This renders as a full-width card on mobile, intended to be hideable below the footer. On desktop this renders as a normal card</p>
+          </MobileCard>
+        </SidebarWrapper>
       </App>
     );
   }

@@ -10,10 +10,10 @@ import Button from '../../styles/button/button';
 const InpageBody = styled.div`
   ${stackSkin()};
   ${cardSkin()};
+  border-radius: 0.5rem;
   padding: 1rem 2rem;
   grid-row: 2/5;
   z-index: 10;
-  width: 95%;
   margin: 0 auto;
 
   ${media.mediumUp`
