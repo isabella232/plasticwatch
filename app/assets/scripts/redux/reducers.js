@@ -31,9 +31,22 @@ const usersReducerInitialState = {
 const usersReducer = baseAPIReducer('USERS', usersReducerInitialState);
 
 /**
+ * PLACES reducer
+ */
+const placesReducerInitialState = {
+  fetching: false,
+  fetched: false,
+  error: null,
+  data: []
+};
+
+const placesReducer = baseAPIReducer('PLACES', placesReducerInitialState);
+
+/**
  * Export combined reducers
  */
 export default combineReducers({
   authenticatedUser: authenticatedUserReducer,
-  users: usersReducer
+  users: usersReducer,
+  places: placesReducer
 });

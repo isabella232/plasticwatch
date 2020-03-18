@@ -1,9 +1,13 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+import { environment } from '../../../config';
+import { PropTypes as T } from 'prop-types';
 
 import { stackSkin, cardSkin } from '../../../styles/skins';
 import media from '../../../styles/utils/media-queries';
+import { wrapApiResult } from '../../../redux/utils';
+import { connect } from 'react-redux';
 
 const InpageBody = styled.div`
   ${stackSkin()};
@@ -22,28 +26,31 @@ const InpageBody = styled.div`
   `}
 `;
 
-const places = [
-  {
-    id: 'node/111'
-  },
-  {
-    id: 'node/112'
-  },
-  {
-    id: 'node/113'
-  },
-  {
-    id: 'node/114'
-  }
-];
-
-export default class PlacesIndex extends Component {
+class PlacesIndex extends Component {
   render () {
+    const { isReady, getData, hasError } = this.props.places;
+
+    if (!isReady()) {
+      return (
+        <InpageBody>
+          <div>Loading...</div>
+        </InpageBody>
+      );
+    }
+
+    if (hasError()) {
+      return (
+        <InpageBody>
+          <div>An error occurred, could not fetch places!</div>
+        </InpageBody>
+      );
+    }
+
     return (
       <InpageBody>
         <h1>Places</h1>
         <ul>
-          {places.map((p) => (
+          {getData().map(p => (
             <li key={p.id}>
               <Link to={`/explore/${p.id}`}>{p.id}</Link>
             </li>
@@ -53,3 +60,17 @@ export default class PlacesIndex extends Component {
     );
   }
 }
+
+if (environment !== 'production') {
+  PlacesIndex.propTypes = {
+    places: T.object
+  };
+}
+
+function mapStateToProps (state) {
+  return {
+    places: wrapApiResult(state.places)
+  };
+}
+
+export default connect(mapStateToProps)(PlacesIndex);
