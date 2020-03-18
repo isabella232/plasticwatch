@@ -1,13 +1,18 @@
 import styled from 'styled-components';
+import { rgba } from 'polished';
 import FormInput from './input';
 import FormLabel from './label';
 import FormToolbar from './toolbar';
 import collecticon from '../collecticons';
-import { themeVal } from '../utils/general';
+import { themeVal, stylizeFunction } from '../utils/general';
 import Button from '../button/button';
+
+const _rgba = stylizeFunction(rgba);
 
 export const FilterToolbar = styled(FormToolbar)`
   align-items: flex-end;
+  justify-content: space-between;
+  background: ${_rgba(themeVal('color.surface'), 0.5)};
 
   & input {
     max-width: 24rem;
