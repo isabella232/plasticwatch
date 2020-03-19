@@ -79,11 +79,31 @@ const SidebarWrapper = styled.div`
   `}
 `;
 
+const TableWrapper = styled.section`
+  display: grid;
+  height: 100%;
+  grid-template-columns: 100vw;
+  ${media.mediumUp`
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: 2fr 10fr;
+  `};
+  &>:first-child {
+    grid-row: 1;
+    grid-column: auto / span 4;
+  }
+  &>:last-child {
+    grid-row: 2;
+    grid-column: auto / span 12;
+  }
+`;
+
 const Panel = styled.section`
   position: relative; /* Likely change to fixed within grid */
   background: ${themeVal('color.background')};
   ${media.mediumUp`
-    padding: 2rem;
+    padding: 3rem 2rem 2rem;
+    display: flex;
+    flex-flow: column nowrap;
   `}
 `;
 
@@ -106,13 +126,14 @@ const InnerPanel = styled.article`
   flex-flow: column nowrap;
   align-items: stretch;
   justify-content: space-between;
-  margin: 2rem 0;
+  margin: 2rem 0 0;
   border-radius: ${themeVal('shape.rounded')};
   background: ${themeVal('color.surface')};
   box-shadow: 0 0 6px 1px ${themeVal('color.shadow')};
   padding: 1rem;
   ${media.mediumUp`
     padding: 1.5rem;
+    flex: 1;
   `}
 `;
 
@@ -121,7 +142,7 @@ const Results = styled.ul`
 `;
 
 const ResultsItem = styled.li`
-  margin-bottom: ${themeVal('layout.space')};
+  margin: ${themeVal('layout.space')} auto;
   max-width: 28rem;
   ${media.mediumUp`
     margin-bottom: 1.5rem;
@@ -239,6 +260,88 @@ class Sandbox extends React.Component {
   render () {
     return (
       <App pageTitle='Sandbox'>
+        <SidebarWrapper id='view1'>
+          <Panel>
+            <Form>
+              <FilterToolbar>
+                <InputWrapper>
+                  <FilterLabel htmlFor='placeSearch'>Search places</FilterLabel>
+                  <InputIcon htmlFor='placeSearch' useIcon='magnifier-left' />
+                  <InputWithIcon
+                    type='text'
+                    id='placeSearch'
+                    placeholder='Look up location'
+                  />
+                </InputWrapper>
+                <Button useIcon='sliders-vertical'>Show Filters</Button>
+              </FilterToolbar>
+              <FilterToolbar>
+                <FilterButton>Plastic Free</FilterButton>
+                <FilterButton>Plastic</FilterButton>
+                <FilterButton>Unsurveyed</FilterButton>
+              </FilterToolbar>
+            </Form>
+            <Results>
+              <ResultsItem>
+                <Place>
+                  <PlaceHeader>
+                    <PlaceTitle>Scott&apos;s Salads</PlaceTitle>
+                    <PlaceType>Cafe</PlaceType>
+                  </PlaceHeader>
+                  <PlaceRating>
+                    <RatingType useIcon='circle-tick' nonplastic>Non-plastic options</RatingType>
+                    <PlaceSurveys>12 out of 16 people</PlaceSurveys>
+                  </PlaceRating>
+                  <PlaceSelect />
+                </Place>
+              </ResultsItem>
+              <ResultsItem>
+                <Place>
+                  <PlaceHeader>
+                    <PlaceTitle>Bob&apos;s Burgers</PlaceTitle>
+                    <PlaceType>Restaurant</PlaceType>
+                  </PlaceHeader>
+                  <PlaceRating>
+                    <RatingType useIcon='circle-xmark'>No non-plastic options</RatingType>
+                    <PlaceSurveys>14 out of 23 people</PlaceSurveys>
+                  </PlaceRating>
+                  <PlaceSelect />
+                </Place>
+              </ResultsItem>
+            </Results>
+          </Panel>
+          <Map />
+        </SidebarWrapper>
+        <SidebarWrapper id='view2'>
+          <Panel>
+            <InpageBackLink>Back to all restaurants</InpageBackLink>
+            <InnerPanel>
+              <PlaceMeta>
+                <PlaceHeader>
+                  <PlaceTitle>Bob&apos;s Burgers</PlaceTitle>
+                  <PlaceType>Restaurant</PlaceType>
+                  <Map />
+                </PlaceHeader>
+                <PlaceRating>
+                  <RatingType useIcon='circle-xmark'>No non-plastic options</RatingType>
+                  <PlaceSurveys>14 out of 23 people</PlaceSurveys>
+                </PlaceRating>
+              </PlaceMeta>
+              <PlaceDetails>
+                <h4>Recent Comments</h4>
+                <PlaceComment>This place is really great</PlaceComment>
+                <PlaceComment>I did not enjoy this restaurant</PlaceComment>
+              </PlaceDetails>
+              <Button
+                variation='primary-raised-dark'
+                size='large'
+              >
+                Submit survey
+              </Button>
+            </InnerPanel>
+          </Panel>
+          <Map />
+        </SidebarWrapper>
         <Inpage>
           <InpageHeader />
           <InpageBody>
@@ -420,6 +523,7 @@ class Sandbox extends React.Component {
                       <th>Rank</th>
                       <th>Surveyor</th>
                       <th>Surveys</th>
+                      <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -427,16 +531,19 @@ class Sandbox extends React.Component {
                       <td>1</td>
                       <td>Bob Smith</td>
                       <td>24</td>
+                      <td><Button size='small' variation='base-plain' useIcon='trash-bin' hideText title='Remove user'>Remove</Button></td>
                     </tr>
                     <tr>
                       <td>2</td>
                       <td>Jane Good</td>
                       <td>19</td>
+                      <td><Button size='small' variation='base-plain' useIcon='trash-bin' hideText title='Remove user'>Remove</Button></td>
                     </tr>
                     <tr>
                       <td>3</td>
                       <td>Matt Park</td>
                       <td>12</td>
+                      <td><Button size='small' variation='base-plain' useIcon='trash-bin' hideText title='Remove user'>Remove</Button></td>
                     </tr>
                   </tbody>
                 </DataTable>
@@ -453,9 +560,53 @@ class Sandbox extends React.Component {
         <SidebarWrapper>
           <MobileCard>
             <h1>Test Mobile Card in Sidebar Wrapper</h1>
-            <p>The MobileCard is nested in an InpageBodyFluid component. This renders as a full-width card on mobile, intended to be hideable below the footer. On desktop this renders as a normal card</p>
+            <p>This MobileCard is nested in a SidebarWrapper component. </p>
+            <InnerPanel>
+              <h1>Test Panel in Card in Wrapper</h1>
+              <p>The InnerPanel is nested in a MobileCard component.</p>
+            </InnerPanel>
           </MobileCard>
         </SidebarWrapper>
+        <InpageBodyInner>
+          <TableWrapper>
+            <MobileCard>
+              <h1>Top Surveyors</h1>
+              <p>The InnerPanel is nested in a MobileCard component.</p>
+            </MobileCard>
+            <InnerPanel>
+              <DataTable>
+                <thead>
+                  <tr>
+                    <th>Rank</th>
+                    <th>Surveyor</th>
+                    <th>Surveys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>Bob Smith</td>
+                    <td>24</td>
+                    <td><Button size='small' variation='base-plain' useIcon='trash-bin' hideText title='Remove user'>Remove</Button></td>
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>Jane Good</td>
+                    <td>19</td>
+                    <td><Button size='small' variation='base-plain' useIcon='trash-bin' hideText title='Remove user'>Remove</Button></td>
+                  </tr>
+                  <tr>
+                    <td>3</td>
+                    <td>Matt Park</td>
+                    <td>12</td>
+                    <td><Button size='small' variation='base-plain' useIcon='trash-bin' hideText title='Remove user'>Remove</Button></td>
+                  </tr>
+                </tbody>
+              </DataTable>
+            </InnerPanel>
+          </TableWrapper>
+        </InpageBodyInner>
       </App>
     );
   }
