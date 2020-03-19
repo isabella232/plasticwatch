@@ -49,8 +49,8 @@ export const InpageHeadline = styled.div`
 export const InpageBackLink = styled(Link)`
   display:flex;
   position: relative;
-  top: -0.5rem;
   text-decoration: none;
+  margin-top: 1rem;
   &:before{
     ${collecticon('chevron-left--small')};
   }
