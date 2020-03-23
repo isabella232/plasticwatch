@@ -6,7 +6,8 @@ import { PropTypes as T } from 'prop-types';
 import { connect } from 'react-redux';
 import { rgba } from 'polished';
 
-import { wrapApiResult } from '../../../redux/utils';
+import { wrapApiResult, getFromState } from '../../../redux/utils';
+import * as actions from '../../../redux/actions/places';
 
 import collecticon from '../../../styles/collecticons';
 import media from '../../../styles/utils/media-queries';
@@ -24,6 +25,8 @@ import {
   FilterLabel,
   FilterButton
 } from '../../../styles/form/filters';
+import { showGlobalLoading, hideGlobalLoading } from '../../common/global-loading';
+import { Place, PlaceHeader, PlaceTitle, PlaceType, PlaceRating } from '../../../styles/place';
 
 const _rgba = stylizeFunction(rgba);
 
@@ -58,45 +61,6 @@ const ResultsItem = styled.li`
   ${media.mediumUp`
     margin-bottom: 1.5rem;
   `}
-`;
-
-const Place = styled.article`
-  border-radius: ${themeVal('shape.rounded')};
-  background: ${themeVal('color.surface')};
-  box-shadow: 0 0 6px 1px ${themeVal('color.shadow')};
-  position: relative;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 1rem;
-  ${media.mediumUp`
-    padding: 1.5rem;
-  `}
-`;
-
-const PlaceHeader = styled.header`
-  display: flex;
-  flex-flow: column nowrap;
-  flex: 1;
-  align-items: flex-start;
-`;
-
-const PlaceTitle = styled.h2`
-  margin: 0;
-`;
-
-const PlaceType = styled.p`
-  color: ${themeVal('color.baseMed')};
-  line-height: 1;
-`;
-
-const PlaceRating = styled.div`
-  display: flex;
-  flex-flow: column nowrap;
-  margin-left: auto;
-  padding-left: ${themeVal('layout.space')};
-  text-align: center;
-  color: ${themeVal('color.baseMed')};
 `;
 
 const RatingType = styled.p`
@@ -135,6 +99,16 @@ const PlaceSelect = styled.a`
 `;
 
 class PlacesIndex extends Component {
+  async componentDidMount () {
+    await this.fetchData();
+  }
+
+  async fetchData () {
+    showGlobalLoading();
+    await this.props.fetchPlaces();
+    hideGlobalLoading();
+  }
+
   render () {
     const { isReady, getData, hasError } = this.props.places;
 
@@ -207,14 +181,21 @@ class PlacesIndex extends Component {
 
 if (environment !== 'production') {
   PlacesIndex.propTypes = {
-    places: T.object
+    places: T.object,
+    fetchPlaces: T.func
   };
 }
 
 function mapStateToProps (state) {
   return {
-    places: wrapApiResult(state.places)
+    places: wrapApiResult(getFromState(state, `places.list`))
   };
 }
 
-export default connect(mapStateToProps)(PlacesIndex);
+function dispatcher (dispatch) {
+  return {
+    fetchPlaces: (...args) => dispatch(actions.fetchPlaces(...args))
+  };
+}
+
+export default connect(mapStateToProps, dispatcher)(PlacesIndex);

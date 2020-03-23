@@ -3,14 +3,9 @@ import React from 'react';
 import { PropTypes as T } from 'prop-types';
 import styled from 'styled-components';
 import { Route } from 'react-router-dom';
-import { connect } from 'react-redux';
-import { environment } from '../../config';
-
-import * as actions from '../../redux/actions/places';
 
 import media from '../../styles/utils/media-queries';
 
-import { showGlobalLoading, hideGlobalLoading } from '../common/global-loading';
 import App from '../common/app';
 import Map from '../common/map';
 import PlacesIndex from './places';
@@ -42,25 +37,15 @@ const Wrapper = styled.div`
   `}
 `;
 
-class Explore extends React.Component {
-  async componentDidMount () {
-    await this.fetchData();
-  }
+export default class Explore extends React.Component {
 
-  async fetchData () {
-    showGlobalLoading();
-
-    await this.props.fetchPlaces({});
-
-    hideGlobalLoading();
-  }
 
   render () {
     return (
       <App pageTitle='About' hideFooter>
         <Wrapper>
           <Route exact path='/explore' component={PlacesIndex} />
-          <Route path='/explore/:id' component={PlacesView} />
+          <Route path='/explore/:type/:id' component={PlacesView} />
           <Map />
         </Wrapper>
       </App>
@@ -68,16 +53,3 @@ class Explore extends React.Component {
   }
 }
 
-if (environment !== 'production') {
-  Explore.propTypes = {
-    fetchPlaces: T.func
-  };
-}
-
-function dispatcher (dispatch) {
-  return {
-    fetchPlaces: (...args) => dispatch(actions.fetchPlaces(...args))
-  };
-}
-
-export default connect(null, dispatcher)(Explore);
