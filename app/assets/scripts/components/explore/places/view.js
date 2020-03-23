@@ -11,10 +11,6 @@ import media from '../../../styles/utils/media-queries';
 import { wrapApiResult, getFromState } from '../../../redux/utils';
 import { connect } from 'react-redux';
 import {
-  showGlobalLoading,
-  hideGlobalLoading
-} from '../../common/global-loading';
-import {
   Place,
   PlaceHeader,
   PlaceTitle,

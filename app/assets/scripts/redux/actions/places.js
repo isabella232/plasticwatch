@@ -1,7 +1,6 @@
-import { fetchDispatchFactory, baseAPIReducer } from '../utils';
+import { fetchDispatchFactory } from '../utils';
 import { apiUrl } from '../../config';
 import qs from 'qs';
-import { combineReducers } from 'redux';
 
 /*
  * List of places

@@ -1,6 +1,5 @@
 /* eslint-disable react/no-access-state-in-setstate */
 import React from 'react';
-import { PropTypes as T } from 'prop-types';
 import styled from 'styled-components';
 import { Route } from 'react-router-dom';
 
@@ -38,8 +37,6 @@ const Wrapper = styled.div`
 `;
 
 export default class Explore extends React.Component {
-
-
   render () {
     return (
       <App pageTitle='About' hideFooter>
@@ -52,4 +49,3 @@ export default class Explore extends React.Component {
     );
   }
 }
-
