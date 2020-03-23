@@ -6,38 +6,32 @@ import { PropTypes as T } from 'prop-types';
 
 import * as actions from '../../../redux/actions/places';
 
-import { stackSkin, cardSkin } from '../../../styles/skins';
-import media from '../../../styles/utils/media-queries';
 import { wrapApiResult, getFromState } from '../../../redux/utils';
 import { connect } from 'react-redux';
 import {
-  Place,
   PlaceHeader,
+  PlaceRating,
+  PlaceSurveys,
   PlaceTitle,
   PlaceType,
-  PlaceRating,
-  RatingType,
-  PlaceSurveys,
-  PlaceSelect
+  RatingType
 } from '../../../styles/place';
 import Button from '../../../styles/button/button';
+import InnerPanel from '../../../styles/inner-panel';
 
-const InpageBody = styled.div`
-  ${stackSkin()};
-  ${cardSkin()};
-  padding: 1rem 2rem;
-  grid-row: 2/5;
-  z-index: 10;
-  width: 95%;
-  margin: 0 auto;
+import { InpageBackLink } from '../../common/inpage';
 
-  ${media.mediumUp`
-    padding: 2rem;
-    width: 100%;
-    order: initial;
-    padding: 4rem;
-  `}
+const PlaceMeta = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
 `;
+
+const PlaceDetails = styled.div`
+  margin-bottom: 2rem;
+`;
+
+const PlaceComment = styled.div``;
 
 class PlacesView extends Component {
   async componentDidMount () {
@@ -62,41 +56,46 @@ class PlacesView extends Component {
     const { recentComments } = this.props;
 
     return (
-      <InpageBody>
-        <Link to='/explore'>Return to places index</Link>
-        <Place>
-          <PlaceHeader>
-            {properties.name && <PlaceTitle>{properties.name}</PlaceTitle>}
-            {properties.amenity && <PlaceType>{properties.amenity}</PlaceType>}
-          </PlaceHeader>
-          <PlaceRating>
-            <RatingType useIcon='circle-tick' nonplastic>
-              Non-plastic options
-            </RatingType>
-            <PlaceSurveys>12 out of 16 people</PlaceSurveys>
-          </PlaceRating>
-          <PlaceSelect />
-        </Place>
-
-        <h2>Recent comments</h2>
-        {recentComments.length === 0 ? (
-          <div>This place did not received comments yet.</div>
-        ) : (
-          <ul>
-            {recentComments.map(({ userId, userPhoto, comment }) => (
-              <li key={userId}>
-                <img width='50' height='50' src={userPhoto} alt={userId} />
-                <div>
-                  <b>{comment}</b> - {userId}
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-        <Button as={Link} to={`/explore/${properties.id}/submit-survey`}>
-          Submit a survey
-        </Button>
-      </InpageBody>
+      <>
+        <InpageBackLink to='/explore'>Back to all restaurants</InpageBackLink>
+        <InnerPanel>
+          <PlaceMeta>
+            <PlaceHeader>
+              {properties.name && <PlaceTitle>{properties.name}</PlaceTitle>}
+              {properties.amenity && (
+                <PlaceType>{properties.amenity}</PlaceType>
+              )}
+            </PlaceHeader>
+            <PlaceRating>
+              <RatingType useIcon='circle-tick' nonplastic>
+                Non-plastic options
+              </RatingType>
+              <PlaceSurveys>12 out of 16 people</PlaceSurveys>
+            </PlaceRating>
+          </PlaceMeta>
+          <Button
+            variation='primary-raised-dark'
+            as={Link}
+            to={`/explore/${properties.id}/submit-survey`}
+          >
+            Submit a survey
+          </Button>
+          <PlaceDetails>
+            <h4>Recent comments</h4>
+            {recentComments.length === 0 ? (
+              <div>This place did not received comments yet.</div>
+            ) : (
+              recentComments.map(({ userId, comment }) => (
+                <PlaceComment key={userId}>
+                  <div>
+                    {comment} - by {userId}
+                  </div>
+                </PlaceComment>
+              ))
+            )}
+          </PlaceDetails>
+        </InnerPanel>
+      </>
     );
   }
 }
@@ -119,25 +118,21 @@ function mapStateToProps (state, props) {
     recentComments: [
       {
         userId: 'sunt',
-        userPhoto: 'https://dummyimage.com/50.png',
         comment:
           'Velit veniam dolore labore aute ut. Adipisicing et tempor reprehenderit incididunt sit culpa in dolore.'
       },
       {
         userId: 'reprehenderit',
-        userPhoto: 'https://dummyimage.com/50.png',
         comment:
           'Ex quis quis sint amet dolor reprehenderit consectetur consequat. Cillum sit culpa cupidatat ex ipsum culpa .'
       },
       {
         userId: 'tempor',
-        userPhoto: 'https://dummyimage.com/50.png',
         comment:
           'Amet dolore velit velit pariatur irure et elit id do non enim ullamco velit. Consequat aute exercitation.'
       },
       {
         userId: 'commodo',
-        userPhoto: 'https://dummyimage.com/50.png',
         comment:
           'Reprehenderit anim Lorem ipsum sit ad magna incididunt cupidatat eiusmod fugiat. Cillum esse enim nisi reprehenderit.'
       }
