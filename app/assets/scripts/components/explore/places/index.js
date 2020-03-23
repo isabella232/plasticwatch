@@ -4,15 +4,13 @@ import { Link } from 'react-router-dom';
 import { environment } from '../../../config';
 import { PropTypes as T } from 'prop-types';
 import { connect } from 'react-redux';
-import { rgba } from 'polished';
 
 import { wrapApiResult, getFromState } from '../../../redux/utils';
 import * as actions from '../../../redux/actions/places';
 
 import collecticon from '../../../styles/collecticons';
-import media from '../../../styles/utils/media-queries';
-import { themeVal, stylizeFunction } from '../../../styles/utils/general';
-import { visuallyHidden, listReset } from '../../../styles/helpers/index';
+import { themeVal } from '../../../styles/utils/general';
+import { listReset } from '../../../styles/helpers/index';
 
 import Button from '../../../styles/button/button';
 import Form from '../../../styles/form/form';
@@ -25,20 +23,18 @@ import {
   FilterButton
 } from '../../../styles/form/filters';
 import { showGlobalLoading, hideGlobalLoading } from '../../common/global-loading';
-import { Place, PlaceHeader, PlaceTitle, PlaceType, PlaceRating } from '../../../styles/place';
-
-const _rgba = stylizeFunction(rgba);
+import { Place, PlaceHeader, PlaceTitle, PlaceType, PlaceRating, PlaceSelect, PlaceSurveys } from '../../../styles/place';
 
 const Results = styled.ul`
   ${listReset()};
+  overflow: scroll;
+  margin-top: 1rem;
 `;
 
 const ResultsItem = styled.li`
   margin-bottom: ${themeVal('layout.space')};
   max-width: 28rem;
-  ${media.mediumUp`
-    margin-bottom: 1.5rem;
-  `}
+  text-decoration: none;
 `;
 
 const RatingType = styled.p`
@@ -52,27 +48,6 @@ const RatingType = styled.p`
     nonplastic ? themeVal('color.primary') : themeVal('color.danger')};
     font-size: 3rem;
     margin-bottom: 0.5rem;
-  }
-`;
-
-const PlaceSurveys = styled.p``;
-
-const PlaceSelect = styled.a`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1;
-  margin: 0 !important;
-  transition: all 0.24s ease 0s;
-  flex: none;
-  &:hover {
-    opacity: 1;
-    background: ${_rgba(themeVal('color.primary'), 0.05)};
-  }
-  span {
-    ${visuallyHidden()}
   }
 `;
 

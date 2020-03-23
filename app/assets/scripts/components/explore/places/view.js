@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { environment } from '../../../config';
 import { PropTypes as T } from 'prop-types';
@@ -9,29 +8,19 @@ import * as actions from '../../../redux/actions/places';
 import { wrapApiResult, getFromState } from '../../../redux/utils';
 import { connect } from 'react-redux';
 import {
+  PlaceMeta,
   PlaceHeader,
   PlaceRating,
   PlaceSurveys,
+  PlaceDetails,
   PlaceTitle,
   PlaceType,
-  RatingType
+  RatingType,
+  PlaceComment
 } from '../../../styles/place';
-import Button from '../../../styles/button/button';
-import InnerPanel from '../../../styles/inner-panel';
-
+import { InnerPanel } from '../../../styles/panel';
 import { InpageBackLink } from '../../common/inpage';
-
-const PlaceMeta = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-`;
-
-const PlaceDetails = styled.div`
-  margin-bottom: 2rem;
-`;
-
-const PlaceComment = styled.div``;
+import Button from '../../../styles/button/button';
 
 class PlacesView extends Component {
   async componentDidMount () {
@@ -57,14 +46,12 @@ class PlacesView extends Component {
 
     return (
       <>
-        <InpageBackLink to='/explore'>Back to all restaurants</InpageBackLink>
+        <InpageBackLink to='/explore'>Return to places index</InpageBackLink>
         <InnerPanel>
           <PlaceMeta>
             <PlaceHeader>
               {properties.name && <PlaceTitle>{properties.name}</PlaceTitle>}
-              {properties.amenity && (
-                <PlaceType>{properties.amenity}</PlaceType>
-              )}
+              {properties.amenity && <PlaceType>{properties.amenity}</PlaceType>}
             </PlaceHeader>
             <PlaceRating>
               <RatingType useIcon='circle-tick' nonplastic>
@@ -75,6 +62,7 @@ class PlacesView extends Component {
           </PlaceMeta>
           <Button
             variation='primary-raised-dark'
+            size='large'
             as={Link}
             to={`/explore/${properties.id}/submit-survey`}
           >
@@ -88,7 +76,8 @@ class PlacesView extends Component {
               recentComments.map(({ userId, comment }) => (
                 <PlaceComment key={userId}>
                   <div>
-                    {comment} - by {userId}
+                    {comment}
+                    <span>- {userId}</span>
                   </div>
                 </PlaceComment>
               ))
