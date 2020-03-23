@@ -4,13 +4,15 @@ import styled from 'styled-components';
 import { Route } from 'react-router-dom';
 
 import media from '../../styles/utils/media-queries';
+import { themeVal } from '../../styles/utils/general';
 
 import App from '../common/app';
 import Map from '../common/map';
 import PlacesIndex from './places';
 import PlacesView from './places/view';
+import submitSurvey from './places/submit-survey';
 
-const Wrapper = styled.div`
+const SidebarWrapper = styled.div`
   display: grid;
   height: 100%;
   grid-template-columns: 100vw;
@@ -36,15 +38,28 @@ const Wrapper = styled.div`
   `}
 `;
 
+const Panel = styled.section`
+  position: relative; /* Likely change to fixed within grid */
+  background: ${themeVal('color.background')};
+  ${media.mediumUp`
+    padding: 3rem 2rem 2rem;
+    display: flex;
+    flex-flow: column nowrap;
+  `}
+`;
+
 export default class Explore extends React.Component {
   render () {
     return (
       <App pageTitle='About' hideFooter>
-        <Wrapper>
-          <Route exact path='/explore' component={PlacesIndex} />
-          <Route path='/explore/:type/:id' component={PlacesView} />
+        <SidebarWrapper>
+          <Panel>
+            <Route exact path='/explore' component={PlacesIndex} />
+            <Route exact path='/explore/:type/:id' component={PlacesView} />
+            <Route exact path='/explore/:type/:id/submit-survey' component={submitSurvey} />
+          </Panel>
           <Map />
-        </Wrapper>
+        </SidebarWrapper>
       </App>
     );
   }

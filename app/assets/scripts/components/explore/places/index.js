@@ -11,7 +11,6 @@ import * as actions from '../../../redux/actions/places';
 
 import collecticon from '../../../styles/collecticons';
 import media from '../../../styles/utils/media-queries';
-import { stackSkin, cardSkin } from '../../../styles/skins';
 import { themeVal, stylizeFunction } from '../../../styles/utils/general';
 import { visuallyHidden, listReset } from '../../../styles/helpers/index';
 
@@ -29,27 +28,6 @@ import { showGlobalLoading, hideGlobalLoading } from '../../common/global-loadin
 import { Place, PlaceHeader, PlaceTitle, PlaceType, PlaceRating } from '../../../styles/place';
 
 const _rgba = stylizeFunction(rgba);
-
-const InpageBody = styled.div`
-  ${stackSkin()};
-  ${cardSkin()};
-  padding: 1rem 2rem;
-  grid-row: 2/5;
-  z-index: 10;
-  width: 95%;
-  margin: 0 auto;
-
-  a {
-    text-decoration: none;
-  }
-
-  ${media.mediumUp`
-    padding: 2rem;
-    width: 100%;
-    order: initial;
-    padding: 4rem;
-  `}
-`;
 
 const Results = styled.ul`
   ${listReset()};
@@ -114,23 +92,18 @@ class PlacesIndex extends Component {
 
     if (!isReady()) {
       return (
-        <InpageBody>
-          <div>Loading...</div>
-        </InpageBody>
+        <div>Loading...</div>
       );
     }
 
     if (hasError()) {
       return (
-        <InpageBody>
-          <div>An error occurred, could not fetch places!</div>
-        </InpageBody>
+        <div>An error occurred, could not fetch places!</div>
       );
     }
 
     return (
-      <InpageBody>
-        <h1>Places</h1>
+      <>
         <Form>
           <FilterToolbar>
             <InputWrapper>
@@ -174,7 +147,7 @@ class PlacesIndex extends Component {
             </ResultsItem>
           ))}
         </Results>
-      </InpageBody>
+      </>
     );
   }
 }
