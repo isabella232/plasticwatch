@@ -103,9 +103,9 @@ class PlacesView extends Component {
 
 if (environment !== 'production') {
   PlacesView.propTypes = {
-    place: T.object,
-    match: T.object,
     fetchPlace: T.func,
+    match: T.object,
+    place: T.object,
     recentComments: T.array
   };
 }

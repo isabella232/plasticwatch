@@ -5,11 +5,11 @@ import { environment } from '../../../config';
 import ReactTooltip from 'react-tooltip';
 
 import * as actions from '../../../redux/actions/places';
-import { wrapApiResult, getFromState } from '../../../redux/utils';
+import { wrapApiResult, getFromState, isLoggedIn } from '../../../redux/utils';
 
-import {
-  PlaceTitle
-} from '../../../styles/place';
+import toasts from '../../common/toasts';
+
+import { PlaceTitle } from '../../../styles/place';
 import Button from '../../../styles/button/button';
 import InnerPanel from '../../../styles/inner-panel';
 import Form from '../../../styles/form/form';
@@ -36,7 +36,13 @@ class SubmitSurvey extends Component {
   async fetchData () {
     const { type, id } = this.props.match.params;
     const placeId = `${type}/${id}`;
-    await this.props.fetchPlace(placeId);
+
+    if (!this.props.isLoggedIn) {
+      toasts.info(`You must be logged in to submit surveys.`);
+      this.props.history.push(`/explore/${placeId}`);
+    } else {
+      await this.props.fetchPlace(placeId);
+    }
   }
 
   render () {
@@ -126,9 +132,11 @@ class SubmitSurvey extends Component {
 
 if (environment !== 'production') {
   SubmitSurvey.propTypes = {
-    place: T.object,
+    fetchPlace: T.func,
+    history: T.object,
+    isLoggedIn: T.bool,
     match: T.object,
-    fetchPlace: T.func
+    place: T.object
   };
 }
 
@@ -137,7 +145,8 @@ function mapStateToProps (state, props) {
   const placeId = `${type}/${id}`;
 
   return {
-    place: wrapApiResult(getFromState(state, `places.individual.${placeId}`))
+    place: wrapApiResult(getFromState(state, `places.individual.${placeId}`)),
+    isLoggedIn: isLoggedIn(state)
   };
 }
 

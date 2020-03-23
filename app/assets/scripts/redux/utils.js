@@ -311,3 +311,15 @@ export function getFromState (state, path) {
     error: null
   });
 }
+
+/**
+ * Checks if user is logged in.
+ *
+ * @param {object} state The redux state
+ *
+ * @returns {boolean} Equal to `true` when is logged in.
+ */
+export function isLoggedIn (state) {
+  const { isReady, hasError } = wrapApiResult(state.authenticatedUser);
+  return isReady() && !hasError();
+}
