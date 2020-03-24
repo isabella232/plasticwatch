@@ -6,7 +6,7 @@ import ReactTooltip from 'react-tooltip';
 import { withFormik } from 'formik';
 
 import { fetchPlace } from '../../../redux/actions/places';
-import { fetchSurveyMeta } from '../../../redux/actions/surveys';
+import { fetchSurveyMeta, postSurvey } from '../../../redux/actions/surveys';
 import { wrapApiResult, getFromState, isLoggedIn } from '../../../redux/utils';
 
 import toasts from '../../common/toasts';
@@ -77,9 +77,8 @@ const InnerSurveyForm = props => {
               id={q.id}
               placeholder='Description'
               onChange={handleChange}
-            >
-              {value}
-            </FormTextarea>
+              value={value}
+            />
           )}
         </FormGroupBody>
       </FormGroup>
@@ -139,17 +138,18 @@ const SurveyForm = withFormik({
     }, {});
   },
 
-  handleSubmit: (values, { setSubmitting }) => {
-    setTimeout(() => {
-      alert(JSON.stringify(values, null, 2));
-      setSubmitting(false);
-    }, 1000);
-  },
-
-  displayName: 'BasicForm'
+  handleSubmit: (values, { props }) => {
+    props.handleSubmit(values);
+  }
 })(InnerSurveyForm);
 
 class SubmitSurvey extends Component {
+  constructor (props) {
+    super(props);
+
+    this.postSurvey = this.postSurvey.bind(this);
+  }
+
   async componentDidMount () {
     await this.fetchData();
   }
@@ -162,59 +162,30 @@ class SubmitSurvey extends Component {
       toasts.info(`You must be logged in to submit surveys.`);
       this.props.history.push(`/explore/${placeId}`);
     } else {
-      this.props.fetchPlaceAction(placeId);
+      this.props.fetchPlace(placeId);
       this.props.fetchSurveyMeta();
     }
   }
 
-  renderQuestion (q) {
-    return (
-      <FormGroup key={q.id}>
-        <FormGroupHeader>
-          <FormLabel>{q.label}</FormLabel>
-        </FormGroupHeader>
-        <FormGroupBody>
-          {q.type === 'boolean' && (
-            <FormCheckableGroup>
-              <FormCheckable
-                textPlacement='right'
-                checked={undefined}
-                type='radio'
-                name='radio-a'
-                id='radio-yes'
-              >
-                Yes
-              </FormCheckable>
-              <FormCheckable
-                textPlacement='right'
-                checked={undefined}
-                type='radio'
-                name='radio-a'
-                id='radio-no'
-              >
-                No
-              </FormCheckable>
-            </FormCheckableGroup>
-          )}
-          {q.type === 'text' && (
-            <FormTextarea
-              size='large'
-              id='textarea-1'
-              placeholder='Description'
-            />
-          )}
-        </FormGroupBody>
-      </FormGroup>
-    );
+  async postSurvey (data) {
+    this.props.postSurvey(data);
   }
 
   render () {
+    // Get place data
+    const { isReady, hasError, getData } = this.props.place;
+    if (!isReady()) return <div>Loading...</div>;
+    if (hasError()) {
+      return <div>As error occurred when fetching place data</div>;
+    }
+    const { properties } = getData();
+
+    // Get survey data
     const {
       isReady: isSurveyReady,
       hasError: hasSurveyError,
       getData: getSurveyData
     } = this.props.surveyMeta;
-
     if (!isSurveyReady()) return <div>Loading survey...</div>;
     if (hasSurveyError()) {
       return <div>As error occurred when fetching survey.</div>;
@@ -222,18 +193,21 @@ class SubmitSurvey extends Component {
     const surveyMeta = getSurveyData();
     if (!surveyMeta) return <div>No survey is available.</div>;
 
-    const { isReady, hasError, getData } = this.props.place;
-
-    if (!isReady()) return <div>Loading...</div>;
-    if (hasError()) {
-      return <div>As error occurred when fetching place data</div>;
-    }
-
-    const { properties } = getData();
-
     return (
       <InnerPanel>
-        <SurveyForm survey={surveyMeta} place={properties} />
+        <SurveyForm
+          survey={surveyMeta}
+          place={properties}
+          handleSubmit={values =>
+            this.postSurvey({
+              surveyId: surveyMeta.id,
+              osmObject: {
+                id: properties.id
+              },
+              createdAt: new Date().toISOString(),
+              answers: values
+            })}
+        />
       </InnerPanel>
     );
   }
@@ -241,7 +215,8 @@ class SubmitSurvey extends Component {
 
 if (environment !== 'production') {
   SubmitSurvey.propTypes = {
-    fetchPlaceAction: T.func,
+    fetchPlace: T.func,
+    postSurvey: T.func,
     fetchSurveyMeta: T.func,
     history: T.object,
     isLoggedIn: T.bool,
@@ -264,8 +239,9 @@ function mapStateToProps (state, props) {
 
 function dispatcher (dispatch) {
   return {
-    fetchPlaceAction: (...args) => dispatch(fetchPlace(...args)),
-    fetchSurveyMeta: (...args) => dispatch(fetchSurveyMeta(...args))
+    fetchPlace: (...args) => dispatch(fetchPlace(...args)),
+    fetchSurveyMeta: (...args) => dispatch(fetchSurveyMeta(...args)),
+    postSurvey: (...args) => dispatch(postSurvey(...args))
   };
 }
 

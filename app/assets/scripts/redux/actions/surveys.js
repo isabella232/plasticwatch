@@ -1,4 +1,4 @@
-import { fetchDispatchFactory } from '../utils';
+import { fetchDispatchFactory, postItem } from '../utils';
 import { apiUrl } from '../../config';
 
 /*
@@ -38,4 +38,14 @@ export function fetchSurveyMeta () {
     requestFn: requestSurvey.bind(this),
     receiveFn: receiveSurvey.bind(this)
   });
+}
+
+/*
+ * Post a new survey
+ */
+export function postSurvey (data) {
+  return async (dispatch, getState) => {
+    const state = getState();
+    await postItem(state, 'observations', data);
+  };
 }
