@@ -54,7 +54,7 @@ const PageTitle = styled.h1`
   line-height: 2rem;
   text-transform: uppercase;
   color: white;
-  padding: 0 2rem;
+  padding: 0 1rem;
   margin: -1rem 0;
   font-weight: ${themeVal('type.heading.black')};
   svg {
@@ -76,7 +76,7 @@ const PageTitle = styled.h1`
     bottom: 0.125rem;
   }
   ${media.mediumUp`
-    padding: 1rem 2rem;
+    padding: 1rem 2rem 1rem 0rem;
     background: linear-gradient(160deg, ${themeVal('color.secondary')}, ${themeVal('color.base')} 70%);
     a {
       padding: 0 2rem 0.5rem;
@@ -112,6 +112,7 @@ const GlobalMenu = styled.ul`
     a:first-of-type {
       &::before {
         color: white;
+        font-size: 1.5rem;
       }
     }
   `}

@@ -28,6 +28,7 @@ const Page = styled.div`
 const PageBody = styled.main`
   padding: 0;
   margin: 0;
+  overflow: scroll;
 `;
 
 class App extends Component {
