@@ -13,14 +13,15 @@ import { themeVal } from '../../../styles/utils/general';
 import { listReset } from '../../../styles/helpers/index';
 
 import Button from '../../../styles/button/button';
-import Form from '../../../styles/form/form';
 import {
+  Filters,
   FilterToolbar,
   InputWrapper,
   InputWithIcon,
   InputIcon,
   FilterLabel,
-  FilterButton
+  FilterButton,
+  FilterButtons
 } from '../../../styles/form/filters';
 import { showGlobalLoading, hideGlobalLoading } from '../../common/global-loading';
 import { Place, PlaceHeader, PlaceTitle, PlaceType, PlaceRating, PlaceSelect, PlaceSurveys } from '../../../styles/place';
@@ -52,6 +53,14 @@ const RatingType = styled.p`
 `;
 
 class PlacesIndex extends Component {
+  constructor (props) {
+    super(props);
+    this.state = {
+      filtersOpened: false
+    };
+    this.toggleFilters = this.toggleFilters.bind(this);
+  }
+
   async componentDidMount () {
     await this.fetchData();
   }
@@ -62,7 +71,16 @@ class PlacesIndex extends Component {
     hideGlobalLoading();
   }
 
+  toggleFilters () {
+    const { filtersOpened } = this.state;
+    this.setState({
+      filtersOpened: !filtersOpened
+    });
+  }
+
   render () {
+    const { filtersOpened } = this.state;
+    const { isMobile } = this.props;
     const { isReady, getData, hasError } = this.props.places;
 
     if (!isReady()) {
@@ -79,7 +97,7 @@ class PlacesIndex extends Component {
 
     return (
       <>
-        <Form>
+        <Filters>
           <FilterToolbar>
             <InputWrapper>
               <FilterLabel htmlFor='placeSearch'>Search places</FilterLabel>
@@ -90,14 +108,24 @@ class PlacesIndex extends Component {
                 placeholder='Look up location'
               />
             </InputWrapper>
-            <Button useIcon='sliders-vertical'>Show Filters</Button>
+            { isMobile
+              ? <>
+                <Button useIcon='sliders-vertical' onClick={this.toggleFilters}>Show Filters</Button>
+                {filtersOpened && (
+                  <FilterButtons>
+                    <FilterButton>Plastic Free</FilterButton>
+                    <FilterButton>Plastic</FilterButton>
+                    <FilterButton>Unsurveyed</FilterButton>
+                  </FilterButtons>
+                )}
+              </>
+              : <FilterButtons>
+                <FilterButton>Plastic Free</FilterButton>
+                <FilterButton>Plastic</FilterButton>
+                <FilterButton>Unsurveyed</FilterButton>
+              </FilterButtons> }
           </FilterToolbar>
-          <FilterToolbar>
-            <FilterButton>Plastic Free</FilterButton>
-            <FilterButton>Plastic</FilterButton>
-            <FilterButton>Unsurveyed</FilterButton>
-          </FilterToolbar>
-        </Form>
+        </Filters>
 
         <Results>
           {getData().map(({ id, properties }) => (
@@ -130,7 +158,8 @@ class PlacesIndex extends Component {
 if (environment !== 'production') {
   PlacesIndex.propTypes = {
     places: T.object,
-    fetchPlaces: T.func
+    fetchPlaces: T.func,
+    isMobile: T.bool
   };
 }
 
