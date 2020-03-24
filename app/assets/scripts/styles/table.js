@@ -53,13 +53,13 @@ const DataTable = styled.table`
   }
 
   tbody {
-    tr:hover {
+    /* tr:hover {
       background: ${_rgba(themeVal('color.primary'), 0.25)};
     }
 
     tr:active {
       background: ${_rgba(themeVal('color.smoke'), 0.25)};
-    }
+    } */
 
     a {
       color: ${_rgba(themeVal('color.primary'), 0.75)};

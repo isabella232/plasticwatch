@@ -9,8 +9,10 @@ import App from '../common/app';
 import Map from '../common/map';
 import PlacesIndex from './places';
 import PlacesView from './places/view';
+import submitSurvey from './places/submit-survey';
+import { Panel } from '../../styles/panel';
 
-const Wrapper = styled.div`
+const SidebarWrapper = styled.div`
   display: grid;
   height: 100%;
   grid-template-columns: 100vw;
@@ -36,18 +38,19 @@ const Wrapper = styled.div`
   `}
 `;
 
-class Explore extends React.Component {
+export default class Explore extends React.Component {
   render () {
     return (
       <App pageTitle='About' hideFooter>
-        <Wrapper>
-          <Route exact path='/explore' component={PlacesIndex} />
-          <Route path='/explore/:id' component={PlacesView} />
+        <SidebarWrapper>
+          <Panel>
+            <Route exact path='/explore' component={PlacesIndex} />
+            <Route exact path='/explore/:type/:id' component={PlacesView} />
+            <Route exact path='/explore/:type/:id/submit-survey' component={submitSurvey} />
+          </Panel>
           <Map />
-        </Wrapper>
+        </SidebarWrapper>
       </App>
     );
   }
 }
-
-export default Explore;

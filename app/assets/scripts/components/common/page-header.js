@@ -30,11 +30,7 @@ const PageHead = styled.header`
   top: 0;
   z-index: 1004;
   display: flex;
-  background: linear-gradient(
-    175deg,
-    ${themeVal('color.secondary')},
-    ${themeVal('color.base')}
-  );
+  background: linear-gradient(160deg, ${themeVal('color.secondary')}, ${themeVal('color.base')} 70%);
   ${media.mediumUp`
     overflow: hidden;
     background: ${themeVal('color.surface')};
@@ -81,9 +77,7 @@ const PageTitle = styled.h1`
   }
   ${media.mediumUp`
     padding: 1rem 2rem;
-    background: linear-gradient(175deg, ${themeVal(
-    'color.secondary'
-  )}, ${themeVal('color.base')});
+    background: linear-gradient(160deg, ${themeVal('color.secondary')}, ${themeVal('color.base')} 70%);
     a {
       padding: 0 2rem 0.5rem;
     }

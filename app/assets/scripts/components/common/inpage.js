@@ -9,6 +9,7 @@ import { stackSkin } from '../../styles/skins';
 import { headingAlt } from '../../styles/type/heading';
 import Constrainer from '../../styles/constrainer';
 import collecticon from '../../styles/collecticons';
+import media from '../../styles/utils/media-queries';
 
 const _rgba = stylizeFunction(rgba);
 
@@ -48,8 +49,8 @@ export const InpageHeadline = styled.div`
 export const InpageBackLink = styled(Link)`
   display:flex;
   position: relative;
-  top: -0.5rem;
   text-decoration: none;
+  margin-top: 1rem;
   &:before{
     ${collecticon('chevron-left--small')};
   }
@@ -78,4 +79,14 @@ export const InpageBody = styled.div`
 export const InpageBodyInner = styled(Constrainer)`
   padding-top: ${multiply(themeVal('layout.space'), 4)};
   padding-bottom: ${multiply(themeVal('layout.space'), 4)};
+`;
+
+export const InpageBodyFluid = styled.div`
+  padding: 0;
+  margin: 0 auto;
+  max-width: none;
+  ${media.mediumUp`
+    max-width: ${themeVal('layout.max')};
+    padding: ${multiply(themeVal('layout.space'), 4)} ${multiply(themeVal('layout.space'), 2)};
+  `};
 `;

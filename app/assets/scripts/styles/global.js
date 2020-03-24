@@ -5,6 +5,7 @@ import { themeVal, stylizeFunction } from './utils/general';
 import { collecticonsFont } from './collecticons';
 import reactInputRangeStyles from './vendor/react-input-range';
 import reactToastStyles from './vendor/react-toastify';
+import reactTooltipStyles from './vendor/react-tooltip';
 
 // Global styles for these components are included here for performance reasons.
 // This way they're only rendered when absolutely needed.
@@ -112,5 +113,6 @@ export default createGlobalStyle`
   ${collecticonsFont()}
   ${reactInputRangeStyles()}
   ${reactToastStyles()}
+  ${reactTooltipStyles()}
   ${baseStyles}
 `;
