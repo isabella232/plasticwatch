@@ -16,8 +16,10 @@ export const Place = styled.article`
   justify-content: space-between;
   align-items: flex-start;
   padding: 1rem;
+  margin: 0.5rem;
   ${media.mediumUp`
     padding: 1.5rem;
+    margin: 1rem 0;
   `}
 `;
 
@@ -78,5 +80,31 @@ export const PlaceSelect = styled.a`
   }
   span {
     ${visuallyHidden()}
+  }
+`;
+
+export const PlaceMeta = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+`;
+
+export const PlaceDetails = styled.div`
+  margin-bottom: 2rem;
+`;
+
+export const PlaceComment = styled.li`
+  display: flex;
+  justify-content: space-between;
+  margin: 0.75rem 0;
+  
+  img {
+    max-width: 100%;
+    margin-right: 0.5rem;
+  }
+  span {
+    display: block;
+    text-align: right;
+    font-size: 0.875rem;
   }
 `;

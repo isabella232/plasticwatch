@@ -4,13 +4,13 @@ import styled from 'styled-components';
 import { Route } from 'react-router-dom';
 
 import media from '../../styles/utils/media-queries';
-import { themeVal } from '../../styles/utils/general';
 
 import App from '../common/app';
 import Map from '../common/map';
 import PlacesIndex from './places';
 import PlacesView from './places/view';
 import submitSurvey from './places/submit-survey';
+import { Panel } from '../../styles/panel';
 
 const SidebarWrapper = styled.div`
   display: grid;
@@ -35,16 +35,6 @@ const SidebarWrapper = styled.div`
   `}
   ${media.largeUp`
     grid-template-columns: 36rem 1fr;
-  `}
-`;
-
-const Panel = styled.section`
-  position: relative; /* Likely change to fixed within grid */
-  background: ${themeVal('color.background')};
-  ${media.mediumUp`
-    padding: 3rem 2rem 2rem;
-    display: flex;
-    flex-flow: column nowrap;
   `}
 `;
 
