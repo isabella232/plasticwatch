@@ -37,6 +37,7 @@
             "@babel/preset-react"
           ],
           "plugins": [
+            "babel-plugin-styled-components",
             "@babel/plugin-transform-spread",
             "@babel/plugin-proposal-object-rest-spread"
           ]
@@ -93,6 +94,7 @@
   },
   "dependencies": {
     "@babel/polyfill": "^7.6.0",
+    "babel-plugin-styled-components": "^1.10.7",
     "classnames": "^2.2.6",
     "history": "^4.10.1",
     "lodash.defaultsdeep": "^4.6.1",
