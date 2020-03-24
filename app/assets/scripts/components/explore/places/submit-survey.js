@@ -3,6 +3,7 @@ import { PropTypes as T } from 'prop-types';
 import { connect } from 'react-redux';
 import { environment } from '../../../config';
 import ReactTooltip from 'react-tooltip';
+import { withFormik } from 'formik';
 
 import { fetchPlace } from '../../../redux/actions/places';
 import { fetchSurveyMeta } from '../../../redux/actions/surveys';
@@ -16,7 +17,6 @@ import InnerPanel from '../../../styles/inner-panel';
 import Form from '../../../styles/form/form';
 import FormTextarea from '../../../styles/form/textarea';
 
-import { FormHelper, FormHelperMessage } from '../../../styles/form/helper';
 import FormLegend from '../../../styles/form/legend';
 import FormLabel from '../../../styles/form/label';
 import {
@@ -28,6 +28,126 @@ import {
   FormCheckableGroup,
   FormCheckable
 } from '../../../styles/form/checkable';
+
+const InnerSurveyForm = props => {
+  const {
+    values,
+    setFieldValue,
+    handleSubmit,
+    handleChange,
+    place,
+    survey
+  } = props;
+
+  function renderQuestion (q) {
+    const value = values[q.id];
+    return (
+      <FormGroup key={q.id}>
+        <FormGroupHeader>
+          <FormLabel>{q.label}</FormLabel>
+        </FormGroupHeader>
+        <FormGroupBody>
+          {q.type === 'boolean' && (
+            <FormCheckableGroup>
+              <FormCheckable
+                textPlacement='right'
+                checked={value === true}
+                type='radio'
+                name='boolean-radio'
+                id='radio-yes'
+                onChange={() => setFieldValue(q.id, true)}
+              >
+                Yes
+              </FormCheckable>
+              <FormCheckable
+                textPlacement='right'
+                checked={value === false}
+                type='radio'
+                name='boolean-radio'
+                id='radio-no'
+                onChange={() => setFieldValue(q.id, false)}
+              >
+                No
+              </FormCheckable>
+            </FormCheckableGroup>
+          )}
+          {q.type === 'text' && (
+            <FormTextarea
+              size='large'
+              id={q.id}
+              placeholder='Description'
+              onChange={handleChange}
+            >
+              {value}
+            </FormTextarea>
+          )}
+        </FormGroupBody>
+      </FormGroup>
+    );
+  }
+
+  return (
+    <Form onSubmit={handleSubmit}>
+      <FormLegend>Name</FormLegend>
+      {place.name && <PlaceTitle>{place.name}</PlaceTitle>}
+      {survey.questions.map(q => renderQuestion(q))}
+      <Button
+        variation='primary-raised-dark'
+        size='large'
+        type='submit'
+        data-tip='Submit survey'
+      >
+        Submit
+      </Button>
+      <Button
+        variation='danger-raised-light'
+        size='large'
+        type='cancel'
+        data-tip='Cancel survey'
+      >
+        Cancel
+      </Button>
+      <ReactTooltip effect='solid' className='type-primary' />
+    </Form>
+  );
+};
+
+if (environment !== 'production') {
+  InnerSurveyForm.propTypes = {
+    place: T.object,
+    survey: T.object,
+    values: T.object.isRequired,
+    setFieldValue: T.func.isRequired,
+    handleSubmit: T.func.isRequired,
+    handleChange: T.func.isRequired
+  };
+}
+
+const SurveyForm = withFormik({
+  mapPropsToValues: props => {
+    return props.survey.questions.reduce((values, q) => {
+      let value;
+      switch (q.type) {
+        case 'boolean':
+          value = undefined;
+          break;
+        default:
+          value = '';
+      }
+      values[q.id] = value;
+      return values;
+    }, {});
+  },
+
+  handleSubmit: (values, { setSubmitting }) => {
+    setTimeout(() => {
+      alert(JSON.stringify(values, null, 2));
+      setSubmitting(false);
+    }, 1000);
+  },
+
+  displayName: 'BasicForm'
+})(InnerSurveyForm);
 
 class SubmitSurvey extends Component {
   async componentDidMount () {
@@ -49,7 +169,7 @@ class SubmitSurvey extends Component {
 
   renderQuestion (q) {
     return (
-      <FormGroup>
+      <FormGroup key={q.id}>
         <FormGroupHeader>
           <FormLabel>{q.label}</FormLabel>
         </FormGroupHeader>
@@ -101,7 +221,6 @@ class SubmitSurvey extends Component {
     }
     const surveyMeta = getSurveyData();
     if (!surveyMeta) return <div>No survey is available.</div>;
-    const { questions } = surveyMeta;
 
     const { isReady, hasError, getData } = this.props.place;
 
@@ -114,28 +233,7 @@ class SubmitSurvey extends Component {
 
     return (
       <InnerPanel>
-        <Form>
-          <FormLegend>Name</FormLegend>
-          {properties.name && <PlaceTitle>{properties.name}</PlaceTitle>}
-          {questions.map(q => this.renderQuestion(q))}
-          <Button
-            variation='primary-raised-dark'
-            size='large'
-            type='submit'
-            data-tip='Submit survey'
-          >
-            Submit
-          </Button>
-          <Button
-            variation='danger-raised-light'
-            size='large'
-            type='submit'
-            data-tip='Cancel survey'
-          >
-            Cancel
-          </Button>
-          <ReactTooltip effect='solid' className='type-primary' />
-        </Form>
+        <SurveyForm survey={surveyMeta} place={properties} />
       </InnerPanel>
     );
   }
