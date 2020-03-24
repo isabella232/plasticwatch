@@ -4,7 +4,8 @@ import { connect } from 'react-redux';
 import { environment } from '../../../config';
 import ReactTooltip from 'react-tooltip';
 
-import * as actions from '../../../redux/actions/places';
+import { fetchPlace } from '../../../redux/actions/places';
+import { fetchSurveyMeta } from '../../../redux/actions/surveys';
 import { wrapApiResult, getFromState, isLoggedIn } from '../../../redux/utils';
 
 import toasts from '../../common/toasts';
@@ -41,11 +42,67 @@ class SubmitSurvey extends Component {
       toasts.info(`You must be logged in to submit surveys.`);
       this.props.history.push(`/explore/${placeId}`);
     } else {
-      await this.props.fetchPlace(placeId);
+      this.props.fetchPlaceAction(placeId);
+      this.props.fetchSurveyMeta();
     }
   }
 
+  renderQuestion (q) {
+    return (
+      <FormGroup>
+        <FormGroupHeader>
+          <FormLabel>{q.label}</FormLabel>
+        </FormGroupHeader>
+        <FormGroupBody>
+          {q.type === 'boolean' && (
+            <FormCheckableGroup>
+              <FormCheckable
+                textPlacement='right'
+                checked={undefined}
+                type='radio'
+                name='radio-a'
+                id='radio-yes'
+              >
+                Yes
+              </FormCheckable>
+              <FormCheckable
+                textPlacement='right'
+                checked={undefined}
+                type='radio'
+                name='radio-a'
+                id='radio-no'
+              >
+                No
+              </FormCheckable>
+            </FormCheckableGroup>
+          )}
+          {q.type === 'text' && (
+            <FormTextarea
+              size='large'
+              id='textarea-1'
+              placeholder='Description'
+            />
+          )}
+        </FormGroupBody>
+      </FormGroup>
+    );
+  }
+
   render () {
+    const {
+      isReady: isSurveyReady,
+      hasError: hasSurveyError,
+      getData: getSurveyData
+    } = this.props.surveyMeta;
+
+    if (!isSurveyReady()) return <div>Loading survey...</div>;
+    if (hasSurveyError()) {
+      return <div>As error occurred when fetching survey.</div>;
+    }
+    const surveyMeta = getSurveyData();
+    if (!surveyMeta) return <div>No survey is available.</div>;
+    const { questions } = surveyMeta;
+
     const { isReady, hasError, getData } = this.props.place;
 
     if (!isReady()) return <div>Loading...</div>;
@@ -60,53 +117,7 @@ class SubmitSurvey extends Component {
         <Form>
           <FormLegend>Name</FormLegend>
           {properties.name && <PlaceTitle>{properties.name}</PlaceTitle>}
-          <FormGroup>
-            <FormGroupHeader>
-              <FormLabel>Restaurant Packaging Options</FormLabel>
-            </FormGroupHeader>
-            <FormHelper>
-              <FormHelperMessage>
-                Does the restaurant offer non-plastic take-away packaging
-                options?
-              </FormHelperMessage>
-            </FormHelper>
-            <FormGroupBody>
-              <FormCheckableGroup>
-                <FormCheckable
-                  textPlacement='right'
-                  checked={undefined}
-                  type='radio'
-                  name='radio-a'
-                  id='radio-yes'
-                >
-                  Yes
-                </FormCheckable>
-                <FormCheckable
-                  textPlacement='right'
-                  checked={undefined}
-                  type='radio'
-                  name='radio-a'
-                  id='radio-no'
-                >
-                  No
-                </FormCheckable>
-              </FormCheckableGroup>
-            </FormGroupBody>
-          </FormGroup>
-          <FormGroup>
-            <FormGroupHeader>
-              <FormLabel htmlFor='textarea-1'>
-                Description of restaurant packaging
-              </FormLabel>
-            </FormGroupHeader>
-            <FormGroupBody>
-              <FormTextarea
-                size='large'
-                id='textarea-1'
-                placeholder='Description'
-              />
-            </FormGroupBody>
-          </FormGroup>
+          {questions.map(q => this.renderQuestion(q))}
           <Button
             variation='primary-raised-dark'
             size='large'
@@ -132,11 +143,13 @@ class SubmitSurvey extends Component {
 
 if (environment !== 'production') {
   SubmitSurvey.propTypes = {
-    fetchPlace: T.func,
+    fetchPlaceAction: T.func,
+    fetchSurveyMeta: T.func,
     history: T.object,
     isLoggedIn: T.bool,
     match: T.object,
-    place: T.object
+    place: T.object,
+    surveyMeta: T.object
   };
 }
 
@@ -146,13 +159,15 @@ function mapStateToProps (state, props) {
 
   return {
     place: wrapApiResult(getFromState(state, `places.individual.${placeId}`)),
+    surveyMeta: wrapApiResult(getFromState(state, `surveyMeta`)),
     isLoggedIn: isLoggedIn(state)
   };
 }
 
 function dispatcher (dispatch) {
   return {
-    fetchPlace: (...args) => dispatch(actions.fetchPlace(...args))
+    fetchPlaceAction: (...args) => dispatch(fetchPlace(...args)),
+    fetchSurveyMeta: (...args) => dispatch(fetchSurveyMeta(...args))
   };
 }
 

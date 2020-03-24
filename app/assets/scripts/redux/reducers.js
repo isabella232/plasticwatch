@@ -55,11 +55,23 @@ const placeReducerInitialState = {
 const placeReducer = baseAPIReducer('PLACE', placeReducerInitialState);
 
 /**
+ * SURVEY_META reducer
+ */
+const surveyMetaReducerInitialState = {
+  fetching: false,
+  fetched: false,
+  error: null,
+  data: null
+};
+const surveyMetaReducer = baseAPIReducer('SURVEY_META', surveyMetaReducerInitialState);
+
+/**
  * Export combined reducers
  */
 export default combineReducers({
   authenticatedUser: authenticatedUserReducer,
   users: usersReducer,
+  surveyMeta: surveyMetaReducer,
   places: combineReducers({
     list: placesReducer,
     individual: placeReducer
