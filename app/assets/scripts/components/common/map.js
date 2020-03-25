@@ -55,6 +55,17 @@ export default class Map extends Component {
       'bottom-right'
     );
 
+    // Add Geolocation control
+    this.map.addControl(
+      new mapboxgl.GeolocateControl({
+        positionOptions: {
+          enableHighAccuracy: true
+        },
+        trackUserLocation: true,
+        showAccuracyCircle: true
+      })
+    );
+
     const self = this;
     this.map.on('load', () => {
       self.setState({ mapLoaded: true });
