@@ -21,6 +21,7 @@ import * as authActions from '../../redux/actions/auth';
 import { environment, apiUrl, appPathname } from '../../config';
 
 import { showGlobalLoading, hideGlobalLoading } from '../common/global-loading';
+import withMobileState from './with-mobile-state';
 
 const _rgba = stylizeFunction(rgba);
 
@@ -30,7 +31,11 @@ const PageHead = styled.header`
   top: 0;
   z-index: 1004;
   display: flex;
-  background: linear-gradient(160deg, ${themeVal('color.secondary')}, ${themeVal('color.base')} 70%);
+  background: linear-gradient(
+    160deg,
+    ${themeVal('color.secondary')},
+    ${themeVal('color.base')} 70%
+  );
   ${media.mediumUp`
     overflow: hidden;
     background: ${themeVal('color.surface')};
@@ -77,7 +82,9 @@ const PageTitle = styled.h1`
   }
   ${media.mediumUp`
     padding: 1rem 2rem 1rem 0rem;
-    background: linear-gradient(160deg, ${themeVal('color.secondary')}, ${themeVal('color.base')} 70%);
+    background: linear-gradient(160deg, ${themeVal(
+    'color.secondary'
+  )}, ${themeVal('color.base')} 70%);
     a {
       padding: 0 2rem 0.5rem;
     }
@@ -527,4 +534,7 @@ function dispatcher (dispatch) {
   };
 }
 
-export default connect(mapStateToProps, dispatcher)(PageHeader);
+export default connect(
+  mapStateToProps,
+  dispatcher
+)(withMobileState(PageHeader));

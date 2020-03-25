@@ -23,8 +23,20 @@ import {
   FilterButton,
   FilterButtons
 } from '../../../styles/form/filters';
-import { showGlobalLoading, hideGlobalLoading } from '../../common/global-loading';
-import { Place, PlaceHeader, PlaceTitle, PlaceType, PlaceRating, PlaceSelect, PlaceSurveys } from '../../../styles/place';
+import {
+  showGlobalLoading,
+  hideGlobalLoading
+} from '../../common/global-loading';
+import {
+  Place,
+  PlaceHeader,
+  PlaceTitle,
+  PlaceType,
+  PlaceRating,
+  PlaceSelect,
+  PlaceSurveys
+} from '../../../styles/place';
+import withMobileState from '../../common/with-mobile-state';
 
 const Results = styled.ul`
   ${listReset()};
@@ -84,15 +96,11 @@ class PlacesIndex extends Component {
     const { isReady, getData, hasError } = this.props.places;
 
     if (!isReady()) {
-      return (
-        <div>Loading...</div>
-      );
+      return <div>Loading...</div>;
     }
 
     if (hasError()) {
-      return (
-        <div>An error occurred, could not fetch places!</div>
-      );
+      return <div>An error occurred, could not fetch places!</div>;
     }
 
     return (
@@ -108,9 +116,11 @@ class PlacesIndex extends Component {
                 placeholder='Look up location'
               />
             </InputWrapper>
-            { isMobile
-              ? <>
-                <Button useIcon='sliders-vertical' onClick={this.toggleFilters}>Show Filters</Button>
+            {isMobile ? (
+              <>
+                <Button useIcon='sliders-vertical' onClick={this.toggleFilters}>
+                  Show Filters
+                </Button>
                 {filtersOpened && (
                   <FilterButtons>
                     <FilterButton>Plastic Free</FilterButton>
@@ -119,11 +129,13 @@ class PlacesIndex extends Component {
                   </FilterButtons>
                 )}
               </>
-              : <FilterButtons>
+            ) : (
+              <FilterButtons>
                 <FilterButton>Plastic Free</FilterButton>
                 <FilterButton>Plastic</FilterButton>
                 <FilterButton>Unsurveyed</FilterButton>
-              </FilterButtons> }
+              </FilterButtons>
+            )}
           </FilterToolbar>
         </Filters>
 
@@ -175,4 +187,7 @@ function dispatcher (dispatch) {
   };
 }
 
-export default connect(mapStateToProps, dispatcher)(PlacesIndex);
+export default connect(
+  mapStateToProps,
+  dispatcher
+)(withMobileState(PlacesIndex));

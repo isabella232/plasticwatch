@@ -2,17 +2,16 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import { PropTypes } from 'prop-types';
 import c from 'classnames';
-import { connect } from 'react-redux';
 
 import MetaTags from './meta-tags';
 import PageHeader from './page-header';
 import PageFooter from './page-footer';
 
 import GlobalLoading from '../common/global-loading';
+import withMobileState from '../common/with-mobile-state';
 
-import { appTitle, appDescription } from '../../config';
+import { appTitle, appDescription, environment } from '../../config';
 import media from '../../styles/utils/media-queries';
-import { mediaRanges } from '../../styles/theme/theme';
 
 const Page = styled.div`
   display: grid;
@@ -32,26 +31,6 @@ const PageBody = styled.main`
 `;
 
 class App extends Component {
-  constructor (props) {
-    super(props);
-
-    this.state = {
-      isMobile: window.innerWidth < mediaRanges.medium[0]
-    };
-
-    this.onDocResize = this.onDocResize.bind(this);
-  }
-  async componentDidMount () {
-    window.addEventListener('resize', this.onDocResize);
-  }
-
-  onDocResize (e) {
-    const isMobile = window.innerWidth < mediaRanges.medium[0];
-    if (this.state.isMobile !== isMobile) {
-      this.setState({ isMobile });
-    }
-  }
-
   render () {
     const { pageTitle, className, children } = this.props;
     const title = pageTitle ? `${pageTitle} — ` : '';
@@ -59,9 +38,9 @@ class App extends Component {
       <Page className={c('page', className)}>
         <GlobalLoading />
         <MetaTags title={`${title}${appTitle} `} description={appDescription} />
-        <PageHeader pageTitle='Plastic Watch' isMobile={this.state.isMobile} />
+        <PageHeader pageTitle='Plastic Watch' />
         <PageBody role='main'>{children}</PageBody>
-        {this.state.isMobile && (
+        {this.props.isMobile && (
           <PageFooter credits='Made with 🧡 by Development Seed' />
         )}
       </Page>
@@ -69,18 +48,13 @@ class App extends Component {
   }
 }
 
-App.propTypes = {
-  className: PropTypes.string,
-  pageTitle: PropTypes.string,
-  children: PropTypes.node
-};
-
-function mapStateToProps (state, props) {
-  return {};
+if (environment !== 'production') {
+  App.propTypes = {
+    className: PropTypes.string,
+    pageTitle: PropTypes.string,
+    children: PropTypes.node,
+    isMobile: PropTypes.bool
+  };
 }
 
-function dispatcher (dispatch) {
-  return {};
-}
-
-export default connect(mapStateToProps, dispatcher)(App);
+export default withMobileState(App);

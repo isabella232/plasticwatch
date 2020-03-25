@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import { Route } from 'react-router-dom';
 
 import media from '../../styles/utils/media-queries';
-import { mediaRanges } from '../../styles/theme/theme';
 
 import App from '../common/app';
 import Map from '../common/map';
@@ -40,33 +39,18 @@ const SidebarWrapper = styled.div`
 `;
 
 export default class Explore extends React.Component {
-  constructor (props) {
-    super(props);
-
-    this.state = {
-      isMobile: window.innerWidth < mediaRanges.medium[0]
-    };
-
-    this.onDocResize = this.onDocResize.bind(this);
-  }
-  async componentDidMount () {
-    window.addEventListener('resize', this.onDocResize);
-  }
-
-  onDocResize (e) {
-    const isMobile = window.innerWidth < mediaRanges.medium[0];
-    if (this.state.isMobile !== isMobile) {
-      this.setState({ isMobile });
-    }
-  }
   render () {
     return (
       <App pageTitle='About' hideFooter>
         <SidebarWrapper>
           <Panel>
-            <Route exact path='/explore' render={() => <PlacesIndex isMobile={this.state.isMobile} />} />
-            <Route exact path='/explore/:type/:id' component={PlacesView} isMobile={this.state.isMobile} />
-            <Route exact path='/explore/:type/:id/submit-survey' component={submitSurvey} isMobile={this.state.isMobile} />
+            <Route exact path='/explore' component={PlacesIndex} />
+            <Route exact path='/explore/:type/:id' component={PlacesView} />
+            <Route
+              exact
+              path='/explore/:type/:id/submit-survey'
+              component={submitSurvey}
+            />
           </Panel>
           <Map />
         </SidebarWrapper>
