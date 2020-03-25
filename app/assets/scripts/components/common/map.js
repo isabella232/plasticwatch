@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import mapboxgl from 'mapbox-gl';
+import { connect } from 'react-redux';
+import { wrapApiResult, getFromState } from '../../redux/utils';
+import * as actions from '../../redux/actions/places';
+import { PropTypes as T } from 'prop-types';
 
 import { mapConfig } from '../../config';
 
@@ -11,11 +15,12 @@ const MapContainer = styled.div`
   height: 100%;
 `;
 
-export default class Map extends Component {
+class Map extends Component {
   constructor (props) {
     super(props);
     this.state = {
-      mapLoaded: false
+      mapLoaded: false,
+      geojson: {}
     };
   }
 
@@ -66,13 +71,55 @@ export default class Map extends Component {
       })
     );
 
+    this.map.on('zoomend', () => {
+      const zoom = this.map.getZoom();
+      if (zoom > 12) {
+        // fetch data?
+      }
+    });
+
     const self = this;
     this.map.on('load', () => {
+      const { getData } = this.props.places;
+
       self.setState({ mapLoaded: true });
+
+      const geojson = {
+        'type': 'FeatureCollection',
+        'features': getData()
+      };
+
+      self.setState({ geojson });
+
+      // add the geojson as a source to the map
+      this.map.addSource('placesSource', {
+        'type': 'geojson',
+        'data': geojson
+      });
+
+      this.map.addLayer({
+        'id': 'placesLayer',
+        'type': 'symbol',
+        'source': 'placesSource',
+        'layout': {
+          'icon-image': 'restaurant-15'
+        }
+      });
     });
   }
 
   renderMap () {
+    const { isReady, hasError } = this.props.places;
+
+    if (!isReady()) {
+      // add a loading indicator on the map
+    }
+
+    if (hasError()) {
+      // handle errors
+      return (<></>);
+    }
+
     return (
       <>
         <MapContainer ref={this.mapContainer}>
@@ -97,3 +144,22 @@ export default class Map extends Component {
     return <div>{this.renderMap()}</div>;
   }
 }
+
+Map.propTypes = {
+  places: T.object,
+  fetchPlaces: T.func
+};
+
+function mapStateToProps (state) {
+  return {
+    places: wrapApiResult(getFromState(state, `places.list`))
+  };
+}
+
+function dispatcher (dispatch) {
+  return {
+    fetchPlaces: (...args) => dispatch(actions.fetchPlaces(...args))
+  };
+}
+
+export default connect(mapStateToProps, dispatcher)(Map);
