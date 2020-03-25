@@ -6,7 +6,11 @@ import ReactTooltip from 'react-tooltip';
 import { withFormik } from 'formik';
 
 import { fetchPlace } from '../../../redux/actions/places';
-import { fetchSurveyMeta, postSurvey } from '../../../redux/actions/surveys';
+import {
+  fetchSurveyMeta,
+  postSurvey,
+  fetchSurveyAnswers
+} from '../../../redux/actions/surveys';
 import { wrapApiResult, getFromState, isLoggedIn } from '../../../redux/utils';
 
 import toasts from '../../common/toasts';
@@ -28,6 +32,11 @@ import {
   FormCheckableGroup,
   FormCheckable
 } from '../../../styles/form/checkable';
+import { Link } from 'react-router-dom';
+import {
+  showGlobalLoading,
+  hideGlobalLoading
+} from '../../common/global-loading';
 
 const InnerSurveyForm = props => {
   const {
@@ -99,9 +108,10 @@ const InnerSurveyForm = props => {
         Submit
       </Button>
       <Button
+        as={Link}
+        to={`/explore/${place.id}`}
         variation='danger-raised-light'
         size='large'
-        type='cancel'
         data-tip='Cancel survey'
       >
         Cancel
@@ -158,52 +168,83 @@ class SubmitSurvey extends Component {
     const { type, id } = this.props.match.params;
     const placeId = `${type}/${id}`;
 
+    // Disallow unlogged users
     if (!this.props.isLoggedIn) {
       toasts.info(`You must be logged in to submit surveys.`);
       this.props.history.push(`/explore/${placeId}`);
-    } else {
-      this.props.fetchPlace(placeId);
-      this.props.fetchSurveyMeta();
+      return;
+    }
+
+    // Load place
+    await this.props.fetchPlace(placeId);
+
+    // Load survey meta
+    await this.props.fetchSurveyMeta();
+
+    // Load survey answers, if any
+    const { surveyMeta, place, user } = this.props;
+    if (
+      surveyMeta.isReady() &&
+      !surveyMeta.hasError() &&
+      place.isReady() &&
+      !place.hasError()
+    ) {
+      await this.props.fetchSurveyAnswers({
+        userId: user.getData().osmId,
+        osmObjectId: place.getData().id,
+        surveyId: surveyMeta.getData().id
+      });
     }
   }
 
   async postSurvey (data) {
-    this.props.postSurvey(data);
+    showGlobalLoading();
+    try {
+      await this.props.postSurvey(data);
+      toasts.info('Survey sent successfully');
+      this.props.history.push(`/explore/${data.osmObject.id}`);
+    } catch (error) {
+      toasts.error('There was an error sending the survey.');
+    }
+    hideGlobalLoading();
   }
 
   render () {
+    const { place, surveyMeta, surveyAnswers } = this.props;
+
     // Get place data
-    const { isReady, hasError, getData } = this.props.place;
-    if (!isReady()) return <div>Loading...</div>;
-    if (hasError()) {
+    if (!place.isReady() || !surveyAnswers.isReady() || !surveyMeta.isReady()) {
+      return <div>Loading...</div>;
+    }
+
+    if (place.hasError() || surveyAnswers.hasError() || surveyMeta.hasError()) {
       return <div>As error occurred when fetching place data</div>;
     }
-    const place = getData();
 
     // Get survey data
-    const {
-      isReady: isSurveyReady,
-      hasError: hasSurveyError,
-      getData: getSurveyData
-    } = this.props.surveyMeta;
-    if (!isSurveyReady()) return <div>Loading survey...</div>;
-    if (hasSurveyError()) {
-      return <div>As error occurred when fetching survey.</div>;
+    if (!surveyMeta.getData()) return <div>No survey is available.</div>;
+
+    // Check if survey was already answered
+    if (surveyAnswers.getData()) {
+      return <div>This place was already surveyed by you.</div>;
     }
-    const surveyMeta = getSurveyData();
-    if (!surveyMeta) return <div>No survey is available.</div>;
+
+    const data = {
+      survey: surveyMeta.getData(),
+      place: place.getData()
+    };
 
     return (
       <InnerPanel>
         <SurveyForm
-          survey={surveyMeta}
-          place={place.properties}
+          survey={data.survey}
+          place={data.place}
           handleSubmit={values =>
             this.postSurvey({
-              surveyId: surveyMeta.id,
-              osmObject: place,
+              surveyId: data.survey.id,
+              osmObject: data.place,
               createdAt: new Date().toISOString(),
-              answers: surveyMeta.questions.map(q => {
+              answers: data.survey.questions.map(q => {
                 return {
                   questionId: q.id,
                   questionVersion: q.version,
@@ -224,11 +265,14 @@ if (environment !== 'production') {
     fetchPlace: T.func,
     postSurvey: T.func,
     fetchSurveyMeta: T.func,
+    fetchSurveyAnswers: T.func,
     history: T.object,
     isLoggedIn: T.bool,
     match: T.object,
     place: T.object,
-    surveyMeta: T.object
+    user: T.object,
+    surveyMeta: T.object,
+    surveyAnswers: T.object
   };
 }
 
@@ -237,8 +281,10 @@ function mapStateToProps (state, props) {
   const placeId = `${type}/${id}`;
 
   return {
+    user: wrapApiResult(state.authenticatedUser),
     place: wrapApiResult(getFromState(state, `places.individual.${placeId}`)),
-    surveyMeta: wrapApiResult(getFromState(state, `surveyMeta`)),
+    surveyMeta: wrapApiResult(getFromState(state, `activeSurvey.meta`)),
+    surveyAnswers: wrapApiResult(getFromState(state, `activeSurvey.answers`)),
     isLoggedIn: isLoggedIn(state)
   };
 }
@@ -247,6 +293,7 @@ function dispatcher (dispatch) {
   return {
     fetchPlace: (...args) => dispatch(fetchPlace(...args)),
     fetchSurveyMeta: (...args) => dispatch(fetchSurveyMeta(...args)),
+    fetchSurveyAnswers: (...args) => dispatch(fetchSurveyAnswers(...args)),
     postSurvey: (...args) => dispatch(postSurvey(...args))
   };
 }

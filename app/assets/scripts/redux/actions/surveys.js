@@ -1,5 +1,6 @@
 import { fetchDispatchFactory, postItem } from '../utils';
 import { apiUrl } from '../../config';
+import qs from 'qs';
 
 /*
  * Fetch survey metadata.
@@ -33,10 +34,46 @@ export function receiveSurvey (data, error = null) {
 
 export function fetchSurveyMeta () {
   return fetchDispatchFactory({
-    statePath: ['surveyMeta'],
+    statePath: ['activeSurvey', 'meta'],
     url: `${apiUrl}/surveys`,
     requestFn: requestSurvey.bind(this),
     receiveFn: receiveSurvey.bind(this)
+  });
+}
+
+/*
+ * Fetch survey answers sent by user to a place.
+ */
+
+export const REQUEST_SURVEY_ANSWERS = 'REQUEST_SURVEY_ANSWERS';
+export const RECEIVE_SURVEY_ANSWERS = 'RECEIVE_SURVEY_ANSWERS';
+export const INVALIDATE_SURVEY_ANSWERS = 'INVALIDATE_SURVEY_ANSWERS';
+
+export function invalidateSurveyAnswers () {
+  return { type: INVALIDATE_SURVEY_ANSWERS };
+}
+
+export function requestSurveyAnswers () {
+  return { type: REQUEST_SURVEY_ANSWERS };
+}
+
+export function receiveSurveyAnswers (data, error = null) {
+  return {
+    type: RECEIVE_SURVEY_ANSWERS,
+    fetched: true,
+    data: data && data.length > 0 && data[0].answers,
+    error,
+    receivedAt: Date.now()
+  };
+}
+
+export function fetchSurveyAnswers (params) {
+  const searchParams = qs.stringify(params);
+  return fetchDispatchFactory({
+    statePath: ['activeSurvey', 'answers'],
+    url: `${apiUrl}/observations?${searchParams}`,
+    requestFn: requestSurveyAnswers.bind(this),
+    receiveFn: receiveSurveyAnswers.bind(this)
   });
 }
 
