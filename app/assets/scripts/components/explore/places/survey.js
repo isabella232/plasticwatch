@@ -97,7 +97,7 @@ const InnerSurveyForm = props => {
   return (
     <Form onSubmit={handleSubmit}>
       <FormLegend>Name</FormLegend>
-      {place.name && <PlaceTitle>{place.name}</PlaceTitle>}
+      {place.properties.name && <PlaceTitle>{place.properties.name}</PlaceTitle>}
       {survey.questions.map(q => renderQuestion(q))}
       <Button
         variation='primary-raised-dark'
