@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { wrapApiResult, getFromState } from '../../redux/utils';
 import * as actions from '../../redux/actions/places';
 import { PropTypes as T } from 'prop-types';
+import { Redirect } from 'react-router-dom';
 
 import { mapConfig } from '../../config';
 
@@ -105,6 +106,24 @@ class Map extends Component {
           'icon-image': 'restaurant-15'
         }
       });
+
+      // bind an event to select the symbol
+      this.map.on('click', 'placesLayer', (e) => {
+        // add a small buffer so clicks are registered properly
+        const width = 10;
+        const height = 10;
+
+        const feature = this.map.queryRenderedFeatures([
+          [e.point.x - width / 2, e.point.y - height / 2],
+          [e.point.x + width / 2, e.point.y + height / 2]
+        ], { layers: ['placesLayer'] })[0];
+
+        if (feature) {
+          self.setState({
+            selectedFeatureId: feature.properties.id
+          });
+        }
+      });
     });
   }
 
@@ -120,6 +139,11 @@ class Map extends Component {
       return (<></>);
     }
 
+    if (this.state.selectedFeatureId) {
+      return (
+        <Redirect to={`/explore/${this.state.selectedFeatureId}`} />
+      );
+    }
     return (
       <>
         <MapContainer ref={this.mapContainer}>
