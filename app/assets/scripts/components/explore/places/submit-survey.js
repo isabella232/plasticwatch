@@ -178,7 +178,7 @@ class SubmitSurvey extends Component {
     if (hasError()) {
       return <div>As error occurred when fetching place data</div>;
     }
-    const { properties } = getData();
+    const place = getData();
 
     // Get survey data
     const {
@@ -197,15 +197,21 @@ class SubmitSurvey extends Component {
       <InnerPanel>
         <SurveyForm
           survey={surveyMeta}
-          place={properties}
+          place={place.properties}
           handleSubmit={values =>
             this.postSurvey({
               surveyId: surveyMeta.id,
-              osmObject: {
-                id: properties.id
-              },
+              osmObject: place,
               createdAt: new Date().toISOString(),
-              answers: values
+              answers: surveyMeta.questions.map(q => {
+                return {
+                  questionId: q.id,
+                  questionVersion: q.version,
+                  answer: {
+                    value: values[q.id]
+                  }
+                };
+              })
             })}
         />
       </InnerPanel>
