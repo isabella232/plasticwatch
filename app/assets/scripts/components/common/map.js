@@ -62,6 +62,16 @@ class Map extends Component {
     if (this.state.isSourceLoaded) {
       this.updateData();
     }
+
+    if (this.state.selectedFeatureId) {
+      this.props.history.push(`/explore/${this.state.selectedFeatureId}`);
+    }
+  }
+
+  componentWillUnmount () {
+    if (this.map) {
+      this.map.remove();
+    }
   }
 
   updateData () {
@@ -172,12 +182,6 @@ class Map extends Component {
       return (<></>);
     }
 
-    if (this.state.selectedFeatureId) {
-      return (
-        <Redirect to={`/explore/${this.state.selectedFeatureId}`} />
-      );
-    }
-
     return (
       <>
         <MapContainer>
@@ -206,7 +210,8 @@ class Map extends Component {
 Map.propTypes = {
   places: T.object,
   place: T.object,
-  match: T.object
+  match: T.object,
+  history: T.object
 };
 
 function mapStateToProps (state, props) {
