@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { wrapApiResult, getFromState } from '../../redux/utils';
 import * as actions from '../../redux/actions/places';
 import { PropTypes as T } from 'prop-types';
-import { Redirect } from 'react-router-dom';
+import { Redirect, withRouter, matchPath } from 'react-router-dom';
 
 import { mapConfig } from '../../config';
 
@@ -21,7 +21,30 @@ class Map extends Component {
     super(props);
     this.state = {
       mapLoaded: false,
-      geojson: {}
+      isSourceLoaded: false,
+      geojson: {
+        'type': 'FeatureCollection',
+        'features': []
+      }
+    };
+  }
+
+  static getDerivedStateFromProps (props) {
+    const { place, places, match } = props;
+    const geojson = {
+      'type': 'FeatureCollection',
+      'features': []
+    };
+
+    if (match) {
+      const placeData = place.getData();
+      geojson.features.push(placeData);
+    } else {
+      geojson.features = places.getData();
+    }
+
+    return {
+      geojson
     };
   }
 
@@ -30,8 +53,19 @@ class Map extends Component {
 
     // Bypass if map is already loaded
     if (mapLoaded) return;
+
     // Mount the map on the net tick to prevent the right side gap.
     setTimeout(() => this.initMap(), 1);
+  }
+
+  componentDidUpdate () {
+    if (this.state.isSourceLoaded) {
+      this.updateData();
+    }
+  }
+
+  updateData () {
+    this.map.getSource('placesSource').setData(this.state.geojson);
   }
 
   initMap () {
@@ -79,23 +113,22 @@ class Map extends Component {
       }
     });
 
-    const self = this;
+    // ensure the source is added
+    this.map.on('sourcedata', (e) => {
+      if (e.sourceId === 'placesSource') {
+        this.setState({
+          isSourceLoaded: true
+        });
+      }
+    });
+
     this.map.on('load', () => {
-      const { getData } = this.props.places;
+      this.setState({ mapLoaded: true });
 
-      self.setState({ mapLoaded: true });
-
-      const geojson = {
-        'type': 'FeatureCollection',
-        'features': getData()
-      };
-
-      self.setState({ geojson });
-
-      // add the geojson as a source to the map
+      // add the geojson from state as a source to the map
       this.map.addSource('placesSource', {
         'type': 'geojson',
-        'data': geojson
+        'data': null
       });
 
       this.map.addLayer({
@@ -119,7 +152,7 @@ class Map extends Component {
         ], { layers: ['placesLayer'] })[0];
 
         if (feature) {
-          self.setState({
+          this.setState({
             selectedFeatureId: feature.properties.id
           });
         }
@@ -144,9 +177,10 @@ class Map extends Component {
         <Redirect to={`/explore/${this.state.selectedFeatureId}`} />
       );
     }
+
     return (
       <>
-        <MapContainer ref={this.mapContainer}>
+        <MapContainer>
           {mapboxgl.supported() ? (
             <div
               ref={r => {
@@ -171,19 +205,34 @@ class Map extends Component {
 
 Map.propTypes = {
   places: T.object,
-  fetchPlaces: T.func
+  place: T.object,
+  match: T.object
 };
 
-function mapStateToProps (state) {
+function mapStateToProps (state, props) {
+  const match = matchPath(props.location.pathname, {
+    path: '/explore/:type/:id',
+    exact: true
+  });
+
+  let place = null;
+  if (match) {
+    const { type, id } = match.params;
+    const placeId = `${type}/${id}`;
+    place = wrapApiResult(getFromState(state, `places.individual.${placeId}`));
+  }
   return {
-    places: wrapApiResult(getFromState(state, `places.list`))
+    places: wrapApiResult(getFromState(state, `places.list`)),
+    match: match,
+    place: place
   };
 }
 
 function dispatcher (dispatch) {
   return {
-    fetchPlaces: (...args) => dispatch(actions.fetchPlaces(...args))
+    fetchPlaces: (...args) => dispatch(actions.fetchPlaces(...args)),
+    fetchPlace: (...args) => dispatch(actions.fetchPlace(...args))
   };
 }
 
-export default connect(mapStateToProps, dispatcher)(Map);
+export default withRouter(connect(mapStateToProps, dispatcher)(Map));
