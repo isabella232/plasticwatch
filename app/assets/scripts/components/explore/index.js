@@ -9,7 +9,7 @@ import App from '../common/app';
 import Map from '../common/map';
 import PlacesIndex from './places';
 import PlacesView from './places/view';
-import submitSurvey from './places/submit-survey';
+import PlaceSurvey from './places/survey';
 import { Panel } from '../../styles/panel';
 
 const SidebarWrapper = styled.div`

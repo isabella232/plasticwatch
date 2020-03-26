@@ -19,3 +19,15 @@ export const FormGroupBody = styled.div`
   grid-template-rows: auto;
   grid-gap: ${divide(themeVal('layout.space'), 4)};
 `;
+
+export const FormGroupFooter = styled.div`
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: ${themeVal('layout.space')};
+  border-top: 1px solid ${themeVal('color.smoke')};
+  >* {
+    margin-bottom: ${divide(themeVal('layout.space'), 2)};
+  }
+`;
