@@ -11,3 +11,12 @@ export const cardSkin = () => css`
   background: ${themeVal('color.surface')};
   box-shadow: 0 0 32px 2px ${themeVal('color.mist')}, 0 16px 48px -16px ${themeVal('color.shadow')};
 `;
+
+export const hideScrollbars = () => css`
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  &::-webkit-scrollbar { /* WebKit */
+    width: 0;
+    height: 0;
+  }
+`;

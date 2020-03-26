@@ -36,11 +36,13 @@ import {
   PlaceSelect,
   PlaceSurveys
 } from '../../../styles/place';
+import { hideScrollbars } from '../../../styles/skins';
 import withMobileState from '../../common/with-mobile-state';
 
 const Results = styled.ul`
   ${listReset()};
-  overflow: scroll;
+  ${hideScrollbars()};
+  overflow-y: scroll;
   margin-top: 1rem;
 `;
 

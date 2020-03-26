@@ -12,6 +12,7 @@ import withMobileState from '../common/with-mobile-state';
 
 import { appTitle, appDescription, environment } from '../../config';
 import media from '../../styles/utils/media-queries';
+import { hideScrollbars } from '../../styles/skins';
 
 const Page = styled.div`
   display: grid;
@@ -28,6 +29,7 @@ const PageBody = styled.main`
   padding: 0;
   margin: 0;
   overflow: scroll;
+  ${hideScrollbars()};
 `;
 
 class App extends Component {
