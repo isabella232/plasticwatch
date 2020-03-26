@@ -62,10 +62,6 @@ class Map extends Component {
     if (this.state.isSourceLoaded) {
       this.updateData();
     }
-
-    if (this.state.selectedFeatureId) {
-      this.props.history.push(`/explore/${this.state.selectedFeatureId}`);
-    }
   }
 
   componentWillUnmount () {
@@ -162,9 +158,7 @@ class Map extends Component {
         ], { layers: ['placesLayer'] })[0];
 
         if (feature) {
-          this.setState({
-            selectedFeatureId: feature.properties.id
-          });
+          this.props.history.push(`/explore/${feature.properties.id}`);
         }
       });
     });
