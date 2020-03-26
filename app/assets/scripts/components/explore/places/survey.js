@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import styled from 'styled-components';
 import { PropTypes as T } from 'prop-types';
 import { connect } from 'react-redux';
 import { environment } from '../../../config';
@@ -26,6 +27,7 @@ import FormLabel from '../../../styles/form/label';
 import {
   FormGroup,
   FormGroupHeader,
+  FormGroupFooter,
   FormGroupBody
 } from '../../../styles/form/group';
 import {
@@ -37,6 +39,16 @@ import {
   showGlobalLoading,
   hideGlobalLoading
 } from '../../common/global-loading';
+
+const PanelForm = styled(Form)`
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-between;
+  height: 100%;
+  &:last-child {
+    margin-top: auto;
+  }
+`;
 
 const InnerSurveyForm = props => {
   const {
@@ -95,29 +107,31 @@ const InnerSurveyForm = props => {
   }
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <PanelForm onSubmit={handleSubmit}>
       <FormLegend>Name</FormLegend>
-      {place.properties.name && <PlaceTitle>{place.properties.name}</PlaceTitle>}
+      {place.name && <PlaceTitle>{place.name}</PlaceTitle>}
       {survey.questions.map(q => renderQuestion(q))}
-      <Button
-        variation='primary-raised-dark'
-        size='large'
-        type='submit'
-        data-tip='Submit survey'
-      >
-        Submit
-      </Button>
-      <Button
-        as={Link}
-        to={`/explore/${place.id}`}
-        variation='danger-raised-light'
-        size='large'
-        data-tip='Cancel survey'
-      >
-        Cancel
-      </Button>
-      <ReactTooltip effect='solid' className='type-primary' />
-    </Form>
+      <FormGroupFooter>
+        <Button
+          variation='primary-raised-dark'
+          size='large'
+          type='submit'
+          data-tip='Submit survey'
+        >
+          Submit
+        </Button>
+        <Button
+          as={Link}
+          to={`/explore/${place.id}`}
+          variation='danger-raised-light'
+          size='large'
+          data-tip='Cancel survey'
+        >
+          Cancel
+        </Button>
+        <ReactTooltip effect='solid' className='type-primary' />
+      </FormGroupFooter>
+    </PanelForm>
   );
 };
 
@@ -226,7 +240,7 @@ class SubmitSurvey extends Component {
 
     // Check if survey was already answered
     if (surveyAnswers.getData()) {
-      return <div>This place was already surveyed by you.</div>;
+      return <div>You have already submitted a survey for this location. Only 1 user survey per location is currently permitted.</div>;
     }
 
     const data = {
