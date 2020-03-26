@@ -31,6 +31,35 @@ export async function fetchJSON (url, options) {
 }
 
 /**
+ * Performs a post request using accessToken from state.
+ *
+ * @param {object} state Application state
+ * @param {string} type Item
+ * @param {string} url Request URL
+ * @param {object} payload Data payload
+ */
+export async function postItem (state, type, payload) {
+  // Get accessToken
+  const accessToken = get(state, 'authenticatedUser.data.accessToken');
+
+  // Thrown error if not defined
+  if (!accessToken) throw Error('User is not logged in.');
+
+  // Make the request
+  const url = `${apiUrl}/${type}`;
+
+  // Make the request
+  await fetchJSON(url, {
+    method: 'POST',
+    headers: {
+      Authorization: accessToken,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  });
+}
+
+/**
  * Performs a patch request using accessToken from state.
  *
  * @param {object} state Application state

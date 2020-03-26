@@ -9,7 +9,7 @@ import App from '../common/app';
 import Map from '../common/map';
 import PlacesIndex from './places';
 import PlacesView from './places/view';
-import submitSurvey from './places/submit-survey';
+import PlaceSurvey from './places/survey';
 import { Panel } from '../../styles/panel';
 
 const SidebarWrapper = styled.div`
@@ -46,7 +46,7 @@ export default class Explore extends React.Component {
           <Panel>
             <Route exact path='/explore' component={PlacesIndex} />
             <Route exact path='/explore/:type/:id' component={PlacesView} />
-            <Route exact path='/explore/:type/:id/submit-survey' component={submitSurvey} />
+            <Route exact path='/explore/:type/:id/survey' component={PlaceSurvey} />
           </Panel>
           <Map />
         </SidebarWrapper>
