@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import { environment } from '../../../config';
 import { PropTypes as T } from 'prop-types';
 
@@ -21,6 +20,7 @@ import {
 import { InnerPanel } from '../../../styles/panel';
 import { InpageBackLink } from '../../common/inpage';
 import Button from '../../../styles/button/button';
+import StyledLink from '../../common/link';
 
 class PlacesView extends Component {
   async componentDidMount () {
@@ -63,7 +63,7 @@ class PlacesView extends Component {
           <Button
             variation='primary-raised-dark'
             size='large'
-            as={Link}
+            as={StyledLink}
             to={`/explore/${properties.id}/survey`}
           >
             Submit a survey

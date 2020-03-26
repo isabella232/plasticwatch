@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
 import { environment } from '../../../config';
 import { PropTypes as T } from 'prop-types';
 import { connect } from 'react-redux';
@@ -22,6 +21,7 @@ import {
   FilterLabel,
   FilterButton
 } from '../../../styles/form/filters';
+import StyledLink from '../../common/link';
 import { showGlobalLoading, hideGlobalLoading } from '../../common/global-loading';
 import { Place, PlaceHeader, PlaceTitle, PlaceType, PlaceRating, PlaceSelect, PlaceSurveys } from '../../../styles/place';
 
@@ -101,7 +101,7 @@ class PlacesIndex extends Component {
 
         <Results>
           {getData().map(({ id, properties }) => (
-            <ResultsItem key={id} as={Link} to={`/explore/${id}`}>
+            <ResultsItem key={id} as={StyledLink} to={`/explore/${id}`}>
               <Place>
                 <PlaceHeader>
                   {properties.name && (

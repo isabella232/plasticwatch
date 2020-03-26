@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { PropTypes as T } from 'prop-types';
 import get from 'lodash.get';
-import { Link } from 'react-router-dom';
 import { environment, osmUrl } from '../../config';
 import * as actions from '../../redux/actions/users';
 import { showGlobalLoading, hideGlobalLoading } from '../common/global-loading';
@@ -32,6 +31,7 @@ import DataTable from '../../styles/table';
 import Pagination from '../../styles/button/pagination';
 import Prose from '../../styles/type/prose';
 import { wrapApiResult } from '../../redux/utils';
+import StyledLink from '../common/link';
 
 class Users extends React.Component {
   constructor (props) {
@@ -275,7 +275,7 @@ class Users extends React.Component {
       <>
         <span>{label}</span>
         <Button
-          as={Link}
+          as={StyledLink}
           useIcon={getIcon()}
           variation='base-plain'
           to={`/users?${nextSortLink()}`}
