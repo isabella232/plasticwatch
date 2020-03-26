@@ -25,26 +25,29 @@ class Map extends Component {
       geojson: {
         'type': 'FeatureCollection',
         'features': []
-      }
+      },
+      filter: ['==', 'id', '']
     };
   }
 
   static getDerivedStateFromProps (props) {
-    const { place, places, match } = props;
+    const { placeId, places, match } = props;
+
     const geojson = {
       'type': 'FeatureCollection',
-      'features': []
+      'features': places.getData()
     };
 
+    let filter;
     if (match) {
-      const placeData = place.getData();
-      geojson.features.push(placeData);
+      filter = ['==', 'id', placeId];
     } else {
-      geojson.features = places.getData();
+      filter = ['==', 'id', ''];
     }
 
     return {
-      geojson
+      geojson,
+      filter
     };
   }
 
@@ -61,6 +64,7 @@ class Map extends Component {
   componentDidUpdate () {
     if (this.state.isSourceLoaded) {
       this.updateData();
+      this.updateFilter();
     }
   }
 
@@ -74,6 +78,9 @@ class Map extends Component {
     this.map.getSource('placesSource').setData(this.state.geojson);
   }
 
+  updateFilter () {
+    this.map.setFilter('selectedPlacesLayer', this.state.filter);
+  }
   initMap () {
     this.map = new mapboxgl.Map({
       container: this.mapContainer,
@@ -142,8 +149,23 @@ class Map extends Component {
         'type': 'symbol',
         'source': 'placesSource',
         'layout': {
-          'icon-image': 'restaurant-15'
+          'icon-image': 'restaurant-11',
+          'icon-allow-overlap': true,
+          'icon-size': 1
+        },
+        'paint': {
+          'icon-color': 'red'
         }
+      });
+
+      this.map.addLayer({
+        'id': 'selectedPlacesLayer',
+        'type': 'symbol',
+        'source': 'placesSource',
+        'layout': {
+          'icon-image': 'restaurant-15'
+        },
+        'filter': ['==', 'id', '']
       });
 
       // bind an event to select the symbol
@@ -214,16 +236,16 @@ function mapStateToProps (state, props) {
     exact: true
   });
 
-  let place = null;
+  let placeId = null;
   if (match) {
     const { type, id } = match.params;
-    const placeId = `${type}/${id}`;
-    place = wrapApiResult(getFromState(state, `places.individual.${placeId}`));
+    placeId = `${type}/${id}`;
+    // place = wrapApiResult(getFromState(state, `places.individual.${placeId}`));
   }
   return {
     places: wrapApiResult(getFromState(state, `places.list`)),
     match: match,
-    place: place
+    placeId: placeId
   };
 }
 
