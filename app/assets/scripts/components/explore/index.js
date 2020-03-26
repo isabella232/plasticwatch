@@ -46,11 +46,7 @@ export default class Explore extends React.Component {
           <Panel>
             <Route exact path='/explore' component={PlacesIndex} />
             <Route exact path='/explore/:type/:id' component={PlacesView} />
-            <Route
-              exact
-              path='/explore/:type/:id/submit-survey'
-              component={submitSurvey}
-            />
+            <Route exact path='/explore/:type/:id/survey' component={PlaceSurvey} />
           </Panel>
           <Map />
         </SidebarWrapper>
