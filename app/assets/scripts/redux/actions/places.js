@@ -71,3 +71,37 @@ export function fetchPlace (id) {
     receiveFn: receivePlace.bind(this, id)
   });
 }
+
+/*
+ * Fetch places stats
+ */
+
+export const REQUEST_PLACES_STATS = 'REQUEST_PLACES_STATS';
+export const RECEIVE_PLACES_STATS = 'RECEIVE_PLACES_STATS';
+export const INVALIDATE_PLACES_STATS = 'INVALIDATE_PLACES_STATS';
+
+export function invalidatePlacesStats () {
+  return { type: INVALIDATE_PLACES_STATS };
+}
+
+export function requestPlacesStats () {
+  return { type: REQUEST_PLACES_STATS };
+}
+
+export function receivePlacesStats (data, error = null) {
+  return {
+    type: RECEIVE_PLACES_STATS,
+    data,
+    error,
+    receivedAt: Date.now()
+  };
+}
+
+export function fetchPlacesStats () {
+  return fetchDispatchFactory({
+    statePath: ['places', 'stats'],
+    url: `${apiUrl}/osmobjects/stats`,
+    requestFn: requestPlacesStats.bind(this),
+    receiveFn: receivePlacesStats.bind(this)
+  });
+}

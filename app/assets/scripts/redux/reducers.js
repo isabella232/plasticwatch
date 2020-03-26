@@ -43,6 +43,18 @@ const placesReducerInitialState = {
 const placesReducer = baseAPIReducer('PLACES', placesReducerInitialState);
 
 /**
+ * PLACES_STATS reducer
+ */
+const placesStatsReducerInitialState = {
+  fetching: false,
+  fetched: false,
+  error: null,
+  data: []
+};
+
+const placesStatsReducer = baseAPIReducer('PLACES_STATS', placesStatsReducerInitialState);
+
+/**
  * PLACE reducer
  */
 const placeReducerInitialState = {
@@ -94,6 +106,7 @@ export default combineReducers({
   }),
   places: combineReducers({
     list: placesReducer,
-    individual: placeReducer
+    individual: placeReducer,
+    stats: placesStatsReducer
   })
 });
