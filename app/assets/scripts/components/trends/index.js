@@ -1,5 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
+import { PropTypes as T } from 'prop-types';
+import { environment } from '../../config';
+
+import { connect } from 'react-redux';
+import { wrapApiResult, getFromState } from '../../redux/utils';
+import * as actions from '../../redux/actions/places';
 
 import App from '../common/app';
 import { Inpage, InpageBody } from '../common/inpage';
@@ -7,6 +13,7 @@ import { InnerPanel, Panel } from '../../styles/panel';
 import Button from '../../styles/button/button';
 import { themeVal } from '../../styles/utils/general';
 import DataTable from '../../styles/table';
+import { round } from '../../utils/utils';
 
 const PanelStats = styled.div`
   display: flex;
@@ -30,8 +37,24 @@ const PanelStat = styled.h2`
   }
 `;
 
-export default class Trends extends React.Component {
+class Trends extends React.Component {
+  componentDidMount () {
+    this.props.fetchPlacesStats();
+  }
+
   render () {
+    const { stats } = this.props;
+
+    if (!stats.isReady()) return null;
+
+    const {
+      placesCount,
+      surveyedPlacesCount,
+      surveyorsCount
+    } = stats.getData();
+
+    const percentSurveyed = round((surveyedPlacesCount / placesCount) * 100, 1);
+
     return (
       <App pageTitle='Trends'>
         <Inpage>
@@ -39,62 +62,41 @@ export default class Trends extends React.Component {
             <Panel>
               <InnerPanel>
                 <h2>Washington DC</h2>
-                <p>1776 restaurants surveyed</p>
-                <p>75% of 2,377 restaurants on OpenStreetMap</p>
-                <h3>81%</h3>
+                <p>{percentSurveyed}% restaurants surveyed</p>
                 <p>
-                1438 Surveyed Washington DC Restaurants offer plastic-free
-                options
+                  {surveyedPlacesCount} of {placesCount} restaurants on
+                  OpenStreetMap
+                </p>
+                <h3>XX%</h3>
+                <p>
+                  XXXX Surveyed Washington DC Restaurants offer plastic-free
+                  options
                 </p>
                 <PanelStats>
                   <PanelStat>
-                  1776
+                    {surveyedPlacesCount}
                     <span>
-                    Restaurants
+                      Restaurants
                       <br />
-                    Surveyed
+                      Surveyed
                     </span>
                   </PanelStat>
                   <PanelStat>
-                  142
+                    {surveyorsCount}
                     <span>Surveyors</span>
                   </PanelStat>
                   <PanelStat>
-                  2123
+                    {placesCount - surveyedPlacesCount}
                     <span>
-                    Restaurants to
+                      Restaurants to
                       <br />
-                    Survey
-                    </span>
-                  </PanelStat>
-                  <PanelStat>
-                  16
-                    <span>
-                    Restaurants
-                      <br />
-                    Near You
+                      Survey
                     </span>
                   </PanelStat>
                 </PanelStats>
                 <Button useIcon='map' variation='base-raised-dark'>
-                Show me the map
+                  Show me the map
                 </Button>
-              </InnerPanel>
-              <InnerPanel>
-                <h2>Surveyors</h2>
-                <PanelStat>
-                  12
-                  <span>surveys</span>
-                </PanelStat>
-                <PanelStat>
-                  2020
-                  <span>surveyors</span>
-                </PanelStat>
-                <PanelStat>
-                  122
-                  <span>locations</span>
-                </PanelStat>
-               
               </InnerPanel>
               <InnerPanel>
                 <h2>Top Surveyors</h2>
@@ -112,19 +114,49 @@ export default class Trends extends React.Component {
                       <td>1</td>
                       <td>Bob Smith</td>
                       <td>24</td>
-                      <td><Button size='small' variation='base-plain' useIcon='trash-bin' hideText title='Remove user'>Remove</Button></td>
+                      <td>
+                        <Button
+                          size='small'
+                          variation='base-plain'
+                          useIcon='trash-bin'
+                          hideText
+                          title='Remove user'
+                        >
+                          Remove
+                        </Button>
+                      </td>
                     </tr>
                     <tr>
                       <td>2</td>
                       <td>Jane Good</td>
                       <td>19</td>
-                      <td><Button size='small' variation='base-plain' useIcon='trash-bin' hideText title='Remove user'>Remove</Button></td>
+                      <td>
+                        <Button
+                          size='small'
+                          variation='base-plain'
+                          useIcon='trash-bin'
+                          hideText
+                          title='Remove user'
+                        >
+                          Remove
+                        </Button>
+                      </td>
                     </tr>
                     <tr>
                       <td>3</td>
                       <td>Matt Park</td>
                       <td>12</td>
-                      <td><Button size='small' variation='base-plain' useIcon='trash-bin' hideText title='Remove user'>Remove</Button></td>
+                      <td>
+                        <Button
+                          size='small'
+                          variation='base-plain'
+                          useIcon='trash-bin'
+                          hideText
+                          title='Remove user'
+                        >
+                          Remove
+                        </Button>
+                      </td>
                     </tr>
                   </tbody>
                 </DataTable>
@@ -136,3 +168,24 @@ export default class Trends extends React.Component {
     );
   }
 }
+
+if (environment !== 'production') {
+  Trends.propTypes = {
+    stats: T.object,
+    fetchPlacesStats: T.func
+  };
+}
+
+function mapStateToProps (state) {
+  return {
+    stats: wrapApiResult(getFromState(state, `places.stats`))
+  };
+}
+
+function dispatcher (dispatch) {
+  return {
+    fetchPlacesStats: (...args) => dispatch(actions.fetchPlacesStats(...args))
+  };
+}
+
+export default connect(mapStateToProps, dispatcher)(Trends);
