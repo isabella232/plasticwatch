@@ -1,25 +1,31 @@
 import styled from 'styled-components';
-import { rgba } from 'polished';
+import Form from './form';
 import FormInput from './input';
 import FormLabel from './label';
 import FormToolbar from './toolbar';
 import collecticon from '../collecticons';
-import { themeVal, stylizeFunction } from '../utils/general';
+import { themeVal } from '../utils/general';
 import Button from '../button/button';
+import media from '../../styles/utils/media-queries';
 
-const _rgba = stylizeFunction(rgba);
-
+export const Filters = styled(Form)`
+  background: #edf6fb;
+  position: sticky;
+  top: 0;
+  z-index: 42;
+`;
 export const FilterToolbar = styled(FormToolbar)`
   align-items: flex-end;
   justify-content: space-between;
-  background: ${_rgba(themeVal('color.surface'), 0.5)};
-
+  margin: 1rem -2rem;
+  padding: 0 3rem 1rem;
+  border-bottom: 1px solid ${themeVal('color.smoke')};
   & input {
     max-width: 24rem;
   }
-  & > * {
-    margin-right: 1rem;
-  }
+  ${media.mediumUp`
+    padding: 0 2rem 1rem;
+  `};
 `;
 
 export const InputWrapper = styled.div`
@@ -49,10 +55,14 @@ export const FilterLabel = styled(FormLabel)`
   font-weight: ${themeVal('type.base.regular')};
 `;
 
+export const FilterButtons = styled.div`
+  margin-top: 0.5rem;
+`;
 export const FilterButton = styled(Button)`
   text-transform: none;
   box-shadow: none;
   font-size: 0.875rem;
   font-weight: ${themeVal('type.base.regular')};
   border: 1px solid ${themeVal('color.smoke')};
+  margin-right: ${themeVal('layout.space')};
 `;
