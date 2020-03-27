@@ -112,5 +112,12 @@ export const SortableLink = styled.a.attrs(({ sort }) => ({
 `;
 
 export const ScrollWrap = styled.div`
-  overflow: scroll;
+  overflow-y: scroll;
+  /* Hide scrollbar */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  &::-webkit-scrollbar { /* WebKit */
+    width: 0;
+    height: 0;
+  }
 `;
