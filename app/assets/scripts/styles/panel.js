@@ -1,17 +1,22 @@
 import styled from 'styled-components';
 import media from './utils/media-queries';
 import { themeVal } from './utils/general';
-import { cardSkin } from './skins';
+import { cardSkin, hideScrollbars } from './skins';
 
 export const Panel = styled.section`
   position: relative; /* Likely change to fixed within grid */
   background: ${themeVal('color.background')};
+  ${hideScrollbars()};
   ${media.mediumUp`
     padding: 2rem;
+    padding: 0.5rem;
     display: flex;
     flex-flow: column nowrap;
     max-height: calc(100vh - 4rem);
-    overflow: scroll;
+    overflow-y: scroll;
+  `}
+  ${media.largeUp`
+    padding: 2rem;
   `}
 `;
 

@@ -87,10 +87,11 @@ export const PlaceMeta = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  margin-bottom: ${themeVal('layout.space')};
 `;
 
 export const PlaceDetails = styled.div`
-  margin-bottom: 2rem;
+  margin: ${themeVal('layout.space')} 0;
 `;
 
 export const PlaceComment = styled.li`
