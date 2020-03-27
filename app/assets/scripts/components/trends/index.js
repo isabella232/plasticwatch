@@ -5,7 +5,7 @@ import { environment } from '../../config';
 
 import { connect } from 'react-redux';
 import { wrapApiResult, getFromState } from '../../redux/utils';
-import * as actions from '../../redux/actions/places';
+import * as actions from '../../redux/actions/trends';
 
 import App from '../common/app';
 import { InnerPanel, Panel } from '../../styles/panel';
@@ -67,7 +67,43 @@ const TwoPanelLayout = styled(Panel)`
 
 class Trends extends React.Component {
   componentDidMount () {
-    this.props.fetchPlacesStats();
+    this.props.fetchStats();
+    this.props.fetchTopSurveyors();
+  }
+
+  renderTopSurveyors () {
+    const { topSurveyors } = this.props;
+
+    if (!topSurveyors.isReady()) return <div>Loading...</div>;
+    if (topSurveyors.hasError()) { return <div>There was an error loading top surveyors.</div>; }
+
+    const data = topSurveyors.getData();
+
+    return (
+      <>
+        <h2>Top Surveyors</h2>
+        <ScrollWrap>
+          <DataTable fixedHeader>
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Surveyor</th>
+                <th>Surveys</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((s, i) => (
+                <tr key={s.osmId}>
+                  <td>{i + 1}</td>
+                  <td>{s.osmDisplayName}</td>
+                  <td>{s.observations}</td>
+                </tr>
+              ))}
+            </tbody>
+          </DataTable>
+        </ScrollWrap>
+      </>
+    );
   }
 
   render () {
@@ -97,8 +133,7 @@ class Trends extends React.Component {
             </PlaceTrends>
             <h3>XX%</h3>
             <p>
-              XXXX Surveyed Washington DC Restaurants offer plastic-free
-              options
+              XXXX Surveyed Washington DC Restaurants offer plastic-free options
             </p>
             <PanelStats>
               <PanelStat>
@@ -126,71 +161,7 @@ class Trends extends React.Component {
               Show me the map
             </Button>
           </InnerPanel>
-          <InnerPanel>
-            <h2>Top Surveyors</h2>
-            <ScrollWrap>
-              <DataTable fixedHeader>
-                <thead>
-                  <tr>
-                    <th>Rank</th>
-                    <th>Surveyor</th>
-                    <th>Surveys</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>Bob Smith</td>
-                    <td>24</td>
-                    <td>
-                      <Button
-                        size='small'
-                        variation='danger-plain'
-                        useIcon='trash-bin'
-                        hideText
-                        title='Remove user'
-                      >
-                        Remove
-                      </Button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>2</td>
-                    <td>Jane Good</td>
-                    <td>19</td>
-                    <td>
-                      <Button
-                        size='small'
-                        variation='danger-plain'
-                        useIcon='trash-bin'
-                        hideText
-                        title='Remove user'
-                      >
-                        Remove
-                      </Button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>3</td>
-                    <td>Matt Park</td>
-                    <td>12</td>
-                    <td>
-                      <Button
-                        size='small'
-                        variation='danger-plain'
-                        useIcon='trash-bin'
-                        hideText
-                        title='Remove user'
-                      >
-                        Remove
-                      </Button>
-                    </td>
-                  </tr>
-                </tbody>
-              </DataTable>
-            </ScrollWrap>
-          </InnerPanel>
+          <InnerPanel>{this.renderTopSurveyors()}</InnerPanel>
         </TwoPanelLayout>
       </App>
     );
@@ -200,19 +171,23 @@ class Trends extends React.Component {
 if (environment !== 'production') {
   Trends.propTypes = {
     stats: T.object,
-    fetchPlacesStats: T.func
+    topSurveyors: T.object,
+    fetchStats: T.func,
+    fetchTopSurveyors: T.func
   };
 }
 
 function mapStateToProps (state) {
   return {
-    stats: wrapApiResult(getFromState(state, `places.stats`))
+    stats: wrapApiResult(getFromState(state, `trends.stats`)),
+    topSurveyors: wrapApiResult(getFromState(state, `trends.topSurveyors`))
   };
 }
 
 function dispatcher (dispatch) {
   return {
-    fetchPlacesStats: (...args) => dispatch(actions.fetchPlacesStats(...args))
+    fetchStats: (...args) => dispatch(actions.fetchStats(...args)),
+    fetchTopSurveyors: (...args) => dispatch(actions.fetchTopSurveyors(...args))
   };
 }
 

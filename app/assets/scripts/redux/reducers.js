@@ -43,18 +43,6 @@ const placesReducerInitialState = {
 const placesReducer = baseAPIReducer('PLACES', placesReducerInitialState);
 
 /**
- * PLACES_STATS reducer
- */
-const placesStatsReducerInitialState = {
-  fetching: false,
-  fetched: false,
-  error: null,
-  data: []
-};
-
-const placesStatsReducer = baseAPIReducer('PLACES_STATS', placesStatsReducerInitialState);
-
-/**
  * PLACE reducer
  */
 const placeReducerInitialState = {
@@ -95,6 +83,30 @@ const surveyAnswersReducer = baseAPIReducer(
 );
 
 /**
+ * STATS reducer
+ */
+const statsReducerInitialState = {
+  fetching: false,
+  fetched: false,
+  error: null,
+  data: []
+};
+
+const statsReducer = baseAPIReducer('STATS', statsReducerInitialState);
+
+/**
+ * TOP_SURVEYORS reducer
+ */
+const topSurveyorsReducerInitialState = {
+  fetching: false,
+  fetched: false,
+  error: null,
+  data: []
+};
+
+const topSurveyorsReducer = baseAPIReducer('TOP_SURVEYORS', topSurveyorsReducerInitialState);
+
+/**
  * Export combined reducers
  */
 export default combineReducers({
@@ -106,7 +118,10 @@ export default combineReducers({
   }),
   places: combineReducers({
     list: placesReducer,
-    individual: placeReducer,
-    stats: placesStatsReducer
+    individual: placeReducer
+  }),
+  trends: combineReducers({
+    stats: statsReducer,
+    topSurveyors: topSurveyorsReducer
   })
 });
