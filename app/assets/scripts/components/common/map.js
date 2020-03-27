@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { wrapApiResult, getFromState } from '../../redux/utils';
 import * as actions from '../../redux/actions/places';
 import { PropTypes as T } from 'prop-types';
-import { Redirect, withRouter, matchPath } from 'react-router-dom';
+import { withRouter, matchPath } from 'react-router-dom';
 
 import { mapConfig } from '../../config';
 
@@ -225,7 +225,7 @@ class Map extends Component {
 
 Map.propTypes = {
   places: T.object,
-  place: T.object,
+  placeId: T.object,
   match: T.object,
   history: T.object
 };
