@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { rgba } from 'polished';
 
 import { themeVal, stylizeFunction } from './utils/general';
@@ -66,6 +66,19 @@ const DataTable = styled.table`
     
     }
   }
+
+  /* Fixed Header */
+  ${({ fixedHeader }) => fixedHeader &&
+    css`
+      thead,
+      thead th {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background: ${themeVal('color.surface')};
+      }
+    `}
 `;
 
 export default DataTable;
@@ -96,4 +109,8 @@ export const SortableLink = styled.a.attrs(({ sort }) => ({
     top: 50%;
     transform: translateY(-50%);
   }
+`;
+
+export const ScrollWrap = styled.div`
+  overflow: scroll;
 `;

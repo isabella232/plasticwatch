@@ -7,7 +7,7 @@ export const Panel = styled.section`
   position: relative; /* Likely change to fixed within grid */
   background: ${themeVal('color.background')};
   ${media.mediumUp`
-    padding: 3rem 2rem 2rem;
+    padding: 2rem;
     display: flex;
     flex-flow: column nowrap;
     max-height: calc(100vh - 4rem);

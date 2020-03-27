@@ -11,7 +11,7 @@ import App from '../common/app';
 import { InnerPanel, Panel } from '../../styles/panel';
 import Button from '../../styles/button/button';
 import { themeVal } from '../../styles/utils/general';
-import DataTable from '../../styles/table';
+import DataTable, { ScrollWrap } from '../../styles/table';
 import { round } from '../../utils/utils';
 import media from '../../styles/utils/media-queries';
 
@@ -36,6 +36,12 @@ const PanelStat = styled.h2`
   }
 `;
 
+const PlaceTrends = styled.div`
+  p {
+    font-size: 0.875rem;
+  }
+`;
+
 const TwoPanelLayout = styled(Panel)`
   ${InnerPanel} {
     margin: 0;
@@ -50,6 +56,12 @@ const TwoPanelLayout = styled(Panel)`
     grid-template-columns: 1fr 2fr;
     grid-gap: 2rem;
     height: 100vh;
+    overflow: hidden;
+    ${InnerPanel} {
+      &:not(:last-of-type) {
+        margin-bottom: 0;
+      }
+    }
   `};
 `;
 
@@ -75,12 +87,14 @@ class Trends extends React.Component {
       <App pageTitle='Trends'>
         <TwoPanelLayout>
           <InnerPanel>
-            <h2>Washington DC</h2>
-            <p>{percentSurveyed}% restaurants surveyed</p>
-            <p>
-              {surveyedPlacesCount} of {placesCount} restaurants on
-              OpenStreetMap
-            </p>
+            <PlaceTrends>
+              <h2>Washington DC</h2>
+              <p>{percentSurveyed}% restaurants surveyed</p>
+              <p>
+                {surveyedPlacesCount} of {placesCount} restaurants on
+                OpenStreetMap
+              </p>
+            </PlaceTrends>
             <h3>XX%</h3>
             <p>
               XXXX Surveyed Washington DC Restaurants offer plastic-free
@@ -114,66 +128,68 @@ class Trends extends React.Component {
           </InnerPanel>
           <InnerPanel>
             <h2>Top Surveyors</h2>
-            <DataTable>
-              <thead>
-                <tr>
-                  <th>Rank</th>
-                  <th>Surveyor</th>
-                  <th>Surveys</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>Bob Smith</td>
-                  <td>24</td>
-                  <td>
-                    <Button
-                      size='small'
-                      variation='base-plain'
-                      useIcon='trash-bin'
-                      hideText
-                      title='Remove user'
-                    >
-                      Remove
-                    </Button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>Jane Good</td>
-                  <td>19</td>
-                  <td>
-                    <Button
-                      size='small'
-                      variation='base-plain'
-                      useIcon='trash-bin'
-                      hideText
-                      title='Remove user'
-                    >
-                      Remove
-                    </Button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>3</td>
-                  <td>Matt Park</td>
-                  <td>12</td>
-                  <td>
-                    <Button
-                      size='small'
-                      variation='base-plain'
-                      useIcon='trash-bin'
-                      hideText
-                      title='Remove user'
-                    >
-                      Remove
-                    </Button>
-                  </td>
-                </tr>
-              </tbody>
-            </DataTable>
+            <ScrollWrap>
+              <DataTable fixedHeader>
+                <thead>
+                  <tr>
+                    <th>Rank</th>
+                    <th>Surveyor</th>
+                    <th>Surveys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>Bob Smith</td>
+                    <td>24</td>
+                    <td>
+                      <Button
+                        size='small'
+                        variation='danger-plain'
+                        useIcon='trash-bin'
+                        hideText
+                        title='Remove user'
+                      >
+                        Remove
+                      </Button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>Jane Good</td>
+                    <td>19</td>
+                    <td>
+                      <Button
+                        size='small'
+                        variation='danger-plain'
+                        useIcon='trash-bin'
+                        hideText
+                        title='Remove user'
+                      >
+                        Remove
+                      </Button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>3</td>
+                    <td>Matt Park</td>
+                    <td>12</td>
+                    <td>
+                      <Button
+                        size='small'
+                        variation='danger-plain'
+                        useIcon='trash-bin'
+                        hideText
+                        title='Remove user'
+                      >
+                        Remove
+                      </Button>
+                    </td>
+                  </tr>
+                </tbody>
+              </DataTable>
+            </ScrollWrap>
           </InnerPanel>
         </TwoPanelLayout>
       </App>
