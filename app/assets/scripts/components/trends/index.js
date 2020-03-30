@@ -44,6 +44,16 @@ const PanelStat = styled.h2`
 const PlaceTrends = styled.div`
   p {
     font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+  }
+  & ~ svg {
+    align-self: center;
+
+    text {
+      fill: ${themeVal('color.base')};
+      font-weight: ${themeVal('type.base.bold')};
+      font-size: 2rem;
+    }
   }
 `;
 
@@ -132,7 +142,7 @@ class Trends extends React.Component {
     );
 
     const barHeight = 20;
-    const pieSize = 100;
+    const pieSize = 200;
     const piePadding = 10;
     const pieData = [
       {
@@ -147,7 +157,7 @@ class Trends extends React.Component {
       }
     ];
     const radius = (pieSize - 2 * piePadding) / 2;
-    const thickness = 10;
+    const thickness = 25;
 
     return (
       <App pageTitle='Trends'>
@@ -155,7 +165,7 @@ class Trends extends React.Component {
           <InnerPanel>
             <PlaceTrends>
               <h2>Washington DC</h2>
-              <p>{formatThousands(surveyedPlacesCount)} restaurants surveyed</p>
+              <p><strong>{formatThousands(surveyedPlacesCount)}</strong> restaurants surveyed</p>
               <svg width='100%' height={barHeight}>
                 <rect
                   x={0}
@@ -175,7 +185,7 @@ class Trends extends React.Component {
                 />
               </svg>
               <p>
-                {percentSurveyed}% of {formatThousands(placesCount)} restaurants
+                <strong>{percentSurveyed}%</strong> of {formatThousands(placesCount)} Washington DC restaurants
                 on OpenStreetMap
               </p>
             </PlaceTrends>
@@ -209,8 +219,8 @@ class Trends extends React.Component {
               </Group>
             </svg>
             <p>
-              {formatThousands(nonPlasticPlacesCount)} Surveyed Washington DC
-              Restaurants offer plastic-free options
+              <strong>{round(percentNonPlastic)}% ({formatThousands(nonPlasticPlacesCount)} of {formatThousands(surveyedPlacesCount)})</strong> of surveyed Washington DC
+              restaurants offer plastic-free options
             </p>
             <PanelStats>
               <PanelStat>
