@@ -7,6 +7,9 @@ import { connect } from 'react-redux';
 import { wrapApiResult, getFromState } from '../../../redux/utils';
 import * as actions from '../../../redux/actions/places';
 
+import withMobileState from '../../common/with-mobile-state';
+import { StyledLink } from '../../common/link';
+
 import collecticon from '../../../styles/collecticons';
 import { themeVal } from '../../../styles/utils/general';
 import { listReset } from '../../../styles/helpers/index';
@@ -36,7 +39,6 @@ import {
   PlaceSurveys
 } from '../../../styles/place';
 import { hideScrollbars } from '../../../styles/skins';
-import withMobileState from '../../common/with-mobile-state';
 
 const Results = styled.ul`
   ${listReset()};
