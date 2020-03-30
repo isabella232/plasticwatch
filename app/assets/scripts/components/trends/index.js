@@ -8,11 +8,12 @@ import { wrapApiResult, getFromState } from '../../redux/utils';
 import * as actions from '../../redux/actions/trends';
 
 import App from '../common/app';
+
 import { InnerPanel, Panel } from '../../styles/panel';
 import Button from '../../styles/button/button';
 import { themeVal } from '../../styles/utils/general';
 import DataTable, { ScrollWrap } from '../../styles/table';
-import { round } from '../../utils/utils';
+import { round, formatThousands } from '../../utils/utils';
 import media from '../../styles/utils/media-queries';
 
 const PanelStats = styled.div`
@@ -121,25 +122,31 @@ class Trends extends React.Component {
     const percentSurveyed = round((surveyedPlacesCount / placesCount) * 100, 1);
     const percentNonPlastic = round((nonPlasticPlacesCount / surveyedPlacesCount) * 100, 1);
 
+    const barHeight = 20;
+
     return (
       <App pageTitle='Trends'>
         <TwoPanelLayout>
           <InnerPanel>
             <PlaceTrends>
               <h2>Washington DC</h2>
-              <p>{percentSurveyed}% restaurants surveyed</p>
+              <p>{formatThousands(surveyedPlacesCount)} restaurants surveyed</p>
+              <svg width='100%' height={barHeight}>
+                <rect x={0} y={0} width='100%' height={barHeight} fill='#D8D8D8' rx={2} />
+                <rect x={0} y={0} width={`${percentSurveyed}%`} height={barHeight} fill='#00A3DA' rx={2} />
+              </svg>
               <p>
-                {surveyedPlacesCount} of {placesCount} restaurants on
+                {percentSurveyed}% of {formatThousands(placesCount)} restaurants on
                 OpenStreetMap
               </p>
             </PlaceTrends>
             <h3>{percentNonPlastic}%</h3>
             <p>
-              {nonPlasticPlacesCount} Surveyed Washington DC Restaurants offer plastic-free options
+              {formatThousands(nonPlasticPlacesCount)} Surveyed Washington DC Restaurants offer plastic-free options
             </p>
             <PanelStats>
               <PanelStat>
-                {surveyedPlacesCount}
+                {formatThousands(surveyedPlacesCount)}
                 <span>
                   Restaurants
                   <br />
@@ -147,11 +154,11 @@ class Trends extends React.Component {
                 </span>
               </PanelStat>
               <PanelStat>
-                {surveyorsCount}
+                {formatThousands(surveyorsCount)}
                 <span>Surveyors</span>
               </PanelStat>
               <PanelStat>
-                {placesCount - surveyedPlacesCount}
+                {formatThousands(placesCount - surveyedPlacesCount)}
                 <span>
                   Restaurants to
                   <br />
