@@ -9,6 +9,10 @@ import * as actions from '../../redux/actions/trends';
 
 import App from '../common/app';
 
+import { Pie } from '@vx/shape';
+import { Group } from '@vx/group';
+import { LinearGradient } from '@vx/gradient';
+
 import { InnerPanel, Panel } from '../../styles/panel';
 import Button from '../../styles/button/button';
 import { themeVal } from '../../styles/utils/general';
@@ -76,7 +80,9 @@ class Trends extends React.Component {
     const { topSurveyors } = this.props;
 
     if (!topSurveyors.isReady()) return <div>Loading...</div>;
-    if (topSurveyors.hasError()) { return <div>There was an error loading top surveyors.</div>; }
+    if (topSurveyors.hasError()) {
+      return <div>There was an error loading top surveyors.</div>;
+    }
 
     const data = topSurveyors.getData();
 
@@ -120,9 +126,28 @@ class Trends extends React.Component {
     } = stats.getData();
 
     const percentSurveyed = round((surveyedPlacesCount / placesCount) * 100, 1);
-    const percentNonPlastic = round((nonPlasticPlacesCount / surveyedPlacesCount) * 100, 1);
+    const percentNonPlastic = round(
+      (nonPlasticPlacesCount / surveyedPlacesCount) * 100,
+      1
+    );
 
     const barHeight = 20;
+    const pieSize = 100;
+    const piePadding = 10;
+    const pieData = [
+      {
+        label: 'plastic',
+        color: '#EDEDED',
+        value: 100 - percentNonPlastic
+      },
+      {
+        label: 'non-plastic',
+        color: "url('#gradient')",
+        value: percentNonPlastic
+      }
+    ];
+    const radius = (pieSize - 2 * piePadding) / 2;
+    const thickness = 10;
 
     return (
       <App pageTitle='Trends'>
@@ -132,17 +157,60 @@ class Trends extends React.Component {
               <h2>Washington DC</h2>
               <p>{formatThousands(surveyedPlacesCount)} restaurants surveyed</p>
               <svg width='100%' height={barHeight}>
-                <rect x={0} y={0} width='100%' height={barHeight} fill='#D8D8D8' rx={2} />
-                <rect x={0} y={0} width={`${percentSurveyed}%`} height={barHeight} fill='#00A3DA' rx={2} />
+                <rect
+                  x={0}
+                  y={0}
+                  width='100%'
+                  height={barHeight}
+                  fill='#D8D8D8'
+                  rx={2}
+                />
+                <rect
+                  x={0}
+                  y={0}
+                  width={`${percentSurveyed}%`}
+                  height={barHeight}
+                  fill='#00A3DA'
+                  rx={2}
+                />
               </svg>
               <p>
-                {percentSurveyed}% of {formatThousands(placesCount)} restaurants on
-                OpenStreetMap
+                {percentSurveyed}% of {formatThousands(placesCount)} restaurants
+                on OpenStreetMap
               </p>
             </PlaceTrends>
-            <h3>{percentNonPlastic}%</h3>
+            <svg width={pieSize} height={pieSize}>
+              <LinearGradient id='gradient' from='#01A1D7' to='#104271' />;
+              <Group top={pieSize / 2} left={pieSize / 2}>
+                <text textAnchor='middle' y='0.5em'>{round(percentNonPlastic)}%</text>
+                <Pie
+                  data={pieData}
+                  pieValue={d => d.value}
+                  cornerRadius={3}
+                  padAngle={0}
+                  fillOpacity={0.8}
+                  outerRadius={radius}
+                  innerRadius={radius - thickness}
+                >
+                  {pie => {
+                    return pie.arcs.map((arc, i) => {
+                      return (
+                        <g key={`letters-${arc.data.label}`}>
+                          <path
+                            className='slice'
+                            d={pie.path(arc)}
+                            fill={arc.data.color}
+                          />
+                        </g>
+                      );
+                    });
+                  }}
+                </Pie>
+              </Group>
+            </svg>
             <p>
-              {formatThousands(nonPlasticPlacesCount)} Surveyed Washington DC Restaurants offer plastic-free options
+              {formatThousands(nonPlasticPlacesCount)} Surveyed Washington DC
+              Restaurants offer plastic-free options
             </p>
             <PanelStats>
               <PanelStat>
