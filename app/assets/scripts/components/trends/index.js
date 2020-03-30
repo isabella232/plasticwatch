@@ -113,11 +113,13 @@ class Trends extends React.Component {
 
     const {
       placesCount,
+      nonPlasticPlacesCount,
       surveyedPlacesCount,
       surveyorsCount
     } = stats.getData();
 
     const percentSurveyed = round((surveyedPlacesCount / placesCount) * 100, 1);
+    const percentNonPlastic = round((nonPlasticPlacesCount / surveyedPlacesCount) * 100, 1);
 
     return (
       <App pageTitle='Trends'>
@@ -131,9 +133,9 @@ class Trends extends React.Component {
                 OpenStreetMap
               </p>
             </PlaceTrends>
-            <h3>XX%</h3>
+            <h3>{percentNonPlastic}%</h3>
             <p>
-              XXXX Surveyed Washington DC Restaurants offer plastic-free options
+              {nonPlasticPlacesCount} Surveyed Washington DC Restaurants offer plastic-free options
             </p>
             <PanelStats>
               <PanelStat>
