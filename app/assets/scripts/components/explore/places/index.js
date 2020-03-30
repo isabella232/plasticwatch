@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
 import { environment } from '../../../config';
 import { PropTypes as T } from 'prop-types';
 import { connect } from 'react-redux';
 
 import { wrapApiResult, getFromState } from '../../../redux/utils';
 import * as actions from '../../../redux/actions/places';
+
+import withMobileState from '../../common/with-mobile-state';
+import { StyledLink } from '../../common/link';
 
 import collecticon from '../../../styles/collecticons';
 import { themeVal } from '../../../styles/utils/general';
@@ -37,7 +39,6 @@ import {
   PlaceSurveys
 } from '../../../styles/place';
 import { hideScrollbars } from '../../../styles/skins';
-import withMobileState from '../../common/with-mobile-state';
 
 const Results = styled.ul`
   ${listReset()};
@@ -143,7 +144,7 @@ class PlacesIndex extends Component {
 
         <Results>
           {getData().map(({ id, properties }) => (
-            <ResultsItem key={id} as={Link} to={`/explore/${id}`}>
+            <ResultsItem key={id} as={StyledLink} to={`/explore/${id}`}>
               <Place>
                 <PlaceHeader>
                   {properties.name && (

@@ -16,6 +16,8 @@ import { wrapApiResult, getFromState, isLoggedIn } from '../../../redux/utils';
 
 import toasts from '../../common/toasts';
 
+import StyledLink from '../../common/link';
+
 import { PlaceTitle } from '../../../styles/place';
 import Button from '../../../styles/button/button';
 import InnerPanel from '../../../styles/inner-panel';
@@ -34,7 +36,6 @@ import {
   FormCheckableGroup,
   FormCheckable
 } from '../../../styles/form/checkable';
-import { Link } from 'react-router-dom';
 import {
   showGlobalLoading,
   hideGlobalLoading
@@ -121,7 +122,7 @@ const InnerSurveyForm = props => {
           Submit
         </Button>
         <Button
-          as={Link}
+          as={StyledLink}
           to={`/explore/${place.id}`}
           variation='danger-raised-light'
           size='large'

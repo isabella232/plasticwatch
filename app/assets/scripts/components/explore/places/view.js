@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import { environment } from '../../../config';
 import { PropTypes as T } from 'prop-types';
 
@@ -20,6 +19,7 @@ import {
 } from '../../../styles/place';
 import { InnerPanel } from '../../../styles/panel';
 import Button from '../../../styles/button/button';
+import StyledLink from '../../common/link';
 
 import { InpageBackLink } from '../../common/inpage';
 import withMobileState from '../../common/with-mobile-state';
@@ -65,7 +65,7 @@ class PlacesView extends Component {
           <Button
             variation='primary-raised-dark'
             size='large'
-            as={Link}
+            as={StyledLink}
             to={`/explore/${properties.id}/survey`}
           >
             Submit a survey

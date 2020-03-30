@@ -5,11 +5,6 @@ import { filterComponentProps } from '../../utils';
 import { osmUrl } from '../../config';
 
 /**
- * A base Link component ready to be used with styled component without warnings
- */
-const StyledLink = filterComponentProps(Link, ['hideText', 'useIcon', 'variation']);
-
-/**
  * Link to OpenStreetMap Profile
  */
 export const LinkToOsmProfile = ({ osmDisplayName, className }) => {
@@ -24,9 +19,14 @@ export const LinkToOsmProfile = ({ osmDisplayName, className }) => {
     </a>
   );
 };
+
 LinkToOsmProfile.propTypes = {
   osmDisplayName: PropTypes.string.isRequired,
   className: PropTypes.string
 };
 
+/**
+ * A base Link component ready to be used with styled component without warnings
+ */
+const StyledLink = filterComponentProps(Link, ['hideText', 'useIcon', 'variation']);
 export default StyledLink;

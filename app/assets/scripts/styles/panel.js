@@ -8,6 +8,7 @@ export const Panel = styled.section`
   background: ${themeVal('color.background')};
   ${hideScrollbars()};
   ${media.mediumUp`
+    padding: 2rem;
     padding: 0.5rem;
     display: flex;
     flex-flow: column nowrap;
