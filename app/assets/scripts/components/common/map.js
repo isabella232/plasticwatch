@@ -6,6 +6,8 @@ import { wrapApiResult, getFromState } from '../../redux/utils';
 import * as actions from '../../redux/actions/places';
 import { PropTypes as T } from 'prop-types';
 import { withRouter, matchPath } from 'react-router-dom';
+import _isEqual from 'lodash.isequal';
+import { geojsonBbox } from '../../utils/geo';
 
 import { mapConfig } from '../../config';
 
@@ -26,28 +28,40 @@ class Map extends Component {
         'type': 'FeatureCollection',
         'features': []
       },
-      filter: ['==', 'id', '']
+      filter: ['==', 'id', ''],
+      bounds: null
     };
   }
 
-  static getDerivedStateFromProps (props) {
-    const { placeId, places, match } = props;
+  static getDerivedStateFromProps (props, state) {
+    const { placeId, places, match, place } = props;
 
-    const geojson = {
-      'type': 'FeatureCollection',
-      'features': places.getData()
-    };
+    let geojson;
+    let bounds = null;
+    if (places.isReady()) {
+      geojson = {
+        'type': 'FeatureCollection',
+        'features': places.getData()
+      };
+      bounds = geojsonBbox(geojson);
+    }
 
     let filter;
-    if (match) {
+    if (match && place.isReady()) {
       filter = ['==', 'id', placeId];
+      bounds = geojsonBbox(place.getData());
     } else {
       filter = ['==', 'id', ''];
     }
 
+    if (_isEqual(state.geojson, geojson) && _isEqual(filter, state.filter) && _isEqual(bounds, state.bounds)) {
+      return null;
+    }
+
     return {
       geojson,
-      filter
+      filter,
+      bounds
     };
   }
 
@@ -55,7 +69,9 @@ class Map extends Component {
     const { mapLoaded } = this.state;
 
     // Bypass if map is already loaded
-    if (mapLoaded) return;
+    if (mapLoaded) {
+      return;
+    }
 
     // Mount the map on the net tick to prevent the right side gap.
     setTimeout(() => this.initMap(), 1);
@@ -65,6 +81,11 @@ class Map extends Component {
     if (this.state.isSourceLoaded) {
       this.updateData();
       this.updateFilter();
+      if (this.state.bounds) {
+        this.map.fitBounds(this.state.bounds, {
+          maxZoom: 15
+        });
+      }
     }
   }
 
@@ -128,7 +149,7 @@ class Map extends Component {
 
     // ensure the source is added
     this.map.on('sourcedata', (e) => {
-      if (e.sourceId === 'placesSource') {
+      if (e.sourceId === 'placesSource' && !this.state.isSourceLoaded) {
         this.setState({
           isSourceLoaded: true
         });
@@ -226,6 +247,7 @@ class Map extends Component {
 Map.propTypes = {
   places: T.object,
   placeId: T.object,
+  place: T.object,
   match: T.object,
   history: T.object
 };
@@ -237,15 +259,17 @@ function mapStateToProps (state, props) {
   });
 
   let placeId = null;
+  let place = null;
   if (match) {
     const { type, id } = match.params;
     placeId = `${type}/${id}`;
-    // place = wrapApiResult(getFromState(state, `places.individual.${placeId}`));
+    place = wrapApiResult(getFromState(state, `places.individual.${placeId}`));
   }
   return {
     places: wrapApiResult(getFromState(state, `places.list`)),
     match: match,
-    placeId: placeId
+    placeId: placeId,
+    place: place
   };
 }
 
