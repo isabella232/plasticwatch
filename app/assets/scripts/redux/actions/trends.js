@@ -63,7 +63,7 @@ export function receiveTopSurveyors (data, error = null) {
 export function fetchTopSurveyors () {
   return fetchDispatchFactory({
     statePath: ['trends', 'topSurveyors'],
-    url: `${apiUrl}/top-surveyors`,
+    url: `${apiUrl}/top-surveyors?limit=10`,
     requestFn: requestTopSurveyors.bind(this),
     receiveFn: receiveTopSurveyors.bind(this)
   });

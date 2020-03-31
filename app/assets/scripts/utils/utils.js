@@ -101,3 +101,57 @@ export function isEqualObj (a, b) {
 export function round (value, decimals = 2) {
   return Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals);
 }
+
+/**
+ * Adds a separator every 3 digits and rounds the number.
+ *
+ * @param {number} num The number to format.
+ * @param {number} decimals Amount of decimals to keep. (Default 2)
+ * @param {string} separator Separator to use. (Default ,)
+ * @param {boolean} forceDecimals Force the existence of decimal. (Default false)
+ *                  Eg: Using 2 decimals and force `true` would result:
+ *                  formatThousands(1 /2, 2, true) => 0.50
+ *
+ * @example
+ * formatThousands(1)               1
+ * formatThousands(1000)            1,000
+ * formatThousands(10000000)        10,000,000
+ * formatThousands(1/3)             0.33
+ * formatThousands(100000/3)        33,333.33
+ * formatThousands()                --
+ * formatThousands('asdasdas')      --
+ * formatThousands(1/2, 0)          1
+ * formatThousands(1/2, 0, true)    1
+ * formatThousands(1/2, 5)          0.5
+ * formatThousands(1/2, 5, true)    0.50000
+ *
+ */
+export function formatThousands (
+  num,
+  decimals = 2,
+  separator = ',',
+  forceDecimals = false
+) {
+  // isNaN(null) === true
+  if (isNaN(num) || (!num && num !== 0)) {
+    return '--';
+  }
+
+  const repeat = (char, length) => {
+    let str = '';
+    for (let i = 0; i < length; i++) str += char + '';
+    return str;
+  };
+
+  let [int, dec] = Number(round(num, decimals))
+    .toString()
+    .split('.');
+  // Space the integer part of the number.
+  int = int.replace(/\B(?=(\d{3})+(?!\d))/g, separator);
+  // Round the decimals.
+  dec = (dec || '').substr(0, decimals);
+  // Add decimals if forced.
+  dec = forceDecimals ? `${dec}${repeat(0, decimals - dec.length)}` : dec;
+
+  return dec !== '' ? `${int}.${dec}` : int;
+}
