@@ -164,7 +164,7 @@ class Map extends Component {
       // const bounds = this.map.getBounds();
       // const zoom = this.map.getZoom();
       // if (zoom > 12) {
-        // fetch data?
+      // fetch data?
       // }
     });
 
