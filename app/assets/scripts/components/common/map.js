@@ -8,7 +8,7 @@ import { PropTypes as T } from 'prop-types';
 import { withRouter, matchPath } from 'react-router-dom';
 import _isEqual from 'lodash.isequal';
 import { geojsonBbox } from '../../utils/geo';
-
+import { getMarker } from '../../utils/utils';
 import { mapConfig } from '../../config';
 
 // Mapbox access token
@@ -17,6 +17,15 @@ mapboxgl.accessToken = mapConfig.mapboxAccessToken;
 const MapContainer = styled.div`
   height: 100%;
 `;
+
+const markerQuestion = new Image(45, 60);
+markerQuestion.src = './assets/icons/marker-question.png';
+
+const markerTick = new Image(45, 60);
+markerTick.src = './assets/icons/marker-tick.png';
+
+const markerX = new Image(45, 60);
+markerX.src = './assets/icons/marker-xmark.png';
 
 class Map extends Component {
   constructor (props) {
@@ -28,7 +37,7 @@ class Map extends Component {
         'type': 'FeatureCollection',
         'features': []
       },
-      filter: ['==', 'id', ''],
+      filters: [['!=', 'id', ''], ['==', 'id', '']],
       bounds: null
     };
   }
@@ -46,21 +55,30 @@ class Map extends Component {
       bounds = geojsonBbox(geojson);
     }
 
-    let filter;
+    let filters = state.filters;
     if (match && place.isReady()) {
-      filter = ['==', 'id', placeId];
+      filters[0] = ['==', 'id', placeId];
+      filters[1] = ['!=', 'id', placeId];
       bounds = geojsonBbox(place.getData());
     } else {
-      filter = ['==', 'id', ''];
+      filters[0] = ['!=', 'id', ''];
+      filters[1] = ['==', 'id', ''];
     }
 
-    if (_isEqual(state.geojson, geojson) && _isEqual(filter, state.filter) && _isEqual(bounds, state.bounds)) {
+    if (_isEqual(state.geojson, geojson) && _isEqual(filters, state.filters) && _isEqual(bounds, state.bounds)) {
       return null;
+    }
+
+    // set icon names
+    if (geojson) {
+      geojson.features.forEach(feature => {
+        feature.properties.icon = getMarker(feature);
+      });
     }
 
     return {
       geojson,
-      filter,
+      filters,
       bounds
     };
   }
@@ -100,8 +118,10 @@ class Map extends Component {
   }
 
   updateFilter () {
-    this.map.setFilter('selectedPlacesLayer', this.state.filter);
+    this.map.setFilter('selectedPlacesLayer', this.state.filters[1]);
+    this.map.setFilter('placesLayer', this.state.filters[0]);
   }
+
   initMap () {
     this.map = new mapboxgl.Map({
       container: this.mapContainer,
@@ -158,25 +178,26 @@ class Map extends Component {
 
     this.map.on('load', () => {
       this.setState({ mapLoaded: true });
-
       // add the geojson from state as a source to the map
       this.map.addSource('placesSource', {
         'type': 'geojson',
         'data': null
       });
 
+      this.map.addImage('markerQuestion', markerQuestion);
+      this.map.addImage('markerTick', markerTick);
+      this.map.addImage('markerX', markerX);
+
       this.map.addLayer({
         'id': 'placesLayer',
         'type': 'symbol',
         'source': 'placesSource',
         'layout': {
-          'icon-image': 'restaurant-11',
+          'icon-image': '{icon}',
           'icon-allow-overlap': true,
-          'icon-size': 1
+          'icon-size': 0.4
         },
-        'paint': {
-          'icon-color': 'red'
-        }
+        'filter': ['!=', 'id', '']
       });
 
       this.map.addLayer({
@@ -184,7 +205,11 @@ class Map extends Component {
         'type': 'symbol',
         'source': 'placesSource',
         'layout': {
-          'icon-image': 'restaurant-15'
+          'icon-image': '{icon}',
+          'icon-size': 0.4
+        },
+        'paint': {
+          'icon-opacity': 0.5
         },
         'filter': ['==', 'id', '']
       });
