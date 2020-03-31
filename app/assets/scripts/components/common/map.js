@@ -160,11 +160,12 @@ class Map extends Component {
       })
     );
 
-    this.map.on('zoomend', () => {
-      const zoom = this.map.getZoom();
-      if (zoom > 12) {
+    this.map.on('moveend', () => {
+      // const bounds = this.map.getBounds();
+      // const zoom = this.map.getZoom();
+      // if (zoom > 12) {
         // fetch data?
-      }
+      // }
     });
 
     // ensure the source is added
