@@ -1,63 +1,135 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { stackSkin, cardSkin } from '../../styles/skins';
+import {
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter
+} from '../common/modal';
+import { PartnerCards, PartnerCard } from '../../styles/skins';
+import { StyledLink } from '../common/link';
+import { InnerPanel } from '../../styles/panel';
 import Heading from '../../styles/type/heading';
-import media from '../../styles/utils/media-queries';
 import Button from '../../styles/button/button';
+import media from '../../styles/utils/media-queries';
 
-const InpageBody = styled.div`
-  ${stackSkin()};
-  ${cardSkin()};
-  border-radius: 0.5rem;
-  padding: 1rem 2rem;
+const AboutPanel = styled(InnerPanel)`
+  margin: 0;
+  padding-bottom: 2rem;
+  align-items: flex-start;
+  justify-content: flex-end;
   grid-row: 2/5;
   z-index: 10;
-  margin: 0 auto;
-
   ${media.mediumUp`
-    padding: 2rem;
-    width: 100%;
-    order: initial;
-    padding: 4rem;
-  `}
+    padding-bottom: 4rem;
+  `};
+  & > ${Button} {
+    margin: 1rem 0 2rem;
+  }
+`;
+
+const ModalButton = styled(Button)`
+  text-transform: none;
+  letter-spacing: 0;
+`;
+
+const AboutLinks = styled.div`
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+  ${Button} {
+    flex: 1;
+    margin-right: 1rem;
+    min-width: inherit;
+  }
 `;
 
 export default class Introduction extends Component {
+  constructor (props) {
+    super(props);
+    this.state = {
+      revealed: false
+    };
+    this.onModalClick = this.onModalClick.bind(this);
+  }
+  onModalClick () {
+    this.setState({ revealed: true });
+  }
   render () {
+    const { revealed } = this.state;
     return (
-      <InpageBody>
+      <AboutPanel>
         <Heading size='x-large'>
           <span>Oceana</span> PlasticWatch
         </Heading>
-        <Heading size='large'>About</Heading>
-        <div>
-          Voluptate aliquip ullamco incididunt incididunt exercitation eu.
-          Consectetur ullamco eiusmod id mollit cillum proident in adipisicing
-          reprehenderit. Et dolor excepteur Lorem laboris adipisicing magna
-          commodo. Est minim et nulla sint do magna elit aliquip officia eu ut
-          culpa. Nulla nisi consectetur et officia reprehenderit dolor eiusmod
-          laboris exercitation magna et sit. Qui labore amet eiusmod mollit
-          culpa cupidatat laboris nostrud ad velit amet.
-        </div>
-        <br />
-        <Link to='/about'>Read more about this project</Link>
-        <br />
-        <br />
-        <p>
-          PlasticWatch uses OSM as a login provider. Login with OpenStreetMap to
-          start contributing to the map
+        <p><a href='https://oceana.org'>Oceana’s</a> PlasticWatch provides a platform for customers to survey restaurants’ single-use plastic usage and locate restaurants that offer plastic-free choices. Using crowdsourced ratings and reviews, PlasticWatch connects people who are seeking to reduce their plastic footprints with restaurants that provide plastic-free alternatives.
         </p>
-        <Button
-          useIcon='login'
-          size='xlarge'
-          variation='primary-raised-dark'
-          onClick={() => this.login()}
+        <ModalButton
+          variation='primary-plain'
+          useIcon={['chevron-right--small', 'after']}
+          onClick={this.onModalClick.bind(this, true)}
         >
-          Login
-        </Button>
-      </InpageBody>
+          Read more about the project
+        </ModalButton>
+        <AboutLinks>
+          <Button
+            useIcon='login'
+            size='large'
+            variation='primary-raised-dark'
+            onClick={() => this.login()}
+          >
+            Login
+          </Button>
+          <p>
+            PlasticWatch uses OSM as a login provider. Login with OpenStreetMap to
+            start contributing to the map
+          </p>
+        </AboutLinks>
+        <Modal
+          id='introExpanded'
+          revealed={revealed}
+          onCloseClick={this.onModalClick.bind(this, false)}
+          headerComponent={(
+            <ModalHeader>
+              <Heading size='x-large'>Oceana PlasticWatch</Heading>
+            </ModalHeader>
+          )}
+          bodyComponent={(
+            <ModalBody>
+              <p><a href='https://oceana.org'>Oceana’s</a> PlasticWatch provides a platform for customers to survey restaurants’ single-use plastic usage and locate restaurants that offer plastic-free choices. Using crowdsourced ratings and reviews, PlasticWatch connects people who are seeking to reduce their plastic footprints with restaurants that provide plastic-free alternatives.
+              </p>
+              <br />
+              <p>
+              You can easily search for restaurants by name or use the PlasticWatch map to explore nearby options and find all the information you need to make a sustainable decision. Whether you’re looking for a new coffee shop or a quick lunch on the go, PlasticWatch can guide you to a plastic-free option.
+              </p>
+              <br />
+              <p>
+              By joining the PlasticWatch community and adding your own restaurant ratings and reviews, you can help others make informed decisions. You can build your profile, compete with other surveyors for a place on the PlasticWatch leaderboard, and help to complete surveys on every restaurant in your city. Users can also track trends in their communities – and see the number of restaurants offering plastic-free options grow!
+              </p>
+            </ModalBody>
+          )}
+          footerComponent={(
+            <ModalFooter>
+              <Button
+                variation='base-raised-dark'
+                useIcon='map'
+                as={StyledLink}
+                to='/explore'
+              >
+                Show me the map!
+              </Button>
+              <PartnerCards>
+                <dt>A project by</dt>
+                <PartnerCard href='https://oceana.org' title='Read more about Oceana'>
+                  <img src='../../../assets/graphics/content/Oceana_logo1.png' />
+                </PartnerCard>
+              </PartnerCards>
+            </ModalFooter>
+          )}
+        />
+      </AboutPanel>
     );
   }
 }

@@ -13,7 +13,6 @@ const Wrapper = styled.div`
   height: 100%;
   grid-template-columns: 100vw;
   grid-template-rows: repeat(4, 1fr);
-  margin-bottom: 3rem;
   > * {
     grid-column: 1;
   }
