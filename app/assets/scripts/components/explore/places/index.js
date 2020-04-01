@@ -158,25 +158,28 @@ class PlacesIndex extends Component {
           {getData().map(
             ({
               id,
-              properties,
-              observationCounts: {
-                total_true: totalTrue,
-                total_false: totalFalse,
-                total
+              properties: {
+                name,
+                amenity,
+                observationCounts: {
+                  total,
+                  total_false: totalFalse,
+                  total_true: totalTrue
+                }
               }
             }) => (
               <ResultsItem key={id} as={StyledLink} to={`/explore/${id}`}>
                 <Place>
                   <PlaceHeader>
-                    {properties.name && (
-                      <PlaceTitle>{properties.name}</PlaceTitle>
+                    {name && (
+                      <PlaceTitle>{name}</PlaceTitle>
                     )}
-                    {properties.amenity && (
-                      <PlaceType>{properties.amenity}</PlaceType>
+                    {amenity && (
+                      <PlaceType>{amenity}</PlaceType>
                     )}
                   </PlaceHeader>
                   <PlaceRating>
-                    {total === 0 ? (
+                    {total > 0 ? (
                       <>
                         <RatingType
                           useIcon={
