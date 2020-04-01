@@ -7,14 +7,14 @@ import {
   ModalBody,
   ModalFooter
 } from '../common/modal';
-import { PartnerCards, PartnerCard } from '../../styles/skins';
 import { StyledLink } from '../common/link';
 import { InnerPanel } from '../../styles/panel';
 import Heading from '../../styles/type/heading';
 import Button from '../../styles/button/button';
 import media from '../../styles/utils/media-queries';
+import { themeVal } from '../../styles/utils/general';
 
-const AboutPanel = styled(InnerPanel)`
+const IntroPanel = styled(InnerPanel)`
   margin: 0;
   padding-bottom: 2rem;
   align-items: flex-start;
@@ -29,6 +29,15 @@ const AboutPanel = styled(InnerPanel)`
   }
 `;
 
+const IntroHeading = styled(Heading)`
+  img {
+    display: block;
+    max-width: 16rem;
+  }
+  span {
+    font-weight: ${themeVal('type.heading.regular')};
+  }
+`;
 const ModalButton = styled(Button)`
   text-transform: none;
   letter-spacing: 0;
@@ -46,6 +55,49 @@ const AboutLinks = styled.div`
   }
 `;
 
+const PartnerCards = styled.ul`
+  align-self: stretch;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 0 ${themeVal('layout.space')};
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  dt {
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    font-weight: 700;
+    grid-column: 1 / span 4;
+
+    &:not(:first-child) {
+      margin-top: $global-spacing;
+    }
+  }
+`;
+
+const PartnerCard = styled.a`
+  grid-column: auto / span 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  height: 6rem;
+  position: relative;
+  z-index: 1;
+  border-radius: ${themeVal('shape.rounded')};
+  box-shadow: inset 0 0 0 1px ${themeVal('color.smoke')};
+  transition: all .16s ease 0s;
+
+  img {
+    display: inline-flex;
+    width: auto;
+    max-width: 100%;
+    max-height: 4rem;
+  }
+`;
+
 export default class Introduction extends Component {
   constructor (props) {
     super(props);
@@ -60,10 +112,10 @@ export default class Introduction extends Component {
   render () {
     const { revealed } = this.state;
     return (
-      <AboutPanel>
-        <Heading size='x-large'>
-          <span>Oceana</span> PlasticWatch
-        </Heading>
+      <IntroPanel>
+        <IntroHeading size='x-large' variation='primary'>
+          <img src='../../../assets/graphics/content/Oceana_2.svg' alt='Oceana logo' /><span>Plastic</span>Watch
+        </IntroHeading>
         <p><a href='https://oceana.org'>Oceana’s</a> PlasticWatch provides a platform for customers to survey restaurants’ single-use plastic usage and locate restaurants that offer plastic-free choices. Using crowdsourced ratings and reviews, PlasticWatch connects people who are seeking to reduce their plastic footprints with restaurants that provide plastic-free alternatives.
         </p>
         <ModalButton
@@ -93,7 +145,7 @@ export default class Introduction extends Component {
           onCloseClick={this.onModalClick.bind(this, false)}
           headerComponent={(
             <ModalHeader>
-              <Heading size='x-large'>Oceana PlasticWatch</Heading>
+              <Heading>About PlasticWatch</Heading>
             </ModalHeader>
           )}
           bodyComponent={(
@@ -123,13 +175,13 @@ export default class Introduction extends Component {
               <PartnerCards>
                 <dt>A project by</dt>
                 <PartnerCard href='https://oceana.org' title='Read more about Oceana'>
-                  <img src='../../../assets/graphics/content/Oceana_logo1.png' />
+                  <img src='../../../assets/graphics/content/Oceana_logo1.png' alt='Oceana logo' />
                 </PartnerCard>
               </PartnerCards>
             </ModalFooter>
           )}
         />
-      </AboutPanel>
+      </IntroPanel>
     );
   }
 }
