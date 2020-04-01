@@ -62,7 +62,7 @@ class Map extends Component {
       filters[0] = ['==', 'id', placeId];
       filters[1] = ['!=', 'id', placeId];
       const feature = place.getData();
-      selectedFeature = feature;
+      selectedFeature = feature.id;
       bounds = geojsonBbox(feature);
     } else {
       filters[0] = ['!=', 'id', ''];
@@ -220,7 +220,7 @@ class Map extends Component {
       });
 
       // bind an event to select the symbol
-      this.map.on('click', 'placesLayer', (e) => {
+      this.map.on('click', (e) => {
         // add a small buffer so clicks are registered properly
         const width = 10;
         const height = 10;
@@ -230,8 +230,12 @@ class Map extends Component {
           [e.point.x + width / 2, e.point.y + height / 2]
         ], { layers: ['placesLayer'] })[0];
 
-        if (feature) {
+        if (feature && !this.state.selectedFeature) {
           this.props.history.push(`/explore/${feature.properties.id}`);
+        }
+
+        if (!feature || feature.properties.id === this.state.selectedFeature) {
+          this.props.history.push('/explore');
         }
       });
     });
