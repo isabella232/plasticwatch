@@ -80,7 +80,6 @@ const Unsurveyed = styled.p`
   }
 `;
 
-
 class PlacesIndex extends Component {
   constructor (props) {
     super(props);
