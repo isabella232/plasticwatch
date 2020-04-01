@@ -17,6 +17,7 @@ const baseStyles = css`
     box-sizing: border-box;
     font-size: ${themeVal('type.base.root')};
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    scroll-behavior: smooth;
   }
   *,
   *::before,

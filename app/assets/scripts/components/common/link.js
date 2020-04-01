@@ -28,4 +28,8 @@ LinkToOsmProfile.propTypes = {
 /**
  * A base Link component ready to be used with styled component without warnings
  */
-export const StyledLink = filterComponentProps(Link, ['hideText', 'useIcon', 'variation']);
+export const StyledLink = filterComponentProps(Link, [
+  'hideText',
+  'useIcon',
+  'variation'
+]);

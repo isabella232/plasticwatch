@@ -49,7 +49,6 @@ const Results = styled.ul`
 
 const ResultsItem = styled.li`
   margin-bottom: ${themeVal('layout.space')};
-  max-width: 28rem;
   text-decoration: none;
 `;
 

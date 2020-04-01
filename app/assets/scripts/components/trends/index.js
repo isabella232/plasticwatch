@@ -12,7 +12,8 @@ import App from '../common/app';
 import { Pie } from '@vx/shape';
 import { Group } from '@vx/group';
 import { LinearGradient } from '@vx/gradient';
-
+import StyledLink from '../common/link';
+import withMobileState from '../common/with-mobile-state';
 import { InnerPanel, Panel } from '../../styles/panel';
 import Button from '../../styles/button/button';
 import { themeVal } from '../../styles/utils/general';
@@ -60,8 +61,7 @@ const PlaceTrends = styled.div`
 const TwoPanelLayout = styled(Panel)`
   ${InnerPanel} {
     margin: 0;
-    justify-content: flex-start;
-    height: calc(100vh - 8rem);
+    min-height: calc(100vh - 8rem);
     &:not(:last-of-type) {
       margin-bottom: 2rem;
     }
@@ -81,9 +81,19 @@ const TwoPanelLayout = styled(Panel)`
 `;
 
 class Trends extends React.Component {
+  constructor () {
+    super();
+    this.topSurveyors = React.createRef();
+    this.cityTrends = React.createRef();
+  }
+
   componentDidMount () {
     this.props.fetchStats();
     this.props.fetchTopSurveyors();
+  }
+
+  scroll (ref) {
+    ref.current.scrollIntoView({ behavior: 'smooth' });
   }
 
   renderTopSurveyors () {
@@ -124,7 +134,7 @@ class Trends extends React.Component {
   }
 
   render () {
-    const { stats } = this.props;
+    const { stats, isMobile } = this.props;
 
     if (!stats.isReady()) return null;
 
@@ -162,7 +172,7 @@ class Trends extends React.Component {
     return (
       <App pageTitle='Trends'>
         <TwoPanelLayout>
-          <InnerPanel>
+          <InnerPanel ref={this.cityTrends}>
             <PlaceTrends>
               <h2>Washington DC</h2>
               <p><strong>{formatThousands(surveyedPlacesCount)}</strong> restaurants surveyed</p>
@@ -244,11 +254,33 @@ class Trends extends React.Component {
                 </span>
               </PanelStat>
             </PanelStats>
-            <Button useIcon='map' variation='base-raised-dark'>
+            <Button
+              useIcon='map'
+              variation='base-raised-dark'
+              as={StyledLink}
+              to='/explore'
+            >
               Show me the map
             </Button>
+            { isMobile &&
+              <Button
+                useIcon={['chevron-down--small', 'after']}
+                variation='primary-raised-light'
+                onClick={() => { this.scroll(this.topSurveyors); }}
+              >
+              Surveyor Trends
+              </Button>}
           </InnerPanel>
-          <InnerPanel>{this.renderTopSurveyors()}</InnerPanel>
+          <InnerPanel ref={this.topSurveyors}>{this.renderTopSurveyors()}
+            { isMobile &&
+                <Button
+                  useIcon={['chevron-up--small', 'after']}
+                  variation='primary-raised-light'
+                  onClick={() => { this.scroll(this.cityTrends); }}
+                >
+                City Trends
+                </Button>}
+          </InnerPanel>
         </TwoPanelLayout>
       </App>
     );
@@ -260,7 +292,8 @@ if (environment !== 'production') {
     stats: T.object,
     topSurveyors: T.object,
     fetchStats: T.func,
-    fetchTopSurveyors: T.func
+    fetchTopSurveyors: T.func,
+    isMobile: T.bool
   };
 }
 
@@ -278,4 +311,4 @@ function dispatcher (dispatch) {
   };
 }
 
-export default connect(mapStateToProps, dispatcher)(Trends);
+export default connect(mapStateToProps, dispatcher)(withMobileState(Trends));
