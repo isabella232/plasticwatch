@@ -10,7 +10,6 @@ import * as actions from '../../../redux/actions/places';
 import withMobileState from '../../common/with-mobile-state';
 import { StyledLink } from '../../common/link';
 
-import collecticon from '../../../styles/collecticons';
 import { themeVal } from '../../../styles/utils/general';
 import { listReset } from '../../../styles/helpers/index';
 
@@ -34,11 +33,10 @@ import {
   PlaceHeader,
   PlaceTitle,
   PlaceType,
-  PlaceRating,
-  PlaceSelect,
-  PlaceSurveys
+  PlaceSelect
 } from '../../../styles/place';
 import { hideScrollbars } from '../../../styles/skins';
+import Rating from './rating';
 
 const Results = styled.ul`
   ${listReset()};
@@ -50,33 +48,6 @@ const Results = styled.ul`
 const ResultsItem = styled.li`
   margin-bottom: ${themeVal('layout.space')};
   text-decoration: none;
-`;
-
-const RatingType = styled.p`
-  font-weight: ${themeVal('type.base.bold')};
-  font-size: 0.8rem;
-  line-height: 1;
-  &::before {
-    display: block;
-    ${({ useIcon }) => collecticon(useIcon)}
-    color: ${({ nonplastic }) =>
-    nonplastic ? themeVal('color.primary') : themeVal('color.danger')};
-    font-size: 3rem;
-    margin-bottom: 0.5rem;
-  }
-`;
-
-const Unsurveyed = styled.p`
-  font-weight: ${themeVal('type.base.bold')};
-  font-size: 0.8rem;
-  line-height: 1;
-  &::before {
-    display: block;
-    useIcon: ${collecticon('circle-question')};
-    color: ${themeVal('color.smoke')};
-    font-size: 3rem;
-    margin-bottom: 0.5rem;
-  }
 `;
 
 class PlacesIndex extends Component {
@@ -156,51 +127,14 @@ class PlacesIndex extends Component {
 
         <Results>
           {getData().map(
-            ({
-              id,
-              properties: {
-                name,
-                amenity,
-                observationCounts: {
-                  total,
-                  total_false: totalFalse,
-                  total_true: totalTrue
-                }
-              }
-            }) => (
+            ({ id, properties: { name, amenity, observationCounts } }) => (
               <ResultsItem key={id} as={StyledLink} to={`/explore/${id}`}>
                 <Place>
                   <PlaceHeader>
-                    {name && (
-                      <PlaceTitle>{name}</PlaceTitle>
-                    )}
-                    {amenity && (
-                      <PlaceType>{amenity}</PlaceType>
-                    )}
+                    {name && <PlaceTitle>{name}</PlaceTitle>}
+                    {amenity && <PlaceType>{amenity}</PlaceType>}
                   </PlaceHeader>
-                  <PlaceRating>
-                    {total > 0 ? (
-                      <>
-                        <RatingType
-                          useIcon={
-                            total > 0
-                              ? totalTrue > totalFalse
-                                ? 'circle-tick'
-                                : 'circle-xmark'
-                              : 'circle-question'
-                          }
-                          nonplastic={totalTrue >= totalFalse}
-                        >
-                          Non-plastic options
-                        </RatingType>
-                        <PlaceSurveys>
-                          {totalTrue} out of {total} people
-                        </PlaceSurveys>
-                      </>
-                    ) : (
-                      <Unsurveyed>Unsurveyed</Unsurveyed>
-                    )}
-                  </PlaceRating>
+                  <Rating observationCounts={observationCounts} />
                   <PlaceSelect />
                 </Place>
               </ResultsItem>
