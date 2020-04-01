@@ -34,10 +34,13 @@ class Map extends Component {
       mapLoaded: false,
       isSourceLoaded: false,
       geojson: {
-        'type': 'FeatureCollection',
-        'features': []
+        type: 'FeatureCollection',
+        features: []
       },
-      filters: [['!=', 'id', ''], ['==', 'id', '']],
+      filters: [
+        ['!=', 'id', ''],
+        ['==', 'id', '']
+      ],
       bounds: null,
       selectedFeature: null
     };
@@ -50,8 +53,8 @@ class Map extends Component {
     let bounds = null;
     if (places.isReady()) {
       geojson = {
-        'type': 'FeatureCollection',
-        'features': places.getData()
+        type: 'FeatureCollection',
+        features: places.getData()
       };
       bounds = geojsonBbox(geojson);
     }
@@ -69,7 +72,12 @@ class Map extends Component {
       filters[1] = ['==', 'id', ''];
     }
 
-    if (_isEqual(state.geojson, geojson) && _isEqual(filters, state.filters) && _isEqual(bounds, state.bounds) && _isEqual(selectedFeature, state.selectedFeature)) {
+    if (
+      _isEqual(state.geojson, geojson) &&
+      _isEqual(filters, state.filters) &&
+      _isEqual(bounds, state.bounds) &&
+      _isEqual(selectedFeature, state.selectedFeature)
+    ) {
       return null;
     }
 
@@ -173,7 +181,7 @@ class Map extends Component {
     });
 
     // ensure the source is added
-    this.map.on('sourcedata', (e) => {
+    this.map.on('sourcedata', e => {
       if (e.sourceId === 'placesSource' && !this.state.isSourceLoaded) {
         this.setState({
           isSourceLoaded: true
@@ -185,8 +193,8 @@ class Map extends Component {
       this.setState({ mapLoaded: true });
       // add the geojson from state as a source to the map
       this.map.addSource('placesSource', {
-        'type': 'geojson',
-        'data': null
+        type: 'geojson',
+        data: null
       });
 
       this.map.addImage('markerQuestion', markerQuestion);
@@ -194,41 +202,44 @@ class Map extends Component {
       this.map.addImage('markerX', markerX);
 
       this.map.addLayer({
-        'id': 'placesLayer',
-        'type': 'symbol',
-        'source': 'placesSource',
-        'layout': {
+        id: 'placesLayer',
+        type: 'symbol',
+        source: 'placesSource',
+        layout: {
           'icon-image': '{icon}',
           'icon-allow-overlap': true,
           'icon-size': 0.4
         },
-        'filter': ['!=', 'id', '']
+        filter: ['!=', 'id', '']
       });
 
       this.map.addLayer({
-        'id': 'selectedPlacesLayer',
-        'type': 'symbol',
-        'source': 'placesSource',
-        'layout': {
+        id: 'selectedPlacesLayer',
+        type: 'symbol',
+        source: 'placesSource',
+        layout: {
           'icon-image': '{icon}',
           'icon-size': 0.4
         },
-        'paint': {
+        paint: {
           'icon-opacity': 0.5
         },
-        'filter': ['==', 'id', '']
+        filter: ['==', 'id', '']
       });
 
       // bind an event to select the symbol
-      this.map.on('click', (e) => {
+      this.map.on('click', e => {
         // add a small buffer so clicks are registered properly
         const width = 10;
         const height = 10;
 
-        const feature = this.map.queryRenderedFeatures([
-          [e.point.x - width / 2, e.point.y - height / 2],
-          [e.point.x + width / 2, e.point.y + height / 2]
-        ], { layers: ['placesLayer'] })[0];
+        const feature = this.map.queryRenderedFeatures(
+          [
+            [e.point.x - width / 2, e.point.y - height / 2],
+            [e.point.x + width / 2, e.point.y + height / 2]
+          ],
+          { layers: ['placesLayer'] }
+        )[0];
 
         if (feature && !this.state.selectedFeature) {
           this.props.history.push(`/explore/${feature.properties.id}`);
@@ -250,7 +261,7 @@ class Map extends Component {
 
     if (hasError()) {
       // handle errors
-      return (<></>);
+      return <></>;
     }
 
     return (
