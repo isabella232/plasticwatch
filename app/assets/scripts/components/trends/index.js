@@ -264,7 +264,7 @@ class Trends extends React.Component {
             </Button>
             { isMobile &&
               <Button
-                useIcon='chevron-down--small'
+                useIcon={['chevron-down--small', 'after']}
                 variation='primary-raised-light'
                 onClick={() => { this.scroll(this.topSurveyors); }}
               >
@@ -274,7 +274,7 @@ class Trends extends React.Component {
           <InnerPanel ref={this.topSurveyors}>{this.renderTopSurveyors()}
             { isMobile &&
                 <Button
-                  useIcon='chevron-up--small'
+                  useIcon={['chevron-up--small', 'after']}
                   variation='primary-raised-light'
                   onClick={() => { this.scroll(this.cityTrends); }}
                 >
