@@ -114,7 +114,7 @@ class Map extends Component {
       this.updateFilter();
 
       if (!this.props.placeId && this.state.bounds) {
-        this.map.fitBounds(this.state.bounds);
+        this.map.fitBounds(this.state.bounds, { padding: 50 });
       }
     }
   }
