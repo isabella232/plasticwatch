@@ -40,9 +40,13 @@ class Rating extends Component {
                     : 'circle-xmark'
                   : 'circle-question'
               }
-              nonplastic={totalTrue >= totalFalse}
+              nonplastic={totalTrue > totalFalse}
             >
-              Non-plastic options
+              {
+                totalTrue > totalFalse
+                  ? <>Plastic-free available</>
+                  : <>Not plastic-free</>
+              }
             </RatingType>
             <PlaceSurveys>
               {totalTrue} out of {total} people
