@@ -38,7 +38,8 @@ class Map extends Component {
         'features': []
       },
       filters: [['!=', 'id', ''], ['==', 'id', '']],
-      bounds: null
+      bounds: null,
+      selectedFeature: null
     };
   }
 
@@ -56,16 +57,19 @@ class Map extends Component {
     }
 
     let filters = state.filters;
+    let selectedFeature = false;
     if (match && place.isReady()) {
       filters[0] = ['==', 'id', placeId];
       filters[1] = ['!=', 'id', placeId];
-      bounds = geojsonBbox(place.getData());
+      const feature = place.getData();
+      selectedFeature = feature;
+      bounds = geojsonBbox(feature);
     } else {
       filters[0] = ['!=', 'id', ''];
       filters[1] = ['==', 'id', ''];
     }
 
-    if (_isEqual(state.geojson, geojson) && _isEqual(filters, state.filters) && _isEqual(bounds, state.bounds)) {
+    if (_isEqual(state.geojson, geojson) && _isEqual(filters, state.filters) && _isEqual(bounds, state.bounds) && _isEqual(selectedFeature, state.selectedFeature)) {
       return null;
     }
 
@@ -79,7 +83,8 @@ class Map extends Component {
     return {
       geojson,
       filters,
-      bounds
+      bounds,
+      selectedFeature
     };
   }
 
@@ -99,10 +104,9 @@ class Map extends Component {
     if (this.state.isSourceLoaded) {
       this.updateData();
       this.updateFilter();
-      if (this.state.bounds) {
-        this.map.fitBounds(this.state.bounds, {
-          maxZoom: 15
-        });
+
+      if (!this.state.selectedFeature && this.state.bounds) {
+        this.map.fitBounds(this.state.bounds);
       }
     }
   }
