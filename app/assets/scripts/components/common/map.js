@@ -105,7 +105,7 @@ class Map extends Component {
       this.updateData();
       this.updateFilter();
 
-      if (!this.state.selectedFeature && this.state.bounds) {
+      if (!this.props.placeId && this.state.bounds) {
         this.map.fitBounds(this.state.bounds);
       }
     }
