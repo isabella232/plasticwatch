@@ -147,7 +147,11 @@ class PlacesIndex extends Component {
             ({
               id,
               properties,
-              observationCounts: { total_true: totalTrue, total_false: totalFalse, total }
+              observationCounts: {
+                total_true: totalTrue,
+                total_false: totalFalse,
+                total
+              }
             }) => (
               <ResultsItem key={id} as={StyledLink} to={`/explore/${id}`}>
                 <Place>
@@ -170,7 +174,7 @@ class PlacesIndex extends Component {
                                 : 'circle-xmark'
                               : 'circle-question'
                           }
-                          nonplastic
+                          nonplastic={totalTrue >= totalFalse}
                         >
                           Non-plastic options
                         </RatingType>
