@@ -67,6 +67,20 @@ const RatingType = styled.p`
   }
 `;
 
+const Unsurveyed = styled.p`
+  font-weight: ${themeVal('type.base.bold')};
+  font-size: 0.8rem;
+  line-height: 1;
+  &::before {
+    display: block;
+    useIcon: ${collecticon('circle-question')};
+    color: ${themeVal('color.smoke')};
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+  }
+`;
+
+
 class PlacesIndex extends Component {
   constructor (props) {
     super(props);
@@ -164,7 +178,7 @@ class PlacesIndex extends Component {
                     )}
                   </PlaceHeader>
                   <PlaceRating>
-                    {total > 0 ? (
+                    {total === 0 ? (
                       <>
                         <RatingType
                           useIcon={
@@ -183,7 +197,7 @@ class PlacesIndex extends Component {
                         </PlaceSurveys>
                       </>
                     ) : (
-                      <div>Unsurveyed</div>
+                      <Unsurveyed>Unsurveyed</Unsurveyed>
                     )}
                   </PlaceRating>
                   <PlaceSelect />
