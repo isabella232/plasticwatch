@@ -143,27 +143,50 @@ class PlacesIndex extends Component {
         </Filters>
 
         <Results>
-          {getData().map(({ id, properties }) => (
-            <ResultsItem key={id} as={StyledLink} to={`/explore/${id}`}>
-              <Place>
-                <PlaceHeader>
-                  {properties.name && (
-                    <PlaceTitle>{properties.name}</PlaceTitle>
-                  )}
-                  {properties.amenity && (
-                    <PlaceType>{properties.amenity}</PlaceType>
-                  )}
-                </PlaceHeader>
-                <PlaceRating>
-                  <RatingType useIcon='circle-tick' nonplastic>
-                    Non-plastic options
-                  </RatingType>
-                  <PlaceSurveys>12 out of 16 people</PlaceSurveys>
-                </PlaceRating>
-                <PlaceSelect />
-              </Place>
-            </ResultsItem>
-          ))}
+          {getData().map(
+            ({
+              id,
+              properties,
+              observationCounts: { total_true: totalTrue, total_false: totalFalse, total }
+            }) => (
+              <ResultsItem key={id} as={StyledLink} to={`/explore/${id}`}>
+                <Place>
+                  <PlaceHeader>
+                    {properties.name && (
+                      <PlaceTitle>{properties.name}</PlaceTitle>
+                    )}
+                    {properties.amenity && (
+                      <PlaceType>{properties.amenity}</PlaceType>
+                    )}
+                  </PlaceHeader>
+                  <PlaceRating>
+                    {total > 0 ? (
+                      <>
+                        <RatingType
+                          useIcon={
+                            total > 0
+                              ? totalTrue > totalFalse
+                                ? 'circle-tick'
+                                : 'circle-xmark'
+                              : 'circle-question'
+                          }
+                          nonplastic
+                        >
+                          Non-plastic options
+                        </RatingType>
+                        <PlaceSurveys>
+                          {totalTrue} out of {total} people
+                        </PlaceSurveys>
+                      </>
+                    ) : (
+                      <div>Unsurveyed</div>
+                    )}
+                  </PlaceRating>
+                  <PlaceSelect />
+                </Place>
+              </ResultsItem>
+            )
+          )}
         </Results>
       </>
     );
