@@ -20,7 +20,6 @@ import Explore from './components/explore';
 import Trends from './components/trends';
 import Auth from './components/auth';
 import UsersIndex from './components/users';
-import SurveysIndex from './components/surveys';
 import UhOh from './components/uhoh';
 import ConfirmationPrompt from './components/common/confirmation-prompt';
 import ProfileListener from './components/common/profile-listener';
@@ -44,7 +43,6 @@ const Root = () => (
             <Route exact path='/login/redirect' component={Auth} />
             <Route exact path='/login' component={Auth} />
             <Route exact path='/logout' component={Auth} />
-            <Route exact path='/surveys' component={SurveysIndex} />
             <Route exact path='/users' component={UsersIndex} />
             <Route path='*' component={UhOh} />
           </Switch>

@@ -338,17 +338,6 @@ class PageHeader extends React.Component {
             </li>
             {this.props.isLoggedIn ? (
               <>
-                <li>
-                  <GlobalMenuLink
-                    as={NavLinkFilter}
-                    exact
-                    to='/surveys'
-                    useIcon='page-tick'
-                    title='View surveys page'
-                  >
-                    <span>Surveys</span>
-                  </GlobalMenuLink>
-                </li>
                 {this.props.isAdmin && (
                   <li>
                     <GlobalMenuLink
@@ -408,17 +397,6 @@ class PageHeader extends React.Component {
         </li>
         {this.props.isLoggedIn ? (
           <>
-            <li>
-              <GlobalMenuLink
-                as={NavLinkFilter}
-                exact
-                to='/surveys'
-                useIcon='page-tick'
-                title='View surveys page'
-              >
-                <span>Surveys</span>
-              </GlobalMenuLink>
-            </li>
             {this.props.isAdmin && (
               <li>
                 <GlobalMenuLink
