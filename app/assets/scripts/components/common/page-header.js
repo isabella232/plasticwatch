@@ -305,17 +305,6 @@ class PageHeader extends React.Component {
               <GlobalMenuLink
                 as={NavLinkFilter}
                 exact
-                to='/sandbox'
-                useIcon='map'
-                title='Sandbox'
-              >
-                <span>Sandbox</span>
-              </GlobalMenuLink>
-            </li>
-            <li>
-              <GlobalMenuLink
-                as={NavLinkFilter}
-                exact
                 to='/about'
                 useIcon='circle-information'
                 title='View about page'
