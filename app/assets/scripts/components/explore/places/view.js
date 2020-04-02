@@ -16,7 +16,7 @@ import {
 } from '../../../styles/place';
 import { InnerPanel } from '../../../styles/panel';
 import Button from '../../../styles/button/button';
-import StyledLink from '../../common/link';
+import { StyledLink } from '../../common/link';
 
 import { InpageBackLink } from '../../common/inpage';
 import withMobileState from '../../common/with-mobile-state';

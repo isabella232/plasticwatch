@@ -12,7 +12,7 @@ import App from '../common/app';
 import { Pie } from '@vx/shape';
 import { Group } from '@vx/group';
 import { LinearGradient } from '@vx/gradient';
-import StyledLink from '../common/link';
+import { StyledLink } from '../common/link';
 import withMobileState from '../common/with-mobile-state';
 import { InnerPanel, Panel } from '../../styles/panel';
 import Button from '../../styles/button/button';
