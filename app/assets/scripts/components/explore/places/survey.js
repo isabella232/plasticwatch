@@ -16,7 +16,7 @@ import { wrapApiResult, getFromState, isLoggedIn } from '../../../redux/utils';
 
 import toasts from '../../common/toasts';
 
-import StyledLink from '../../common/link';
+import { StyledLink } from '../../common/link';
 
 import { PlaceTitle } from '../../../styles/place';
 import Button from '../../../styles/button/button';

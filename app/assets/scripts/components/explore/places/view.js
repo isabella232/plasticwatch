@@ -9,20 +9,18 @@ import { connect } from 'react-redux';
 import {
   PlaceMeta,
   PlaceHeader,
-  PlaceRating,
-  PlaceSurveys,
   PlaceDetails,
   PlaceTitle,
   PlaceType,
-  RatingType,
   PlaceComment
 } from '../../../styles/place';
 import { InnerPanel } from '../../../styles/panel';
 import Button from '../../../styles/button/button';
-import StyledLink from '../../common/link';
+import { StyledLink } from '../../common/link';
 
 import { InpageBackLink } from '../../common/inpage';
 import withMobileState from '../../common/with-mobile-state';
+import Rating from './rating';
 
 class PlacesView extends Component {
   async componentDidMount () {
@@ -53,14 +51,11 @@ class PlacesView extends Component {
           <PlaceMeta>
             <PlaceHeader>
               {properties.name && <PlaceTitle>{properties.name}</PlaceTitle>}
-              {properties.amenity && <PlaceType>{properties.amenity}</PlaceType>}
+              {properties.amenity && (
+                <PlaceType>{properties.amenity}</PlaceType>
+              )}
             </PlaceHeader>
-            <PlaceRating>
-              <RatingType useIcon='circle-tick' nonplastic>
-                Non-plastic options
-              </RatingType>
-              <PlaceSurveys>12 out of 16 people</PlaceSurveys>
-            </PlaceRating>
+            <Rating observationCounts={properties.observationCounts} />
           </PlaceMeta>
           <Button
             variation='primary-raised-dark'
@@ -137,4 +132,7 @@ function dispatcher (dispatch) {
   };
 }
 
-export default connect(mapStateToProps, dispatcher)(withMobileState(PlacesView));
+export default connect(
+  mapStateToProps,
+  dispatcher
+)(withMobileState(PlacesView));

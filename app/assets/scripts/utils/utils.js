@@ -162,11 +162,11 @@ export function formatThousands (
  * @param {object} geojson The geojson feature
  */
 export function getMarker (geojson) {
-  if (geojson.observationCounts.total === 0) {
+  if (geojson.properties.observationCounts.total === 0) {
     return 'markerQuestion';
   }
 
-  const isPlasticFree = geojson.observationCounts.total_true > geojson.observationCounts.total_false;
+  const isPlasticFree = geojson.properties.observationCounts.total_true > geojson.properties.observationCounts.total_false;
 
   if (isPlasticFree) {
     return 'markerTick';
