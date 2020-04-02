@@ -12,7 +12,7 @@ import App from '../common/app';
 import { Pie } from '@vx/shape';
 import { Group } from '@vx/group';
 import { LinearGradient } from '@vx/gradient';
-import { StyledLink } from '../common/link';
+import { StyledLink } from '../common/link';
 import withMobileState from '../common/with-mobile-state';
 import { InnerPanel, Panel } from '../../styles/panel';
 import Button from '../../styles/button/button';
@@ -175,7 +175,10 @@ class Trends extends React.Component {
           <InnerPanel ref={this.cityTrends}>
             <PlaceTrends>
               <h2>Washington DC</h2>
-              <p><strong>{formatThousands(surveyedPlacesCount)}</strong> restaurants surveyed</p>
+              <p>
+                <strong>{formatThousands(surveyedPlacesCount)}</strong>
+                restaurants surveyed
+              </p>
               <svg width='100%' height={barHeight}>
                 <rect
                   x={0}
@@ -195,14 +198,17 @@ class Trends extends React.Component {
                 />
               </svg>
               <p>
-                <strong>{percentSurveyed}%</strong> of {formatThousands(placesCount)} Washington DC restaurants
-                on OpenStreetMap
+                <strong>{percentSurveyed}%</strong> of
+                {formatThousands(placesCount)} Washington DC restaurants on
+                OpenStreetMap
               </p>
             </PlaceTrends>
             <svg width={pieSize} height={pieSize}>
               <LinearGradient id='gradient' from='#01A1D7' to='#104271' />;
               <Group top={pieSize / 2} left={pieSize / 2}>
-                <text textAnchor='middle' y='0.5em'>{round(percentNonPlastic)}%</text>
+                <text textAnchor='middle' y='0.5em'>
+                  {round(percentNonPlastic)}%
+                </text>
                 <Pie
                   data={pieData}
                   pieValue={d => d.value}
@@ -229,8 +235,12 @@ class Trends extends React.Component {
               </Group>
             </svg>
             <p>
-              <strong>{round(percentNonPlastic)}% ({formatThousands(nonPlasticPlacesCount)} of {formatThousands(surveyedPlacesCount)})</strong> of surveyed Washington DC
-              restaurants offer plastic-free options
+              <strong>
+                {round(percentNonPlastic)}% (
+                {formatThousands(nonPlasticPlacesCount)} of
+                {formatThousands(surveyedPlacesCount)})
+              </strong>
+              of surveyed Washington DC restaurants offer plastic-free options
             </p>
             <PanelStats>
               <PanelStat>
@@ -262,24 +272,31 @@ class Trends extends React.Component {
             >
               Show me the map
             </Button>
-            { isMobile &&
+            {isMobile && (
               <Button
                 useIcon={['chevron-down--small', 'after']}
                 variation='primary-raised-light'
-                onClick={() => { this.scroll(this.topSurveyors); }}
+                onClick={() => {
+                  this.scroll(this.topSurveyors);
+                }}
               >
-              Surveyor Trends
-              </Button>}
+                Surveyor Trends
+              </Button>
+            )}
           </InnerPanel>
-          <InnerPanel ref={this.topSurveyors}>{this.renderTopSurveyors()}
-            { isMobile &&
-                <Button
-                  useIcon={['chevron-up--small', 'after']}
-                  variation='primary-raised-light'
-                  onClick={() => { this.scroll(this.cityTrends); }}
-                >
+          <InnerPanel ref={this.topSurveyors}>
+            {this.renderTopSurveyors()}
+            {isMobile && (
+              <Button
+                useIcon={['chevron-up--small', 'after']}
+                variation='primary-raised-light'
+                onClick={() => {
+                  this.scroll(this.cityTrends);
+                }}
+              >
                 City Trends
-                </Button>}
+              </Button>
+            )}
           </InnerPanel>
         </TwoPanelLayout>
       </App>
