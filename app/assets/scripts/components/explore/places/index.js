@@ -37,6 +37,7 @@ import {
 } from '../../../styles/place';
 import { hideScrollbars } from '../../../styles/skins';
 import Rating from './rating';
+import { Panel } from '../../../styles/panel';
 
 const Results = styled.ul`
   ${listReset()};
@@ -78,8 +79,10 @@ class PlacesIndex extends Component {
 
   render () {
     const { filtersOpened } = this.state;
-    const { isMobile } = this.props;
+    const { isMobile, location } = this.props;
     const { isReady, getData, hasError } = this.props.places;
+
+    if (isMobile && location.search.indexOf('viewAs=list') === -1) return null;
 
     if (!isReady()) {
       return <div>Loading...</div>;
@@ -90,7 +93,7 @@ class PlacesIndex extends Component {
     }
 
     return (
-      <>
+      <Panel>
         <Filters>
           <FilterToolbar>
             <InputWrapper>
@@ -141,7 +144,7 @@ class PlacesIndex extends Component {
             )
           )}
         </Results>
-      </>
+      </Panel>
     );
   }
 }
@@ -150,7 +153,8 @@ if (environment !== 'production') {
   PlacesIndex.propTypes = {
     places: T.object,
     fetchPlaces: T.func,
-    isMobile: T.bool
+    isMobile: T.bool,
+    location: T.object
   };
 }
 

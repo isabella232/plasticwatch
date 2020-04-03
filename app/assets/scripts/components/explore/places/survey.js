@@ -40,6 +40,7 @@ import {
   showGlobalLoading,
   hideGlobalLoading
 } from '../../common/global-loading';
+import { Panel } from '../../../styles/panel';
 
 const PanelForm = styled(Form)`
   display: flex;
@@ -51,7 +52,7 @@ const PanelForm = styled(Form)`
   }
 `;
 
-const InnerSurveyForm = props => {
+const InnerSurveyForm = (props) => {
   const {
     values,
     setFieldValue,
@@ -110,8 +111,10 @@ const InnerSurveyForm = props => {
   return (
     <PanelForm onSubmit={handleSubmit}>
       <FormLegend>Name</FormLegend>
-      {place.properties.name && <PlaceTitle>{place.properties.name}</PlaceTitle>}
-      {survey.questions.map(q => renderQuestion(q))}
+      {place.properties.name && (
+        <PlaceTitle>{place.properties.name}</PlaceTitle>
+      )}
+      {survey.questions.map((q) => renderQuestion(q))}
       <FormGroupFooter>
         <Button
           variation='primary-raised-dark'
@@ -148,7 +151,7 @@ if (environment !== 'production') {
 }
 
 const SurveyForm = withFormik({
-  mapPropsToValues: props => {
+  mapPropsToValues: (props) => {
     return props.survey.questions.reduce((values, q) => {
       let value;
       switch (q.type) {
@@ -241,7 +244,12 @@ class SubmitSurvey extends Component {
 
     // Check if survey was already answered
     if (surveyAnswers.getData()) {
-      return <div>You have already submitted a survey for this location. Only 1 user survey per location is currently permitted.</div>;
+      return (
+        <div>
+          You have already submitted a survey for this location. Only 1 user
+          survey per location is currently permitted.
+        </div>
+      );
     }
 
     const data = {
@@ -250,27 +258,29 @@ class SubmitSurvey extends Component {
     };
 
     return (
-      <InnerPanel>
-        <SurveyForm
-          survey={data.survey}
-          place={data.place}
-          handleSubmit={values =>
-            this.postSurvey({
-              surveyId: data.survey.id,
-              osmObject: data.place,
-              createdAt: new Date().toISOString(),
-              answers: data.survey.questions.map(q => {
-                return {
-                  questionId: q.id,
-                  questionVersion: q.version,
-                  answer: {
-                    value: values[q.id]
-                  }
-                };
-              })
-            })}
-        />
-      </InnerPanel>
+      <Panel>
+        <InnerPanel>
+          <SurveyForm
+            survey={data.survey}
+            place={data.place}
+            handleSubmit={(values) =>
+              this.postSurvey({
+                surveyId: data.survey.id,
+                osmObject: data.place,
+                createdAt: new Date().toISOString(),
+                answers: data.survey.questions.map((q) => {
+                  return {
+                    questionId: q.id,
+                    questionVersion: q.version,
+                    answer: {
+                      value: values[q.id]
+                    }
+                  };
+                })
+              })}
+          />
+        </InnerPanel>
+      </Panel>
     );
   }
 }
