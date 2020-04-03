@@ -4,14 +4,13 @@ import styled from 'styled-components';
 import { themeVal } from '../../styles/utils/general';
 
 import Heading from '../../styles/type/heading';
-import { StyledLink } from '../common/link';
-import Button from '../../styles/button/button';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from '../common/modal';
 
 const IntroSubHeading = styled(Heading)`
   &:after {
     content: "";
-    width: 16rem;
+    width: 12rem;
+    max-width: 22vw;
     display: block;
     margin: 0.25rem 0;
     border: 0.25rem solid ${themeVal('color.primary')};
@@ -127,14 +126,6 @@ export default class AboutModal extends Component {
         }
         footerComponent={
           <ModalFooter>
-            <Button
-              variation='base-raised-dark'
-              useIcon='map'
-              as={StyledLink}
-              to='/explore'
-            >
-              Show me the map!
-            </Button>
             <PartnerCards>
               <dt>A project by</dt>
               <PartnerCard
