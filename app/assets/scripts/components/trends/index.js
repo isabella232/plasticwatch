@@ -61,7 +61,7 @@ const PlaceTrends = styled.div`
 const TwoPanelLayout = styled(Panel)`
   ${InnerPanel} {
     margin: 0;
-    min-height: calc(100vh - 8rem);
+    height: calc(100vh - 8.5rem);
     &:not(:last-of-type) {
       margin-bottom: 2rem;
     }

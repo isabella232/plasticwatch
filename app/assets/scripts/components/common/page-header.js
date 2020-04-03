@@ -22,6 +22,7 @@ import { environment, apiUrl, appPathname } from '../../config';
 
 import { showGlobalLoading, hideGlobalLoading } from '../common/global-loading';
 import withMobileState from './with-mobile-state';
+import { showAboutModal } from './about-modal';
 
 const _rgba = stylizeFunction(rgba);
 
@@ -62,8 +63,8 @@ const PageTitle = styled.h1`
   padding: 0 1rem;
   margin: -1rem 0;
   font-weight: ${themeVal('type.heading.black')};
-  svg {
-    margin-right: 0.5rem;
+  img {
+    max-width: 5.5rem;
   }
   a {
     color: inherit;
@@ -82,6 +83,8 @@ const PageTitle = styled.h1`
   }
   ${media.mediumUp`
     padding: 1rem 2rem 1rem 0rem;
+    min-height: 4rem;
+    min-width: 12rem;
     background: linear-gradient(160deg, ${themeVal(
     'color.secondary'
   )}, ${themeVal('color.base')} 70%);
@@ -305,17 +308,6 @@ class PageHeader extends React.Component {
               <GlobalMenuLink
                 as={NavLinkFilter}
                 exact
-                to='/about'
-                useIcon='circle-information'
-                title='View about page'
-              >
-                <span>About</span>
-              </GlobalMenuLink>
-            </li>
-            <li>
-              <GlobalMenuLink
-                as={NavLinkFilter}
-                exact
                 to='/explore'
                 useIcon='map'
                 isActive={(match, { pathname, search }) =>
@@ -386,9 +378,7 @@ class PageHeader extends React.Component {
       <MobileMenu>
         <li>
           <GlobalMenuLink
-            as={NavLinkFilter}
-            exact
-            to='/about'
+            onClick={showAboutModal}
             useIcon='circle-information'
             title='View about page'
           >
@@ -445,7 +435,7 @@ class PageHeader extends React.Component {
         <PageHeadInner>
           <PageTitle>
             <Link to='/' title='Go to homepage'>
-              OCEANA
+              <img src='../../../assets/graphics/content/Oceana_White.svg' />
               <span>
                 Plastic<strong>Watch</strong>
               </span>

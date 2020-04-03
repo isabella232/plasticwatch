@@ -15,7 +15,6 @@ import history from './utils/history';
 import GlobalStyles from './styles/global';
 
 import Home from './components/home';
-import About from './components/about';
 import Explore from './components/explore';
 import Trends from './components/trends';
 import Auth from './components/auth';
@@ -36,7 +35,6 @@ const Root = () => (
           <GlobalStyles />
           <Switch>
             <Route exact path='/' component={Home} />
-            <Route exact path='/about' component={About} />
             <Route exact path='/trends' component={Trends} />
             <Route exact path='/explore' component={Explore} />
             <Route path='/explore/:id' component={Explore} />

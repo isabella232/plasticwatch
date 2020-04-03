@@ -126,15 +126,16 @@ export const ModalBody = styled.div`
 
 export const ModalFooter = styled.footer`
   display: flex;
-  flex-flow: row nowrap;
+  flex-flow: column nowrap;
   align-items: center;
+  justify-content: center;
   background: #fff;
   padding: ${multiply(themeVal('layout.space'), 2)};
   border-radius: 0 0 ${themeVal('shape.rounded')} ${themeVal('shape.rounded')};
 
   > a,
   > button {
-    margin-right: ${themeVal('layout.space')};
+    margin-bottom: ${themeVal('layout.space')};
     min-width: 7rem;
   }
 
