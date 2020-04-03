@@ -110,7 +110,7 @@ const InnerSurveyForm = props => {
   return (
     <PanelForm onSubmit={handleSubmit}>
       <FormLegend>Name</FormLegend>
-      {place.name && <PlaceTitle>{place.name}</PlaceTitle>}
+      {place.properties.name && <PlaceTitle>{place.properties.name}</PlaceTitle>}
       {survey.questions.map(q => renderQuestion(q))}
       <FormGroupFooter>
         <Button
