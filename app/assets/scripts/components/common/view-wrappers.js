@@ -1,6 +1,44 @@
 import styled from 'styled-components';
 import { cardSkin } from '../../styles/skins';
 import { themeVal } from '../../styles/utils/general';
+import media from '../../styles/utils/media-queries';
+import { Panel } from '../../styles/panel';
+
+export const SidebarWrapper = styled.div`
+  display: flex;
+  height: 100%;
+  flex-flow: column nowrap;
+  > div:first-child{
+    z-index: 10;
+  }
+  > div:last-child {
+    order: -1;
+    flex: 1;
+    position: sticky;
+    top: 0;
+  }
+  ${media.mediumUp`
+    display: grid;
+    height: 100%;
+    grid-template-columns: 24rem 1fr;
+    grid-template-rows: 1fr;
+    margin: 0;
+    > * {
+      grid-row: 1;
+      grid-column: initial;
+    }
+    > div:last-child {
+      height: initial;
+      order: initial;      
+    }
+  `}
+  ${media.largeUp`
+    grid-template-columns: 36rem 1fr;
+  `}
+  >${Panel} {
+    margin-bottom: -48vh;
+  }
+`;
 
 export const ContentWrapper = styled.div`
   display: flex;
