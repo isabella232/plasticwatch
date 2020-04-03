@@ -127,14 +127,14 @@ class PlacesIndex extends Component {
 
         <Results>
           {getData().map(
-            ({ id, properties: { name, amenity, observationCounts } }) => (
+            ({ id, properties: { name, amenity, observations } }) => (
               <ResultsItem key={id} as={StyledLink} to={`/explore/${id}`}>
                 <Place>
                   <PlaceHeader>
                     {name && <PlaceTitle>{name}</PlaceTitle>}
                     {amenity && <PlaceType>{amenity}</PlaceType>}
                   </PlaceHeader>
-                  <Rating observationCounts={observationCounts} />
+                  <Rating observations={observations} />
                   <PlaceSelect />
                 </Place>
               </ResultsItem>

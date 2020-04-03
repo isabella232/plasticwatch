@@ -31,7 +31,7 @@ export function fetchPlaces (params) {
   const searchParams = qs.stringify(params);
   return fetchDispatchFactory({
     statePath: ['places', 'list'],
-    url: `${apiUrl}/osmobjects?${searchParams}`,
+    url: `${apiUrl}/osmobjects?limit=100&${searchParams}`,
     requestFn: requestPlaces,
     receiveFn: receivePlaces
   });

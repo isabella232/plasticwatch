@@ -25,9 +25,9 @@ class Rating extends Component {
   render () {
     const {
       total,
-      total_true: totalTrue,
-      total_false: totalFalse
-    } = this.props.observationCounts;
+      totalTrue,
+      totalFalse
+    } = this.props.observations;
     return (
       <PlaceRating>
         {total > 0 ? (
@@ -49,7 +49,7 @@ class Rating extends Component {
               }
             </RatingType>
             <PlaceSurveys>
-              {totalTrue} out of {total} people
+              {totalTrue > totalFalse ? totalTrue : totalFalse} out of {total} people
             </PlaceSurveys>
           </>
         ) : (
@@ -62,7 +62,7 @@ class Rating extends Component {
 
 if (environment !== 'production') {
   Rating.propTypes = {
-    observationCounts: T.object
+    observations: T.object
   };
 }
 
