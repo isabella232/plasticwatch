@@ -13,6 +13,7 @@ import withMobileState from '../common/with-mobile-state';
 import { appTitle, appDescription, environment } from '../../config';
 import media from '../../styles/utils/media-queries';
 import { hideScrollbars } from '../../styles/skins';
+import AboutModal from './about-modal';
 
 const Page = styled.div`
   display: grid;
@@ -39,6 +40,7 @@ class App extends Component {
     return (
       <Page className={c('page', className)}>
         <GlobalLoading />
+        <AboutModal />
         <MetaTags title={`${title}${appTitle} `} description={appDescription} />
         <PageHeader pageTitle='Plastic Watch' />
         <PageBody role='main'>{children}</PageBody>

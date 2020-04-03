@@ -22,6 +22,7 @@ import { environment, apiUrl, appPathname } from '../../config';
 
 import { showGlobalLoading, hideGlobalLoading } from '../common/global-loading';
 import withMobileState from './with-mobile-state';
+import { showAboutModal } from './about-modal';
 
 const _rgba = stylizeFunction(rgba);
 
@@ -399,9 +400,7 @@ class PageHeader extends React.Component {
       <MobileMenu>
         <li>
           <GlobalMenuLink
-            as={NavLinkFilter}
-            exact
-            to='/about'
+            onClick={showAboutModal}
             useIcon='circle-information'
             title='View about page'
           >
