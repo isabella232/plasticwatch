@@ -1,5 +1,6 @@
 'use strict';
 
 module.exports = {
-  environment: 'staging'
+  environment: 'staging',
+  baseUrl: 'http://plasticwatch.surge.sh'
 };

@@ -1,10 +1,10 @@
 {
-  "name": "wikiplastic-website",
+  "name": "plasticwatch-website",
   "version": "0.0.0",
-  "description": "Wikiplastic Website",
+  "description": "PlasticWatch Website",
   "repository": {
     "type": "git",
-    "url": "https://github.com/developmentseed/wikiplastic.git"
+    "url": "https://github.com/developmentseed/plasticwatch.git"
   },
   "author": {
     "name": "Development Seed",
@@ -12,9 +12,9 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/developmentseed/wikiplastic/issues"
+    "url": "https://github.com/developmentseed/plasticwatch/issues"
   },
-  "homepage": "https://github.com/developmentseed/wikiplastic",
+  "homepage": "https://github.com/developmentseed/plasticwatch",
   "scripts": {
     "postinstall": "[ -f app/assets/scripts/config/local.js ] || echo \"module.exports = {\n  environment: 'development'\n};\" > app/assets/scripts/config/local.js",
     "serve": "DS_ENV=development NODE_ENV=development gulp serve",

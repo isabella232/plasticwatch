@@ -5,7 +5,7 @@ import qs from 'qs';
 /*
  * Fetch survey metadata.
  *
- * The Observe API has support to multiple surveys, but in Wikiplastic context
+ * The Observe API has support to multiple surveys, but in PlasticWatch context
  * only one survey is allowed. So the client will fetch data from /surveys endpoint
  * and use the first result, if available.
  */
