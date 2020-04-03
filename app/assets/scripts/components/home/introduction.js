@@ -14,15 +14,16 @@ const IntroPanel = styled(InnerPanel)`
   margin: 0;
   padding: 2rem;
   align-items: flex-start;
-  justify-content: flex-end;
-  grid-row: 2/5;
   z-index: 10;
   border-radius: 0.5rem;
-  border: 2px solid ${themeVal('color.shadow')};
-  box-shadow: 0 -2px 12px 1px ${themeVal('color.shadow')};
+  border: 2px solid ${themeVal('color.baseLight')};
+  box-shadow: 0 -2px 12px 1px ${themeVal('color.smoke')};
   ${media.mediumUp`
+    justify-content: flex-end;
     padding-bottom: 4rem;
     background: ${themeVal('color.background')};
+    border: none;
+    border-right: 1px solid ${themeVal('color.smoke')};
     &:before {
       content: '';
       width: 100%;
@@ -63,20 +64,29 @@ const ModalButton = styled(Button)`
 
 const AboutLinks = styled.div`
   display: flex;
-  flex-flow: row nowrap;
+  align-items: flex-start;
+  flex-flow: column nowrap;
   justify-content: space-between;
-  align-items: center;
   ${Button} {
     flex: 1;
-    margin-right: 1rem;
+    margin-bottom: 1rem;
     min-width: inherit;
   }
+  ${media.mediumUp`
+    align-items: center;
+    flex-flow: row nowrap;
+    ${Button} {
+      margin-bottom: 0;
+      margin-right: 1rem;
+    }
+  `};
 `;
 
 const IntroSubHeading = styled(Heading)`
   &:after {
     content: "";
-    width: 16rem;
+    width: 12rem;
+    max-width: 22vw;
     display: block;
     margin: 0.25rem 0;
     border: 0.25rem solid ${themeVal('color.primary')};

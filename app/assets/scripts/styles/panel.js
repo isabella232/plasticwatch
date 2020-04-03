@@ -14,6 +14,7 @@ export const Panel = styled.section`
     flex-flow: column nowrap;
     max-height: calc(100vh - 4rem);
     overflow-y: scroll;
+    border-right: 1px solid ${themeVal('color.smoke')};
   `}
   ${media.largeUp`
     padding: 2rem;
