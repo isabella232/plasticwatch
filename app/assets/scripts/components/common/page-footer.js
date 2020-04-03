@@ -17,7 +17,7 @@ const PageFoot = styled.footer`
   box-shadow: 0 -4px 6px ${themeVal('color.shadow')};
   font-size: 0.875rem;
   line-height: 1rem;
-  z-index: 10002;
+  z-index: 9002;
 
   /* Visually hidden */
   ${({ isHidden }) =>
@@ -50,6 +50,7 @@ const FooterMenu = styled.ul`
 
   > li {
     width: 4rem;
+    margin: 0.25rem 0;
   }
 `;
 
@@ -59,6 +60,7 @@ const FooterMenuLink = styled.a.attrs({
   position: relative;
   height: 100%;
   display: flex;
+  padding-top: 0.25rem;
   flex-flow: column nowrap;
   justify-content: center;
   align-items: center;
