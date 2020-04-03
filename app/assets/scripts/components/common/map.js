@@ -19,13 +19,13 @@ const MapContainer = styled.div`
 `;
 
 const markerQuestion = new Image(45, 60);
-markerQuestion.src = './assets/icons/marker-question.png';
+markerQuestion.src = './assets/graphics/map/marker-question.png';
 
 const markerTick = new Image(45, 60);
-markerTick.src = './assets/icons/marker-tick.png';
+markerTick.src = './assets/graphics/map/marker-tick.png';
 
 const markerX = new Image(45, 60);
-markerX.src = './assets/icons/marker-xmark.png';
+markerX.src = './assets/graphics/map/marker-xmark.png';
 
 class Map extends Component {
   constructor (props) {
