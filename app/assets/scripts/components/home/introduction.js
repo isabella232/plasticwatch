@@ -8,6 +8,8 @@ import media from '../../styles/utils/media-queries';
 import { themeVal } from '../../styles/utils/general';
 import { showAboutModal } from '../common/about-modal';
 
+import { apiUrl, appPathname } from '../../config';
+
 const IntroPanel = styled(InnerPanel)`
   margin: 0;
   padding: 2rem;
@@ -82,6 +84,29 @@ const IntroSubHeading = styled(Heading)`
 `;
 
 export default class Introduction extends Component {
+  async login () {
+    // Setting for popup window, parsed into DOMString
+    const w = 600;
+    const h = 550;
+    const settings = [
+      ['width', w],
+      ['height', h],
+      ['left', screen.width / 2 - w / 2],
+      ['top', screen.height / 2 - h / 2]
+    ]
+      .map(function (x) {
+        return x.join('=');
+      })
+      .join(',');
+
+    // Open API login route in popup window to start OAuth
+    window.open(
+      `${apiUrl}/login?redirect=${window.location.origin}${appPathname}/login/redirect`,
+      'oauth_window',
+      settings
+    );
+  }
+
   render () {
     return (
       <IntroPanel>
