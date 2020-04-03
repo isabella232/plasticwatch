@@ -12,6 +12,7 @@ import { apiUrl, appPathname } from '../../config';
 
 const IntroPanel = styled(InnerPanel)`
   margin: 0;
+  margin-bottom: -30vh;
   padding: 2rem;
   align-items: flex-start;
   z-index: 10;
@@ -21,6 +22,7 @@ const IntroPanel = styled(InnerPanel)`
   ${media.mediumUp`
     justify-content: flex-end;
     padding-bottom: 4rem;
+    margin-bottom: 0;
     background: ${themeVal('color.background')};
     border: none;
     border-right: 1px solid ${themeVal('color.smoke')};

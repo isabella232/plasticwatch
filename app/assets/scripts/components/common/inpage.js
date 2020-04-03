@@ -50,13 +50,16 @@ export const InpageBackLink = styled(Link)`
   display:flex;
   position: relative;
   text-decoration: none;
-  margin-top: 1rem;
+  margin-top: -2rem;
   &:before{
     ${collecticon('chevron-left--small')};
   }
   & + * {
     margin-top: 0.2rem;;
   }
+  ${media.mediumUp`
+    margin: 0;
+  `};
 `;
 
 export const InpageTitle = styled.h1`

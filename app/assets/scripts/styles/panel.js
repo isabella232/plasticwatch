@@ -6,9 +6,11 @@ import { cardSkin, hideScrollbars } from './skins';
 export const Panel = styled.section`
   position: relative; /* Likely change to fixed within grid */
   background: ${themeVal('color.background')};
+  z-index: 20;
   ${hideScrollbars()};
   ${media.mediumUp`
     padding: 1rem;
+    margin-bottom: 0;
     display: flex;
     flex-flow: column nowrap;
     max-height: calc(100vh - 4rem);
