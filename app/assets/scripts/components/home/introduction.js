@@ -48,12 +48,14 @@ const IntroPanel = styled(InnerPanel)`
 
 const IntroHeading = styled(Heading)`
   margin: 0;
+  font-family: ${themeVal('type.base.family')};
   img {
     display: block;
     max-width: 16rem;
   }
   span {
-    font-weight: ${themeVal('type.heading.regular')};
+    letter-spacing: 0.1rem;
+    font-weight: ${themeVal('type.heading.light')};
   }
 `;
 
