@@ -14,7 +14,7 @@ import {
   PlaceType,
   PlaceComment
 } from '../../../styles/place';
-import { InnerPanel } from '../../../styles/panel';
+import { InnerPanel, Panel } from '../../../styles/panel';
 import Button from '../../../styles/button/button';
 import { StyledLink } from '../../common/link';
 
@@ -45,7 +45,7 @@ class PlacesView extends Component {
     const { recentComments } = this.props;
 
     return (
-      <>
+      <Panel>
         <InpageBackLink to='/explore'>Return to places index</InpageBackLink>
         <InnerPanel>
           <PlaceMeta>
@@ -81,7 +81,7 @@ class PlacesView extends Component {
             )}
           </PlaceDetails>
         </InnerPanel>
-      </>
+      </Panel>
     );
   }
 }

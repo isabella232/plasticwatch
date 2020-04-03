@@ -10,7 +10,6 @@ import Map from '../common/map';
 import PlacesIndex from './places';
 import PlacesView from './places/view';
 import PlaceSurvey from './places/survey';
-import { Panel } from '../../styles/panel';
 
 const SidebarWrapper = styled.div`
   display: grid;
@@ -43,11 +42,9 @@ export default class Explore extends React.Component {
     return (
       <App pageTitle='About' hideFooter>
         <SidebarWrapper>
-          <Panel>
-            <Route exact path='/explore' component={PlacesIndex} />
-            <Route exact path='/explore/:type/:id' component={PlacesView} />
-            <Route exact path='/explore/:type/:id/survey' component={PlaceSurvey} />
-          </Panel>
+          <Route exact path='/explore' component={PlacesIndex} />
+          <Route exact path='/explore/:type/:id' component={PlacesView} />
+          <Route exact path='/explore/:type/:id/survey' component={PlaceSurvey} />
           <Map />
         </SidebarWrapper>
       </App>
