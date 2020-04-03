@@ -64,7 +64,7 @@ const PageTitle = styled.h1`
   margin: -1rem 0;
   font-weight: ${themeVal('type.heading.black')};
   img {
-    max-width: 6rem;
+    max-width: 5.5rem;
   }
   a {
     color: inherit;
