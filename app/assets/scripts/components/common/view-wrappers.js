@@ -36,7 +36,7 @@ export const SidebarWrapper = styled.div`
     grid-template-columns: 36rem 1fr;
   `}
   >${Panel} {
-    margin-bottom: -48vh;
+    margin-bottom: -24rem;
   }
 `;
 
