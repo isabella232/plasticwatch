@@ -11,9 +11,6 @@ import Map from '../common/map';
 const Wrapper = styled.div`
   display: flex;
   flex-flow: column nowrap;
-  height: calc(100vh - 8.5rem);
-  /* grid-template-columns: 100vw;
-  grid-template-rows: repeat(4, 1fr); */
   > * {
     grid-column: 1;
   }
