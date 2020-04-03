@@ -55,7 +55,7 @@ class PlacesView extends Component {
                 <PlaceType>{properties.amenity}</PlaceType>
               )}
             </PlaceHeader>
-            <Rating observationCounts={properties.observationCounts} />
+            <Rating observations={properties.observations} />
           </PlaceMeta>
           <Button
             variation='primary-raised-dark'
