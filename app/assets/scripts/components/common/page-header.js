@@ -308,17 +308,6 @@ class PageHeader extends React.Component {
               <GlobalMenuLink
                 as={NavLinkFilter}
                 exact
-                to='/sandbox'
-                useIcon='map'
-                title='Sandbox'
-              >
-                <span>Sandbox</span>
-              </GlobalMenuLink>
-            </li>
-            <li>
-              <GlobalMenuLink
-                as={NavLinkFilter}
-                exact
                 to='/explore'
                 useIcon='map'
                 isActive={(match, { pathname, search }) =>
@@ -341,17 +330,6 @@ class PageHeader extends React.Component {
             </li>
             {this.props.isLoggedIn ? (
               <>
-                <li>
-                  <GlobalMenuLink
-                    as={NavLinkFilter}
-                    exact
-                    to='/surveys'
-                    useIcon='page-tick'
-                    title='View surveys page'
-                  >
-                    <span>Surveys</span>
-                  </GlobalMenuLink>
-                </li>
                 {this.props.isAdmin && (
                   <li>
                     <GlobalMenuLink
@@ -409,17 +387,6 @@ class PageHeader extends React.Component {
         </li>
         {this.props.isLoggedIn ? (
           <>
-            <li>
-              <GlobalMenuLink
-                as={NavLinkFilter}
-                exact
-                to='/surveys'
-                useIcon='page-tick'
-                title='View surveys page'
-              >
-                <span>Surveys</span>
-              </GlobalMenuLink>
-            </li>
             {this.props.isAdmin && (
               <li>
                 <GlobalMenuLink

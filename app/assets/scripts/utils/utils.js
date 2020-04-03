@@ -155,3 +155,22 @@ export function formatThousands (
 
   return dec !== '' ? `${int}.${dec}` : int;
 }
+
+/*
+ * Get the marker name for this geojson
+ * Based on whether it's unsurveyed, plastic-free, or not.
+ * @param {object} geojson The geojson feature
+ */
+export function getMarker (geojson) {
+  if (geojson.properties.observations.total === 0) {
+    return 'markerQuestion';
+  }
+
+  const isPlasticFree = geojson.properties.observations.totalTrue > geojson.properties.observations.totalFalse;
+
+  if (isPlasticFree) {
+    return 'markerTick';
+  } else {
+    return 'markerX';
+  }
+}

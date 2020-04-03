@@ -1101,6 +1101,14 @@
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.7.0.tgz#9a06f4f137ee84d7df0460c1fdb1135ffa6c50fd"
   integrity sha512-ONhaKPIufzzrlNbqtWFFd+jlnemX6lJAgq9ZeiZtS7I1PIf/la7CW4m83rTXRnVnsMbW2k56pGYu7AUFJD9Pow==
 
+"@turf/bbox@^6.2.0-alpha.1":
+  version "6.2.0-alpha.1"
+  resolved "https://registry.yarnpkg.com/@turf/bbox/-/bbox-6.2.0-alpha.1.tgz#a917802edfa4f0a1e04387804b3c26a1113b2eae"
+  integrity sha512-vHqh5hVdteQdgim58eQYPcgqdXGYGwuc7EDBpPudsF7ShWQiiQ3kP4/96h3BKmOnK69HIHcFpWLRXFkl8NJR3Q==
+  dependencies:
+    "@turf/helpers" "^6.2.0-alpha.1"
+    "@turf/meta" "^6.2.0-alpha.1"
+
 "@turf/centroid@^6.0.2":
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/@turf/centroid/-/centroid-6.0.2.tgz#c4eb16b4bc60b692f74e1809cf9a7c4a4f5ba1cc"
@@ -1114,12 +1122,24 @@
   resolved "https://registry.yarnpkg.com/@turf/helpers/-/helpers-6.1.4.tgz#d6fd7ebe6782dd9c87dca5559bda5c48ae4c3836"
   integrity sha512-vJvrdOZy1ngC7r3MDA7zIGSoIgyrkWcGnNIEaqn/APmw+bVLF2gAW7HIsdTxd12s5wQMqEpqIQrmrbRRZ0xC7g==
 
+"@turf/helpers@^6.2.0-alpha.1":
+  version "6.2.0-alpha.1"
+  resolved "https://registry.yarnpkg.com/@turf/helpers/-/helpers-6.2.0-alpha.1.tgz#619cdc1fb214b29c69b8ad48fa1757ecb5867393"
+  integrity sha512-A+ffh4N0JcOWRNMn3pdBM4H5gZVwPcXzVnVVLq4XLkYBowra/wxPi8u6+of8UknnsSasJ0U48ixVQJj/POkX3Q==
+
 "@turf/meta@6.x":
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/@turf/meta/-/meta-6.0.2.tgz#eb92951126d24a613ac1b7b99d733fcc20fd30cf"
   integrity sha512-VA7HJkx7qF1l3+GNGkDVn2oXy4+QoLP6LktXAaZKjuT1JI0YESat7quUkbCMy4zP9lAUuvS4YMslLyTtr919FA==
   dependencies:
     "@turf/helpers" "6.x"
+
+"@turf/meta@^6.2.0-alpha.1":
+  version "6.2.0-alpha.1"
+  resolved "https://registry.yarnpkg.com/@turf/meta/-/meta-6.2.0-alpha.1.tgz#b839855985be54955c58a6d18f56ca618f352bb4"
+  integrity sha512-D1DF5uS8DOrNpeEGPBHo+p4ebqgTPBQkGd7Qk/bINpWt77EdJbjXhkDlRxx6+WXEYR6WhVa1htGMYsjL0j3Q9A==
+  dependencies:
+    "@turf/helpers" "^6.2.0-alpha.1"
 
 "@types/classnames@^2.2.9":
   version "2.2.10"
@@ -6513,6 +6533,11 @@ lodash.get@^4.4.2:
   version "4.4.2"
   resolved "https://registry.yarnpkg.com/lodash.get/-/lodash.get-4.4.2.tgz#2d177f652fa31e939b4438d5341499dfa3825e99"
   integrity sha1-LRd/ZS+jHpObRDjVNBSZ36OCXpk=
+
+lodash.isequal@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/lodash.isequal/-/lodash.isequal-4.5.0.tgz#415c4478f2bcc30120c22ce10ed3226f7d3e18e0"
+  integrity sha1-QVxEePK8wwEgwizhDtMib30+GOA=
 
 lodash.isfinite@^3.3.2:
   version "3.3.2"

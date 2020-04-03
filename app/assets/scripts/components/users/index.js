@@ -31,7 +31,7 @@ import DataTable from '../../styles/table';
 import Pagination from '../../styles/button/pagination';
 import Prose from '../../styles/type/prose';
 import { wrapApiResult } from '../../redux/utils';
-import StyledLink from '../common/link';
+import { StyledLink } from '../common/link';
 
 class Users extends React.Component {
   constructor (props) {

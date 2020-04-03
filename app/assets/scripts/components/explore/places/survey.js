@@ -16,7 +16,7 @@ import { wrapApiResult, getFromState, isLoggedIn } from '../../../redux/utils';
 
 import toasts from '../../common/toasts';
 
-import StyledLink from '../../common/link';
+import { StyledLink } from '../../common/link';
 
 import { PlaceTitle } from '../../../styles/place';
 import Button from '../../../styles/button/button';
@@ -110,7 +110,7 @@ const InnerSurveyForm = props => {
   return (
     <PanelForm onSubmit={handleSubmit}>
       <FormLegend>Name</FormLegend>
-      {place.name && <PlaceTitle>{place.name}</PlaceTitle>}
+      {place.properties.name && <PlaceTitle>{place.properties.name}</PlaceTitle>}
       {survey.questions.map(q => renderQuestion(q))}
       <FormGroupFooter>
         <Button

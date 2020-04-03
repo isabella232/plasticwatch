@@ -42,27 +42,28 @@ export const PlaceType = styled.p`
 export const PlaceRating = styled.div`
   display: flex;
   flex-flow: column nowrap;
+  flex: 1;
   margin-left: auto;
-  padding-left: ${themeVal('layout.space')};
+  margin-right: -${themeVal('layout.space')};
   text-align: center;
   color: ${themeVal('color.baseMed')};
 `;
 
 export const RatingType = styled.p`
   font-weight: ${themeVal('type.base.bold')};
-  font-size: 0.8rem;
   line-height: 1;
   &::before {
     display: block;
     ${({ useIcon }) => collecticon(useIcon)}
-    color: ${({ nonplastic }) =>
-    nonplastic ? themeVal('color.primary') : themeVal('color.danger')};
+    color: ${({ nonplastic }) => (nonplastic ? themeVal('color.primary') : themeVal('color.base'))};
     font-size: 3rem;
     margin-bottom: 0.5rem;
   }
 `;
 
-export const PlaceSurveys = styled.p``;
+export const PlaceSurveys = styled.p`
+  font-size: 0.8rem;
+`;
 
 export const PlaceSelect = styled.a`
   position: absolute;

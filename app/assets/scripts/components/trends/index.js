@@ -12,7 +12,8 @@ import App from '../common/app';
 import { Pie } from '@vx/shape';
 import { Group } from '@vx/group';
 import { LinearGradient } from '@vx/gradient';
-
+import { StyledLink } from '../common/link';
+import withMobileState from '../common/with-mobile-state';
 import { InnerPanel, Panel } from '../../styles/panel';
 import Button from '../../styles/button/button';
 import { themeVal } from '../../styles/utils/general';
@@ -80,9 +81,19 @@ const TwoPanelLayout = styled(Panel)`
 `;
 
 class Trends extends React.Component {
+  constructor () {
+    super();
+    this.topSurveyors = React.createRef();
+    this.cityTrends = React.createRef();
+  }
+
   componentDidMount () {
     this.props.fetchStats();
     this.props.fetchTopSurveyors();
+  }
+
+  scroll (ref) {
+    ref.current.scrollIntoView({ behavior: 'smooth' });
   }
 
   renderTopSurveyors () {
@@ -123,7 +134,7 @@ class Trends extends React.Component {
   }
 
   render () {
-    const { stats } = this.props;
+    const { stats, isMobile } = this.props;
 
     if (!stats.isReady()) return null;
 
@@ -161,10 +172,13 @@ class Trends extends React.Component {
     return (
       <App pageTitle='Trends'>
         <TwoPanelLayout>
-          <InnerPanel>
+          <InnerPanel ref={this.cityTrends}>
             <PlaceTrends>
               <h2>Washington DC</h2>
-              <p><strong>{formatThousands(surveyedPlacesCount)}</strong> restaurants surveyed</p>
+              <p>
+                <strong>{formatThousands(surveyedPlacesCount)}</strong>
+                restaurants surveyed
+              </p>
               <svg width='100%' height={barHeight}>
                 <rect
                   x={0}
@@ -184,14 +198,17 @@ class Trends extends React.Component {
                 />
               </svg>
               <p>
-                <strong>{percentSurveyed}%</strong> of {formatThousands(placesCount)} Washington DC restaurants
-                on OpenStreetMap
+                <strong>{percentSurveyed}%</strong> of
+                {formatThousands(placesCount)} Washington DC restaurants on
+                OpenStreetMap
               </p>
             </PlaceTrends>
             <svg width={pieSize} height={pieSize}>
               <LinearGradient id='gradient' from='#01A1D7' to='#104271' />;
               <Group top={pieSize / 2} left={pieSize / 2}>
-                <text textAnchor='middle' y='0.5em'>{round(percentNonPlastic)}%</text>
+                <text textAnchor='middle' y='0.5em'>
+                  {round(percentNonPlastic)}%
+                </text>
                 <Pie
                   data={pieData}
                   pieValue={d => d.value}
@@ -218,8 +235,12 @@ class Trends extends React.Component {
               </Group>
             </svg>
             <p>
-              <strong>{round(percentNonPlastic)}% ({formatThousands(nonPlasticPlacesCount)} of {formatThousands(surveyedPlacesCount)})</strong> of surveyed Washington DC
-              restaurants offer plastic-free options
+              <strong>
+                {round(percentNonPlastic)}% (
+                {formatThousands(nonPlasticPlacesCount)} of
+                {formatThousands(surveyedPlacesCount)})
+              </strong>
+              of surveyed Washington DC restaurants offer plastic-free options
             </p>
             <PanelStats>
               <PanelStat>
@@ -243,11 +264,40 @@ class Trends extends React.Component {
                 </span>
               </PanelStat>
             </PanelStats>
-            <Button useIcon='map' variation='base-raised-dark'>
+            <Button
+              useIcon='map'
+              variation='base-raised-dark'
+              as={StyledLink}
+              to='/explore'
+            >
               Show me the map
             </Button>
+            {isMobile && (
+              <Button
+                useIcon={['chevron-down--small', 'after']}
+                variation='primary-raised-light'
+                onClick={() => {
+                  this.scroll(this.topSurveyors);
+                }}
+              >
+                Surveyor Trends
+              </Button>
+            )}
           </InnerPanel>
-          <InnerPanel>{this.renderTopSurveyors()}</InnerPanel>
+          <InnerPanel ref={this.topSurveyors}>
+            {this.renderTopSurveyors()}
+            {isMobile && (
+              <Button
+                useIcon={['chevron-up--small', 'after']}
+                variation='primary-raised-light'
+                onClick={() => {
+                  this.scroll(this.cityTrends);
+                }}
+              >
+                City Trends
+              </Button>
+            )}
+          </InnerPanel>
         </TwoPanelLayout>
       </App>
     );
@@ -259,7 +309,8 @@ if (environment !== 'production') {
     stats: T.object,
     topSurveyors: T.object,
     fetchStats: T.func,
-    fetchTopSurveyors: T.func
+    fetchTopSurveyors: T.func,
+    isMobile: T.bool
   };
 }
 
@@ -277,4 +328,4 @@ function dispatcher (dispatch) {
   };
 }
 
-export default connect(mapStateToProps, dispatcher)(Trends);
+export default connect(mapStateToProps, dispatcher)(withMobileState(Trends));
