@@ -51,6 +51,8 @@ export const InpageBackLink = styled(Link)`
   position: relative;
   text-decoration: none;
   margin-top: -2rem;
+  padding: 0.25rem 0;
+  background: linear-gradient(90deg, white, rgba(255,255,255,0));
   &:before{
     ${collecticon('chevron-left--small')};
   }
