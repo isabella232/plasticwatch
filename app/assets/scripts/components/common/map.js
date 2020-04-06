@@ -7,7 +7,7 @@ import * as actions from '../../redux/actions/places';
 import { PropTypes as T } from 'prop-types';
 import { withRouter, matchPath } from 'react-router-dom';
 import _isEqual from 'lodash.isequal';
-import { geojsonBbox } from '../../utils/geo';
+import { geojsonBbox, bboxToTiles } from '../../utils/geo';
 import { getMarker } from '../../utils/utils';
 import { mapConfig } from '../../config';
 
@@ -121,6 +121,11 @@ class Map extends Component {
     }
   }
 
+  getVisibleTiles() {
+    const bounds = this.map.getBounds();
+    return bboxToTiles(bounds.toArray());
+  }
+
   updateData () {
     this.map.getSource('placesSource').setData(this.state.geojson);
   }
@@ -170,8 +175,10 @@ class Map extends Component {
       })
     );
 
-    this.map.on('moveend', () => {
-      // const bounds = this.map.getBounds();
+    this.map.on('dragend', () => {
+      const bounds = this.map.getBounds();
+      const visibleTiles = bboxToTiles(bounds.toArray());
+      console.log('map moved', bboxToTiles(bounds.toArray()));
       // const zoom = this.map.getZoom();
       // if (zoom > 12) {
       // fetch data?
@@ -318,6 +325,7 @@ function mapStateToProps (state, props) {
 
 function dispatcher (dispatch) {
   return {
+    fetchTiles: (...args) => dispatch(actions.fetchTiles(...args)),
     fetchPlaces: (...args) => dispatch(actions.fetchPlaces(...args)),
     fetchPlace: (...args) => dispatch(actions.fetchPlace(...args))
   };

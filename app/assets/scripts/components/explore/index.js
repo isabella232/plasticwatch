@@ -3,7 +3,7 @@ import React from 'react';
 import { Route } from 'react-router-dom';
 import { PropTypes as T } from 'prop-types';
 import QsState from '../../utils/qs-state';
-import { environment, mapConfig } from '../../config';
+import { environment } from '../../config';
 import { connect } from 'react-redux';
 
 import * as actions from '../../redux/actions/places';
@@ -15,7 +15,6 @@ import PlacesIndex from './places';
 import PlacesView from './places/view';
 import PlaceSurvey from './places/survey';
 import withMobileState from '../common/with-mobile-state';
-import { bboxToTiles } from '../../utils/geo';
 
 class Explore extends React.Component {
   constructor (props) {
@@ -37,6 +36,10 @@ class Explore extends React.Component {
   }
 
   async componentDidMount () {
+    // This would load all tiles in the view port
+    // const initialTiles = bboxToTiles(mapConfig.defaultInitialBounds);
+    // await Promise.all(initialTiles.map(this.props.fetchPlacesTile))
+
     await this.fetchData();
   }
 
@@ -114,6 +117,7 @@ if (environment !== 'production') {
   Explore.propTypes = {
     history: T.object,
     fetchPlaces: T.func,
+    // fetchPlacesTile: T.func,
     location: T.object,
     isMobile: T.bool
   };
@@ -121,6 +125,7 @@ if (environment !== 'production') {
 
 function dispatcher (dispatch) {
   return {
+    // fetchPlacesTile: (...args) => dispatch(actions.fetchPlacesTile(...args)),
     fetchPlaces: (...args) => dispatch(actions.fetchPlaces(...args))
   };
 }

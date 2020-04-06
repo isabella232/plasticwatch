@@ -88,3 +88,38 @@ export function fetchPlace (id) {
     receiveFn: receivePlace.bind(this, id)
   });
 }
+
+/*
+ * Fetch place tile (by quadkey)
+ */
+
+export const REQUEST_PLACES_TILE = 'REQUEST_PLACES_TILE';
+export const RECEIVE_PLACES_TILE = 'RECEIVE_PLACES_TILE';
+export const INVALIDATE_PLACES_TILE = 'INVALIDATE_PLACES_TILE';
+
+export function invalidatePlacesTile (id) {
+  return { type: INVALIDATE_PLACES_TILE, id };
+}
+
+export function requestPlacesTile (id) {
+  return { type: REQUEST_PLACES_TILE, id };
+}
+
+export function receivePlacesTile (id, { results }, error = null) {
+  return {
+    type: RECEIVE_PLACES_TILE,
+    id,
+    data: results,
+    error,
+    receivedAt: Date.now()
+  };
+}
+
+export function fetchPlacesTile (quadkey) {
+  return fetchDispatchFactory({
+    statePath: ['places', 'tiles', quadkey],
+    url: `${apiUrl}/osmobjects?limit=100&quadkey=${quadkey}`,
+    requestFn: requestPlacesTile.bind(this, quadkey),
+    receiveFn: receivePlacesTile.bind(this, quadkey)
+  });
+}
