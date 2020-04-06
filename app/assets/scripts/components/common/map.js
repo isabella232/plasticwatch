@@ -112,10 +112,6 @@ class Map extends Component {
     if (this.state.isSourceLoaded) {
       this.updateData();
       this.updateFilter();
-
-      if (!this.props.placeId && this.state.bounds) {
-        this.map.fitBounds(this.state.bounds, { padding: 50 });
-      }
     }
   }
 
@@ -135,10 +131,12 @@ class Map extends Component {
   }
 
   initMap () {
+    const bounds = mapConfig.defaultInitialBounds;
+
     this.map = new mapboxgl.Map({
       container: this.mapContainer,
       style: mapConfig.style,
-      bounds: mapConfig.bounds,
+      bounds,
       attributionControl: false,
       fitBoundsOptions: mapConfig.fitBoundsOptions
     });

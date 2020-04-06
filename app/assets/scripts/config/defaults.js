@@ -13,7 +13,10 @@ module.exports = {
   mapConfig: {
     mapboxAccessToken: 'pk.eyJ1IjoiZGV2c2VlZCIsImEiOiJjazdhZjA3aXQwMmZ5M3FtcjZlb3RoeTY5In0.1e90Coahqa6RSlMqfR_Xow',
     style: 'mapbox://styles/devseed/ck4d052l20gfj1cljht7rvhsw',
-    bounds: [[-77.192687, 38.776034], [-76.889190, 39.010647]],
+    defaultInitialBounds: [
+      [-77.03199148178099, 38.90727307602592],
+      [-77.02598333358765, 38.91112176289355]
+    ],
     fitBoundsOptions: {
       padding: 20
     }

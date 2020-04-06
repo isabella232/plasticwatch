@@ -3,7 +3,7 @@ import React from 'react';
 import { Route } from 'react-router-dom';
 import { PropTypes as T } from 'prop-types';
 import QsState from '../../utils/qs-state';
-import { environment } from '../../config';
+import { environment, mapConfig } from '../../config';
 import { connect } from 'react-redux';
 
 import * as actions from '../../redux/actions/places';
@@ -15,6 +15,7 @@ import PlacesIndex from './places';
 import PlacesView from './places/view';
 import PlaceSurvey from './places/survey';
 import withMobileState from '../common/with-mobile-state';
+import { bboxToTiles } from '../../utils/geo';
 
 class Explore extends React.Component {
   constructor (props) {
