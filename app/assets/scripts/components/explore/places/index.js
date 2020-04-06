@@ -138,7 +138,6 @@ class PlacesIndex extends Component {
                     {amenity && <PlaceType>{amenity}</PlaceType>}
                   </PlaceHeader>
                   <Rating observations={observations} />
-                  <PlaceSelect />
                 </Place>
               </ResultsItem>
             )

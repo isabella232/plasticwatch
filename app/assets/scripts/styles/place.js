@@ -65,25 +65,6 @@ export const PlaceSurveys = styled.p`
   font-size: 0.8rem;
 `;
 
-export const PlaceSelect = styled.a`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1;
-  margin: 0 !important;
-  transition: all 0.24s ease 0s;
-  flex: none;
-  &:hover {
-    opacity: 1;
-    background: ${_rgba(themeVal('color.primary'), 0.05)};
-  }
-  span {
-    ${visuallyHidden()}
-  }
-`;
-
 export const PlaceMeta = styled.div`
   display: flex;
   justify-content: space-between;
