@@ -1,11 +1,7 @@
 import styled from 'styled-components';
-import { themeVal, stylizeFunction } from './utils/general';
+import { themeVal } from './utils/general';
 import media from './utils/media-queries';
-import { visuallyHidden } from './helpers/index';
 import collecticon from './collecticons';
-import { rgba } from 'polished';
-
-const _rgba = stylizeFunction(rgba);
 
 export const Place = styled.article`
   border-radius: ${themeVal('shape.rounded')};
@@ -55,7 +51,8 @@ export const RatingType = styled.p`
   &::before {
     display: block;
     ${({ useIcon }) => collecticon(useIcon)}
-    color: ${({ nonplastic }) => (nonplastic ? themeVal('color.primary') : themeVal('color.base'))};
+    color: ${({ nonplastic }) =>
+    nonplastic ? themeVal('color.primary') : themeVal('color.base')};
     font-size: 3rem;
     margin-bottom: 0.5rem;
   }
@@ -80,7 +77,7 @@ export const PlaceComment = styled.li`
   display: flex;
   justify-content: space-between;
   margin: 0.75rem 0;
-  
+
   img {
     max-width: 100%;
     margin-right: 0.5rem;
