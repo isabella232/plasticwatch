@@ -19,7 +19,7 @@ const Page = styled.div`
   display: grid;
   height: 100vh;
   max-height: 100vh;
-  grid-template-rows: 4rem 1fr 4.5rem;
+  grid-template-rows: 4rem 1fr 3.5rem;
 
   ${media.mediumUp`
     grid-template-rows: 4rem 1fr;
