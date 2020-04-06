@@ -1,7 +1,10 @@
 import styled from 'styled-components';
-import { themeVal } from './utils/general';
+import { themeVal, stylizeFunction } from './utils/general';
 import media from './utils/media-queries';
 import collecticon from './collecticons';
+
+import { rgba } from 'polished';
+const _rgba = stylizeFunction(rgba);
 
 export const Place = styled.article`
   border-radius: ${themeVal('shape.rounded')};
@@ -13,10 +16,15 @@ export const Place = styled.article`
   align-items: flex-start;
   padding: 1rem;
   margin: 0.5rem;
+  transition: all 0.24s ease 0s;
   ${media.mediumUp`
     padding: 1.5rem;
     margin: 1rem 0;
   `}
+  &:hover {
+    opacity: 1;
+    background: ${_rgba(themeVal('color.primary'), 0.05)};
+  }
 `;
 
 export const PlaceHeader = styled.header`
