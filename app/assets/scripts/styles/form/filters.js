@@ -13,6 +13,10 @@ export const Filters = styled(Form)`
   position: sticky;
   top: 0;
   z-index: 42;
+  overflow-x: hidden;
+  ${media.mediumUp`
+    overflow-x: visible;
+  `};
 `;
 export const FilterToolbar = styled(FormToolbar)`
   align-items: flex-end;
