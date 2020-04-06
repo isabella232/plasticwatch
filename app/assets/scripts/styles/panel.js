@@ -49,6 +49,7 @@ export const InnerPanel = styled.article`
   ${media.mediumUp`
     padding: 1.5rem;
     flex: 1;
+    justify-content: flex-start;
   `}
 
   a {

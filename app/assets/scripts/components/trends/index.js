@@ -49,7 +49,7 @@ const PlaceTrends = styled.div`
   }
   & ~ svg {
     align-self: center;
-
+    margin: 1rem 0;
     text {
       fill: ${themeVal('color.base')};
       font-weight: ${themeVal('type.base.bold')};
@@ -60,6 +60,9 @@ const PlaceTrends = styled.div`
 
 const TwoPanelLayout = styled(Panel)`
   ${InnerPanel} {
+    h2 {
+      margin-bottom: 1rem;
+    }
     margin: 0;
     &:not(:last-of-type) {
       margin-bottom: 2rem;
