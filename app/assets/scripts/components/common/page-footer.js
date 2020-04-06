@@ -1,7 +1,10 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
+import qs from 'qs';
 import { rgba } from 'polished';
-import { NavLink } from 'react-router-dom';
+import { NavLink, withRouter } from 'react-router-dom';
+import { environment } from '../../config';
+import { PropTypes as T } from 'prop-types';
 
 import { visuallyHidden } from '../../styles/helpers';
 import { themeVal, stylizeFunction } from '../../styles/utils/general';
@@ -101,6 +104,12 @@ const propsToFilter = ['variation', 'size', 'hideText', 'useIcon', 'active'];
 const NavLinkFilter = filterComponentProps(NavLink, propsToFilter);
 
 class PageFooter extends React.Component {
+  setQuerystringAs (viewType) {
+    const parsedQS = qs.parse(this.props.location.search.substr(1));
+    parsedQS.viewAs = viewType;
+    return qs.stringify(parsedQS);
+  }
+
   render () {
     return (
       <PageFoot>
@@ -122,7 +131,7 @@ class PageFooter extends React.Component {
                 <FooterMenuLink
                   as={NavLinkFilter}
                   exact
-                  to='/explore?viewAs=list'
+                  to={`/explore?${this.setQuerystringAs('list')}`}
                   useIcon='list'
                   isActive={(match, { pathname, search }) =>
                     match &&
@@ -137,7 +146,7 @@ class PageFooter extends React.Component {
                 <FooterMenuLink
                   as={NavLinkFilter}
                   exact
-                  to='/explore'
+                  to={`/explore?${this.setQuerystringAs('map')}`}
                   useIcon='map'
                   isActive={(match, { pathname, search }) =>
                     match &&
@@ -156,4 +165,10 @@ class PageFooter extends React.Component {
   }
 }
 
-export default PageFooter;
+if (environment !== 'production') {
+  PageFooter.propTypes = {
+    location: T.object
+  };
+}
+
+export default withRouter(PageFooter);

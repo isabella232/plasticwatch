@@ -14,18 +14,23 @@ import Map from '../common/map';
 import PlacesIndex from './places';
 import PlacesView from './places/view';
 import PlaceSurvey from './places/survey';
+import withMobileState from '../common/with-mobile-state';
 
 class Explore extends React.Component {
   constructor (props) {
     super(props);
-    this.state = {};
 
     // Setup the qsState for url state management.
     this.qsState = new QsState({
+      viewAs: {
+        accessor: 'viewAs'
+      },
       placeType: {
         accessor: 'filterValues.placeType'
       }
     });
+
+    this.state = this.qsState.getState(this.props.location.search.substr(1));
 
     this.handleFilterTypeChange = this.handleFilterTypeChange.bind(this);
   }
@@ -67,6 +72,7 @@ class Explore extends React.Component {
     // Set new filter type, if type is already set, disable it
     this.setState(
       {
+        ...this.state,
         filterValues: {
           ...filterValues,
           placeType: newValue
@@ -77,27 +83,26 @@ class Explore extends React.Component {
   }
 
   render () {
+    const { location, isMobile } = this.props;
+
+    const displayMap =
+      !isMobile || (location && location.search.indexOf('viewAs=list') === -1);
     return (
       <App pageTitle='About' hideFooter>
         <SidebarWrapper>
-          <Route
-            exact
-            path='/explore'
-            render={(routeProps) => (
-              <PlacesIndex
-                {...routeProps}
-                handleFilterTypeChange={this.handleFilterTypeChange}
-                filterValues={this.state.filterValues}
-              />
-            )}
-          />
+          <Route exact path='/explore'>
+            <PlacesIndex
+              handleFilterTypeChange={this.handleFilterTypeChange}
+              filterValues={this.state.filterValues}
+            />
+          </Route>
           <Route exact path='/explore/:type/:id' component={PlacesView} />
           <Route
             exact
             path='/explore/:type/:id/survey'
             component={PlaceSurvey}
           />
-          <Map />
+          {displayMap && <Map />}
         </SidebarWrapper>
       </App>
     );
@@ -108,7 +113,8 @@ if (environment !== 'production') {
   Explore.propTypes = {
     history: T.object,
     fetchPlaces: T.func,
-    location: T.object
+    location: T.object,
+    isMobile: T.bool
   };
 }
 
@@ -118,4 +124,4 @@ function dispatcher (dispatch) {
   };
 }
 
-export default connect(null, dispatcher)(Explore);
+export default connect(null, dispatcher)(withMobileState(Explore));

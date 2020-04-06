@@ -31,6 +31,7 @@ import {
 import { hideScrollbars } from '../../../styles/skins';
 import Rating from './rating';
 import { Panel } from '../../../styles/panel';
+import { withRouter } from 'react-router-dom';
 
 const Results = styled.ul`
   ${listReset()};
@@ -70,7 +71,7 @@ class PlacesIndex extends Component {
     } = this.props;
     const { isReady, getData, hasError } = this.props.places;
 
-    if (isMobile && location && location.search.indexOf('viewAs=list') === -1) return null;
+    if (isMobile && location && location.search.indexOf('viewAs=list') === -1) { return null; }
 
     return (
       <Panel>
@@ -104,9 +105,7 @@ class PlacesIndex extends Component {
                 </FilterButton>
                 <FilterButton
                   onClick={() => handleFilterTypeChange('plastic')}
-                  active={
-                    filterValues && filterValues.placeType === 'plastic'
-                  }
+                  active={filterValues && filterValues.placeType === 'plastic'}
                 >
                   Plastic
                 </FilterButton>
@@ -161,6 +160,6 @@ function mapStateToProps (state) {
   };
 }
 
-export default connect(
-  mapStateToProps
-)(withMobileState(PlacesIndex));
+export default connect(mapStateToProps)(
+  withRouter(withMobileState(PlacesIndex))
+);
