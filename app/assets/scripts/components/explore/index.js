@@ -80,12 +80,17 @@ class Explore extends React.Component {
     return (
       <App pageTitle='About' hideFooter>
         <SidebarWrapper>
-          <Route exact path='/explore'>
-            <PlacesIndex
-              handleFilterTypeChange={this.handleFilterTypeChange}
-              filterValues={this.state.filterValues}
-            />
-          </Route>
+          <Route
+            exact
+            path='/explore'
+            render={(routeProps) => (
+              <PlacesIndex
+                {...routeProps}
+                handleFilterTypeChange={this.handleFilterTypeChange}
+                filterValues={this.state.filterValues}
+              />
+            )}
+          />
           <Route exact path='/explore/:type/:id' component={PlacesView} />
           <Route
             exact

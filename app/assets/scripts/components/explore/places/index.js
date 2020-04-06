@@ -70,7 +70,7 @@ class PlacesIndex extends Component {
     } = this.props;
     const { isReady, getData, hasError } = this.props.places;
 
-    if (isMobile && location.search.indexOf('viewAs=list') === -1) return null;
+    if (isMobile && location && location.search.indexOf('viewAs=list') === -1) return null;
 
     return (
       <Panel>
