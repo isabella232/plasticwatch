@@ -61,6 +61,7 @@ export const InpageBackLink = styled(Link)`
   }
   ${media.mediumUp`
     margin: 0;
+    background: none;
   `};
 `;
 
