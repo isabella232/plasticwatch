@@ -93,6 +93,7 @@ class PlacesIndex extends Component {
 
             {(!isMobile || (isMobile && filtersOpened)) && (
               <FilterButtons>
+                <FilterLabel>Filters:</FilterLabel>
                 <FilterButton
                   onClick={() => handleFilterTypeChange('plasticFree')}
                   active={

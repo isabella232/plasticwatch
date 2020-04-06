@@ -53,6 +53,7 @@ export const InputIcon = styled(FormLabel)`
 export const FilterLabel = styled(FormLabel)`
   font-size: 0.875rem;
   font-weight: ${themeVal('type.base.regular')};
+  margin-right: 1rem;
 `;
 
 export const FilterButtons = styled.div`
