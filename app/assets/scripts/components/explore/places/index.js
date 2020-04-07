@@ -61,6 +61,14 @@ class PlacesIndex extends Component {
     });
   }
 
+  renderPlacesCount (places) {
+    const count = places.length;
+
+    if (count === 0) return <div>No places found.</div>;
+    else if (count.length === 1) return <div>1 place found.</div>;
+    else return <div>{count} places found.</div>;
+  }
+
   render () {
     const { filtersOpened } = this.state;
     const {
@@ -71,7 +79,14 @@ class PlacesIndex extends Component {
     } = this.props;
     const { isReady, getData, hasError } = this.props.places;
 
-    if (isMobile && location && location.search.indexOf('viewAs=list') === -1) { return null; }
+    if (isMobile && location && location.search.indexOf('viewAs=list') === -1) {
+      return null;
+    }
+
+    let data;
+    if (isReady() && !hasError()) {
+      data = getData();
+    }
 
     return (
       <Panel>
@@ -124,19 +139,18 @@ class PlacesIndex extends Component {
 
         {isReady() && !hasError() && (
           <Results>
-            {getData().map(
-              ({ id, properties: { name, amenity, observations } }) => (
-                <ResultsItem key={id} as={StyledLink} to={`/explore/${id}`}>
-                  <Place>
-                    <PlaceHeader>
-                      {name && <PlaceTitle>{name}</PlaceTitle>}
-                      {amenity && <PlaceType>{amenity}</PlaceType>}
-                    </PlaceHeader>
-                    <Rating observations={observations} />
-                  </Place>
-                </ResultsItem>
-              )
-            )}
+            {this.renderPlacesCount(data)}
+            {data.map(({ id, properties: { name, amenity, observations } }) => (
+              <ResultsItem key={id} as={StyledLink} to={`/explore/${id}`}>
+                <Place>
+                  <PlaceHeader>
+                    {name && <PlaceTitle>{name}</PlaceTitle>}
+                    {amenity && <PlaceType>{amenity}</PlaceType>}
+                  </PlaceHeader>
+                  <Rating observations={observations} />
+                </Place>
+              </ResultsItem>
+            ))}
           </Results>
         )}
       </Panel>

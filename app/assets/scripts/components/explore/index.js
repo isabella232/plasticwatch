@@ -3,7 +3,7 @@ import React from 'react';
 import { Route } from 'react-router-dom';
 import { PropTypes as T } from 'prop-types';
 import QsState from '../../utils/qs-state';
-import { environment } from '../../config';
+import { environment, mapConfig } from '../../config';
 import { connect } from 'react-redux';
 
 import * as actions from '../../redux/actions/places';
@@ -15,6 +15,7 @@ import PlacesIndex from './places';
 import PlacesView from './places/view';
 import PlaceSurvey from './places/survey';
 import withMobileState from '../common/with-mobile-state';
+import { wrapApiResult, getFromState } from '../../redux/utils';
 
 class Explore extends React.Component {
   constructor (props) {
@@ -33,14 +34,12 @@ class Explore extends React.Component {
     this.state = this.qsState.getState(this.props.location.search.substr(1));
 
     this.handleFilterTypeChange = this.handleFilterTypeChange.bind(this);
+    this.handleMapMove = this.handleMapMove.bind(this);
   }
 
   async componentDidMount () {
     // This would load all tiles in the view port
-    // const initialTiles = bboxToTiles(mapConfig.defaultInitialBounds);
-    // await Promise.all(initialTiles.map(this.props.fetchPlacesTile))
-
-    await this.fetchData();
+    this.handleMapMove(mapConfig.defaultInitialBounds);
   }
 
   async componentDidUpdate (prevProps) {
@@ -56,6 +55,10 @@ class Explore extends React.Component {
     );
 
     await this.props.fetchPlaces(filterValues);
+  }
+
+  async handleMapMove (bounds) {
+    this.props.updatePlacesList(bounds);
   }
 
   handleFilterChangeSubmit () {
@@ -106,7 +109,7 @@ class Explore extends React.Component {
             path='/explore/:type/:id/survey'
             component={PlaceSurvey}
           />
-          {displayMap && <Map />}
+          {displayMap && <Map handleMapMove={this.handleMapMove} />}
         </SidebarWrapper>
       </App>
     );
@@ -116,18 +119,25 @@ class Explore extends React.Component {
 if (environment !== 'production') {
   Explore.propTypes = {
     history: T.object,
+    updatePlacesList: T.func,
     fetchPlaces: T.func,
-    // fetchPlacesTile: T.func,
     location: T.object,
     isMobile: T.bool
   };
 }
 
+function mapStateToProps (state, props) {
+  return {
+    getTile: (id) => wrapApiResult(getFromState(state, `places.tiles.${id}`))
+  };
+}
+
 function dispatcher (dispatch) {
   return {
-    // fetchPlacesTile: (...args) => dispatch(actions.fetchPlacesTile(...args)),
+    updatePlacesList: (...args) => dispatch(actions.updatePlacesList(...args)),
+    fetchPlacesTile: (...args) => dispatch(actions.fetchPlacesTile(...args)),
     fetchPlaces: (...args) => dispatch(actions.fetchPlaces(...args))
   };
 }
 
-export default connect(null, dispatcher)(withMobileState(Explore));
+export default connect(mapStateToProps, dispatcher)(withMobileState(Explore));

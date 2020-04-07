@@ -121,7 +121,7 @@ class Map extends Component {
     }
   }
 
-  getVisibleTiles() {
+  getVisibleTiles () {
     const bounds = this.map.getBounds();
     return bboxToTiles(bounds.toArray());
   }
@@ -176,13 +176,7 @@ class Map extends Component {
     );
 
     this.map.on('dragend', () => {
-      const bounds = this.map.getBounds();
-      const visibleTiles = bboxToTiles(bounds.toArray());
-      console.log('map moved', bboxToTiles(bounds.toArray()));
-      // const zoom = this.map.getZoom();
-      // if (zoom > 12) {
-      // fetch data?
-      // }
+      this.props.handleMapMove(this.map.getBounds().toArray());
     });
 
     // ensure the source is added
@@ -295,6 +289,7 @@ class Map extends Component {
 }
 
 Map.propTypes = {
+  handleMapMove: T.func,
   places: T.object,
   placeId: T.object,
   place: T.object,

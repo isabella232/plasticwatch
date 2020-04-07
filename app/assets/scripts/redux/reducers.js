@@ -52,7 +52,7 @@ const placesTilesReducerInitialState = {
   // data: []
 };
 
-const placesTilesReducer = baseAPIReducer('PLACES_TILES', placesTilesReducerInitialState);
+const placesTilesReducer = baseAPIReducer('PLACES_TILE', placesTilesReducerInitialState);
 
 /**
  * PLACE reducer

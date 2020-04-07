@@ -1,6 +1,12 @@
-import { fetchDispatchFactory } from '../utils';
+import {
+  fetchDispatchFactory,
+  fetchDispatchCacheFactory,
+  wrapApiResult,
+  getFromState
+} from '../utils';
 import { apiUrl } from '../../config';
 import qs from 'qs';
+import { bboxToTiles, featuresInBounds } from '../../utils/geo';
 
 /*
  * List of places
@@ -105,21 +111,54 @@ export function requestPlacesTile (id) {
   return { type: REQUEST_PLACES_TILE, id };
 }
 
-export function receivePlacesTile (id, { results }, error = null) {
+export function receivePlacesTile (id, data, error = null) {
   return {
     type: RECEIVE_PLACES_TILE,
     id,
-    data: results,
+    data,
     error,
     receivedAt: Date.now()
   };
 }
 
 export function fetchPlacesTile (quadkey) {
-  return fetchDispatchFactory({
+  return fetchDispatchCacheFactory({
     statePath: ['places', 'tiles', quadkey],
     url: `${apiUrl}/osmobjects?limit=100&quadkey=${quadkey}`,
     requestFn: requestPlacesTile.bind(this, quadkey),
     receiveFn: receivePlacesTile.bind(this, quadkey)
   });
+}
+
+/*
+ * Fetch place tile (by quadkey)
+ */
+
+export const SET_PLACES_LIST = 'SET_PLACES_LIST';
+
+export function updatePlacesList (bounds, filters = {}) {
+  return async (dispatch, getState) => {
+    // Fetch visible tiles
+    const visibleTiles = bboxToTiles(bounds);
+    await Promise.all(visibleTiles.map((id) => dispatch(fetchPlacesTile(id))));
+
+    const state = getState();
+
+    // Helper function to get tile from state
+    const getTile = (id) =>
+      wrapApiResult(getFromState(state, `places.tiles.${id}`));
+
+    // Get all features on visible tiles
+    let features = [];
+    for (let i = 0; i < visibleTiles.length; i++) {
+      const { isReady, hasError, getData } = getTile(visibleTiles[i]);
+      if (isReady() && !hasError()) {
+        features = features.concat(getData());
+      }
+    }
+
+    features = featuresInBounds(features, bounds);
+
+    dispatch(receivePlaces(features));
+  };
 }
