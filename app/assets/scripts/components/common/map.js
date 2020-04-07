@@ -136,12 +136,10 @@ class Map extends Component {
   }
 
   initMap () {
-    const bounds = mapConfig.defaultInitialBounds;
-
     this.map = new mapboxgl.Map({
       container: this.mapContainer,
       style: mapConfig.style,
-      bounds,
+      bounds: this.props.initialBounds,
       attributionControl: false,
       fitBoundsOptions: mapConfig.fitBoundsOptions
     });
@@ -290,6 +288,7 @@ class Map extends Component {
 
 Map.propTypes = {
   handleMapMove: T.func,
+  initialBounds: T.object,
   places: T.object,
   placeId: T.object,
   place: T.object,
