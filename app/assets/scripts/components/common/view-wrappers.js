@@ -36,14 +36,14 @@ export const SidebarWrapper = styled.div`
     grid-template-columns: 36rem 1fr;
   `}
   >${Panel} {
-    margin-bottom: -48vh;
+    margin-bottom: -24rem;
   }
 `;
 
 export const ContentWrapper = styled.div`
   display: flex;
   flex-flow: row nowrap;
-  justify-contents: space-between;
+  justify-content: space-between;
   > * {
     flex: 1;
   }

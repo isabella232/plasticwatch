@@ -46,7 +46,7 @@ class PlacesView extends Component {
 
     return (
       <Panel>
-        <InpageBackLink to='/explore'>Return to places index</InpageBackLink>
+        <InpageBackLink to='/explore'>View all places</InpageBackLink>
         <InnerPanel>
           <PlaceMeta>
             <PlaceHeader>

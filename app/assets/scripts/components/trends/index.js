@@ -49,7 +49,7 @@ const PlaceTrends = styled.div`
   }
   & ~ svg {
     align-self: center;
-
+    margin: 1rem 0;
     text {
       fill: ${themeVal('color.base')};
       font-weight: ${themeVal('type.base.bold')};
@@ -60,8 +60,10 @@ const PlaceTrends = styled.div`
 
 const TwoPanelLayout = styled(Panel)`
   ${InnerPanel} {
+    h2 {
+      margin-bottom: 1rem;
+    }
     margin: 0;
-    height: calc(100vh - 8.5rem);
     &:not(:last-of-type) {
       margin-bottom: 2rem;
     }
@@ -176,8 +178,7 @@ class Trends extends React.Component {
             <PlaceTrends>
               <h2>Washington DC</h2>
               <p>
-                <strong>{formatThousands(surveyedPlacesCount)}</strong>
-                restaurants surveyed
+                <strong>{formatThousands(surveyedPlacesCount)}</strong> restaurants surveyed
               </p>
               <svg width='100%' height={barHeight}>
                 <rect
@@ -198,8 +199,7 @@ class Trends extends React.Component {
                 />
               </svg>
               <p>
-                <strong>{percentSurveyed}%</strong> of
-                {formatThousands(placesCount)} Washington DC restaurants on
+                <strong>{percentSurveyed}%</strong> of {formatThousands(placesCount)} Washington DC restaurants on
                 OpenStreetMap
               </p>
             </PlaceTrends>
@@ -237,10 +237,8 @@ class Trends extends React.Component {
             <p>
               <strong>
                 {round(percentNonPlastic)}% (
-                {formatThousands(nonPlasticPlacesCount)} of
-                {formatThousands(surveyedPlacesCount)})
-              </strong>
-              of surveyed Washington DC restaurants offer plastic-free options
+                {formatThousands(nonPlasticPlacesCount)} of ß{formatThousands(surveyedPlacesCount)})
+              </strong> of surveyed Washington DC restaurants offer plastic-free options
             </p>
             <PanelStats>
               <PanelStat>

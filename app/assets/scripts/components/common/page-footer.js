@@ -1,17 +1,14 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
-import qs from 'qs';
-import { rgba } from 'polished';
 import { NavLink, withRouter } from 'react-router-dom';
 import { environment } from '../../config';
 import { PropTypes as T } from 'prop-types';
+import qs from 'qs';
 
 import { visuallyHidden } from '../../styles/helpers';
-import { themeVal, stylizeFunction } from '../../styles/utils/general';
+import { themeVal } from '../../styles/utils/general';
 import collecticon from '../../styles/collecticons';
 import { filterComponentProps } from '../../utils';
-
-const _rgba = stylizeFunction(rgba);
 
 const PageFoot = styled.footer`
   position: sticky;
@@ -53,7 +50,6 @@ const FooterMenu = styled.ul`
 
   > li {
     width: 4rem;
-    margin: 0.25rem 0;
   }
 `;
 
@@ -73,13 +69,13 @@ const FooterMenuLink = styled.a.attrs({
   text-decoration: none;
   span {
     font-size: 0.75rem;
-    margin-top: 0.5rem;
+    margin-top: 0.25rem;
     font-weight: ${themeVal('type.base.light')};
     text-transform: uppercase;
   }
   &::before {
     ${({ useIcon }) => collecticon(useIcon)}
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   }
   &,
   &:visited {
@@ -91,9 +87,9 @@ const FooterMenuLink = styled.a.attrs({
   }
   &.active {
     color: ${themeVal('color.link')};
-    font-weight: ${themeVal('type.base.medium')};
-    background: ${_rgba(themeVal('color.link'), 0.08)};
-    border-radius: ${themeVal('shape.ellipsoid')};
+    span {
+      font-weight: ${themeVal('type.base.medium')};
+    }
     &::after {
       opacity: 1;
     }
