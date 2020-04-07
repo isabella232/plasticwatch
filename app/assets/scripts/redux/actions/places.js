@@ -148,12 +148,37 @@ export function updatePlacesList (bounds, filters = {}) {
     const getTile = (id) =>
       wrapApiResult(getFromState(state, `places.tiles.${id}`));
 
+    function applyFilters (features) {
+      return features.filter((f) => {
+        const {
+          properties: { observations }
+        } = f;
+        const { placeType } = filters;
+
+        if (placeType === 'plasticFree') {
+          return (
+            observations.total > 0 &&
+            observations.totalTrue > observations.totalFalse
+          );
+        } else if (placeType === 'plastic') {
+          return (
+            observations.total > 0 &&
+            observations.totalTrue <= observations.totalFalse
+          );
+        } else if (placeType === 'unsurveyed') {
+          return observations.total === 0;
+        }
+
+        return true;
+      });
+    }
+
     // Get all features on visible tiles
     let features = [];
     for (let i = 0; i < visibleTiles.length; i++) {
       const { isReady, hasError, getData } = getTile(visibleTiles[i]);
       if (isReady() && !hasError()) {
-        features = features.concat(getData());
+        features = features.concat(applyFilters(getData()));
       }
     }
 

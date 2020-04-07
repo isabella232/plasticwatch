@@ -28,6 +28,10 @@ class Explore extends React.Component {
       },
       placeType: {
         accessor: 'filterValues.placeType'
+      },
+      bounds: {
+        accessor: 'bounds',
+        default: mapConfig.defaultInitialBounds
       }
     });
 
@@ -39,12 +43,18 @@ class Explore extends React.Component {
 
   async componentDidMount () {
     // This would load all tiles in the view port
-    this.handleMapMove(mapConfig.defaultInitialBounds);
+    this.props.updatePlacesList(mapConfig.defaultInitialBounds);
   }
 
   async componentDidUpdate (prevProps) {
     if (prevProps.location.search !== this.props.location.search) {
-      await this.fetchData();
+      const newState = this.qsState.getState(
+        this.props.location.search.substr(1)
+      );
+      this.setState(newState, () => {
+        const { bounds, filterValues } = newState;
+        this.props.updatePlacesList(bounds, filterValues);
+      });
     }
   }
 
@@ -58,7 +68,11 @@ class Explore extends React.Component {
   }
 
   async handleMapMove (bounds) {
-    this.props.updatePlacesList(bounds);
+    const qString = this.qsState.getQs({
+      ...this.state,
+      bounds
+    });
+    this.props.history.push({ search: qString });
   }
 
   handleFilterChangeSubmit () {
