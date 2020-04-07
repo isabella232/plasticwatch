@@ -175,7 +175,7 @@ class Map extends Component {
       })
     );
 
-    this.map.on('dragend', () => {
+    this.map.on('moveend', () => {
       this.props.handleMapMove(this.map.getBounds().toArray());
     });
 
