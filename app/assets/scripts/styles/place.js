@@ -1,10 +1,9 @@
 import styled from 'styled-components';
 import { themeVal, stylizeFunction } from './utils/general';
 import media from './utils/media-queries';
-import { visuallyHidden } from './helpers/index';
 import collecticon from './collecticons';
-import { rgba } from 'polished';
 
+import { rgba } from 'polished';
 const _rgba = stylizeFunction(rgba);
 
 export const Place = styled.article`
@@ -17,10 +16,15 @@ export const Place = styled.article`
   align-items: flex-start;
   padding: 1rem;
   margin: 0.5rem;
+  transition: all 0.24s ease 0s;
   ${media.mediumUp`
     padding: 1.5rem;
     margin: 1rem 0;
   `}
+  &:hover {
+    opacity: 1;
+    background: ${_rgba(themeVal('color.primary'), 0.05)};
+  }
 `;
 
 export const PlaceHeader = styled.header`
@@ -55,7 +59,8 @@ export const RatingType = styled.p`
   &::before {
     display: block;
     ${({ useIcon }) => collecticon(useIcon)}
-    color: ${({ nonplastic }) => (nonplastic ? themeVal('color.primary') : themeVal('color.base'))};
+    color: ${({ nonplastic }) =>
+    nonplastic ? themeVal('color.primary') : themeVal('color.base')};
     font-size: 3rem;
     margin-bottom: 0.5rem;
   }
@@ -63,25 +68,6 @@ export const RatingType = styled.p`
 
 export const PlaceSurveys = styled.p`
   font-size: 0.8rem;
-`;
-
-export const PlaceSelect = styled.a`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1;
-  margin: 0 !important;
-  transition: all 0.24s ease 0s;
-  flex: none;
-  &:hover {
-    opacity: 1;
-    background: ${_rgba(themeVal('color.primary'), 0.05)};
-  }
-  span {
-    ${visuallyHidden()}
-  }
 `;
 
 export const PlaceMeta = styled.div`
@@ -99,7 +85,7 @@ export const PlaceComment = styled.li`
   display: flex;
   justify-content: space-between;
   margin: 0.75rem 0;
-  
+
   img {
     max-width: 100%;
     margin-right: 0.5rem;

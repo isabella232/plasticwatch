@@ -43,6 +43,18 @@ const placesReducerInitialState = {
 const placesReducer = baseAPIReducer('PLACES', placesReducerInitialState);
 
 /**
+ * PLACES_TILES reducer
+ */
+const placesTilesReducerInitialState = {
+  // fetching: false,
+  // fetched: false,
+  // error: null,
+  // data: []
+};
+
+const placesTilesReducer = baseAPIReducer('PLACES_TILE', placesTilesReducerInitialState);
+
+/**
  * PLACE reducer
  */
 const placeReducerInitialState = {
@@ -117,6 +129,7 @@ export default combineReducers({
     answers: surveyAnswersReducer
   }),
   places: combineReducers({
+    tiles: placesTilesReducer,
     list: placesReducer,
     individual: placeReducer
   }),

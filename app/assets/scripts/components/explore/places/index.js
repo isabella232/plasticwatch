@@ -5,14 +5,12 @@ import { PropTypes as T } from 'prop-types';
 import { connect } from 'react-redux';
 
 import { wrapApiResult, getFromState } from '../../../redux/utils';
-import * as actions from '../../../redux/actions/places';
 
 import withMobileState from '../../common/with-mobile-state';
 import { StyledLink } from '../../common/link';
 
 import { themeVal } from '../../../styles/utils/general';
 import { listReset } from '../../../styles/helpers/index';
-
 import Button from '../../../styles/button/button';
 import {
   Filters,
@@ -25,19 +23,15 @@ import {
   FilterButtons
 } from '../../../styles/form/filters';
 import {
-  showGlobalLoading,
-  hideGlobalLoading
-} from '../../common/global-loading';
-import {
   Place,
   PlaceHeader,
   PlaceTitle,
-  PlaceType,
-  PlaceSelect
+  PlaceType
 } from '../../../styles/place';
 import { hideScrollbars } from '../../../styles/skins';
 import Rating from './rating';
 import { Panel } from '../../../styles/panel';
+import { withRouter } from 'react-router-dom';
 
 const Results = styled.ul`
   ${listReset()};
@@ -60,16 +54,6 @@ class PlacesIndex extends Component {
     this.toggleFilters = this.toggleFilters.bind(this);
   }
 
-  async componentDidMount () {
-    await this.fetchData();
-  }
-
-  async fetchData () {
-    showGlobalLoading();
-    await this.props.fetchPlaces();
-    hideGlobalLoading();
-  }
-
   toggleFilters () {
     const { filtersOpened } = this.state;
     this.setState({
@@ -77,19 +61,31 @@ class PlacesIndex extends Component {
     });
   }
 
+  renderPlacesCount (places) {
+    const count = places.length;
+
+    if (count === 0) return <div>No places found.</div>;
+    else if (count.length === 1) return <div>1 place found.</div>;
+    else return <div>{count} places found.</div>;
+  }
+
   render () {
     const { filtersOpened } = this.state;
-    const { isMobile, location } = this.props;
+    const {
+      isMobile,
+      location,
+      filterValues,
+      handleFilterTypeChange
+    } = this.props;
     const { isReady, getData, hasError } = this.props.places;
 
-    if (isMobile && location.search.indexOf('viewAs=list') === -1) return null;
-
-    if (!isReady()) {
-      return <div>Loading...</div>;
+    if (isMobile && location && location.search.indexOf('viewAs=list') === -1) {
+      return null;
     }
 
-    if (hasError()) {
-      return <div>An error occurred, could not fetch places!</div>;
+    let data;
+    if (isReady() && !hasError()) {
+      data = getData();
     }
 
     return (
@@ -105,32 +101,46 @@ class PlacesIndex extends Component {
                 placeholder='Look up location'
               />
             </InputWrapper>
-            {isMobile ? (
-              <>
-                <Button useIcon='sliders-vertical' onClick={this.toggleFilters}>
-                  Show Filters
-                </Button>
-                {filtersOpened && (
-                  <FilterButtons>
-                    <FilterButton>Plastic Free</FilterButton>
-                    <FilterButton>Plastic</FilterButton>
-                    <FilterButton>Unsurveyed</FilterButton>
-                  </FilterButtons>
-                )}
-              </>
-            ) : (
+            {isMobile && (
+              <Button useIcon='sliders-vertical' onClick={this.toggleFilters}>
+                Show Filters
+              </Button>
+            )}
+
+            {(!isMobile || (isMobile && filtersOpened)) && (
               <FilterButtons>
-                <FilterButton>Plastic Free</FilterButton>
-                <FilterButton>Plastic</FilterButton>
-                <FilterButton>Unsurveyed</FilterButton>
+                <FilterLabel>Filters:</FilterLabel>
+                <FilterButton
+                  onClick={() => handleFilterTypeChange('plasticFree')}
+                  active={
+                    filterValues && filterValues.placeType === 'plasticFree'
+                  }
+                >
+                  Plastic Free
+                </FilterButton>
+                <FilterButton
+                  onClick={() => handleFilterTypeChange('plastic')}
+                  active={filterValues && filterValues.placeType === 'plastic'}
+                >
+                  Plastic
+                </FilterButton>
+                <FilterButton
+                  onClick={() => handleFilterTypeChange('unsurveyed')}
+                  active={
+                    filterValues && filterValues.placeType === 'unsurveyed'
+                  }
+                >
+                  Unsurveyed
+                </FilterButton>
               </FilterButtons>
             )}
           </FilterToolbar>
         </Filters>
 
-        <Results>
-          {getData().map(
-            ({ id, properties: { name, amenity, observations } }) => (
+        {isReady() && !hasError() && (
+          <Results>
+            {this.renderPlacesCount(data)}
+            {data.map(({ id, properties: { name, amenity, observations } }) => (
               <ResultsItem key={id} as={StyledLink} to={`/explore/${id}`}>
                 <Place>
                   <PlaceHeader>
@@ -138,12 +148,11 @@ class PlacesIndex extends Component {
                     {amenity && <PlaceType>{amenity}</PlaceType>}
                   </PlaceHeader>
                   <Rating observations={observations} />
-                  <PlaceSelect />
                 </Place>
               </ResultsItem>
-            )
-          )}
-        </Results>
+            ))}
+          </Results>
+        )}
       </Panel>
     );
   }
@@ -152,7 +161,8 @@ class PlacesIndex extends Component {
 if (environment !== 'production') {
   PlacesIndex.propTypes = {
     places: T.object,
-    fetchPlaces: T.func,
+    filterValues: T.object,
+    handleFilterTypeChange: T.func,
     isMobile: T.bool,
     location: T.object
   };
@@ -164,13 +174,6 @@ function mapStateToProps (state) {
   };
 }
 
-function dispatcher (dispatch) {
-  return {
-    fetchPlaces: (...args) => dispatch(actions.fetchPlaces(...args))
-  };
-}
-
-export default connect(
-  mapStateToProps,
-  dispatcher
-)(withMobileState(PlacesIndex));
+export default connect(mapStateToProps)(
+  withRouter(withMobileState(PlacesIndex))
+);

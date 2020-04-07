@@ -7,7 +7,7 @@ import * as actions from '../../redux/actions/places';
 import { PropTypes as T } from 'prop-types';
 import { withRouter, matchPath } from 'react-router-dom';
 import _isEqual from 'lodash.isequal';
-import { geojsonBbox } from '../../utils/geo';
+import { geojsonBbox, bboxToTiles } from '../../utils/geo';
 import { getMarker } from '../../utils/utils';
 import { mapConfig } from '../../config';
 
@@ -112,10 +112,6 @@ class Map extends Component {
     if (this.state.isSourceLoaded) {
       this.updateData();
       this.updateFilter();
-
-      if (!this.props.placeId && this.state.bounds) {
-        this.map.fitBounds(this.state.bounds, { padding: 50 });
-      }
     }
   }
 
@@ -123,6 +119,11 @@ class Map extends Component {
     if (this.map) {
       this.map.remove();
     }
+  }
+
+  getVisibleTiles () {
+    const bounds = this.map.getBounds();
+    return bboxToTiles(bounds.toArray());
   }
 
   updateData () {
@@ -135,10 +136,12 @@ class Map extends Component {
   }
 
   initMap () {
+    const bounds = mapConfig.defaultInitialBounds;
+
     this.map = new mapboxgl.Map({
       container: this.mapContainer,
       style: mapConfig.style,
-      bounds: mapConfig.bounds,
+      bounds,
       attributionControl: false,
       fitBoundsOptions: mapConfig.fitBoundsOptions
     });
@@ -173,11 +176,7 @@ class Map extends Component {
     );
 
     this.map.on('moveend', () => {
-      // const bounds = this.map.getBounds();
-      // const zoom = this.map.getZoom();
-      // if (zoom > 12) {
-      // fetch data?
-      // }
+      this.props.handleMapMove(this.map.getBounds().toArray());
     });
 
     // ensure the source is added
@@ -290,6 +289,7 @@ class Map extends Component {
 }
 
 Map.propTypes = {
+  handleMapMove: T.func,
   places: T.object,
   placeId: T.object,
   place: T.object,
@@ -320,6 +320,7 @@ function mapStateToProps (state, props) {
 
 function dispatcher (dispatch) {
   return {
+    fetchTiles: (...args) => dispatch(actions.fetchTiles(...args)),
     fetchPlaces: (...args) => dispatch(actions.fetchPlaces(...args)),
     fetchPlace: (...args) => dispatch(actions.fetchPlace(...args))
   };
