@@ -46,7 +46,7 @@ class Explore extends React.Component {
   async componentDidMount () {
     // If bounds querystring is not already set, apply defaults
     if (!this.state.bounds) {
-      this.updateQuerystring(mapConfig.defaultInitialBounds);
+      this.updateBoundsQuerystring(mapConfig.defaultInitialBounds);
     } else {
       this.fetchData();
     }
@@ -107,8 +107,10 @@ class Explore extends React.Component {
 
   render () {
     const { location, isMobile } = this.props;
-    const { bounds } = this.state;
-
+    let { bounds } = this.state;
+    if (!bounds) {
+      bounds = mapConfig.defaultInitialBounds;
+    }
     const displayMap =
       !isMobile || (location && location.search.indexOf('viewAs=list') === -1);
     return (

@@ -288,7 +288,7 @@ class Map extends Component {
 
 Map.propTypes = {
   handleMapMove: T.func,
-  initialBounds: T.object,
+  initialBounds: T.array,
   places: T.object,
   placeId: T.object,
   place: T.object,
