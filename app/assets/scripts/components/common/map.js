@@ -7,10 +7,9 @@ import * as actions from '../../redux/actions/places';
 import { PropTypes as T } from 'prop-types';
 import { withRouter, matchPath } from 'react-router-dom';
 import _isEqual from 'lodash.isequal';
-import { geojsonBbox, bboxToTiles } from '../../utils/geo';
+import { geojsonBbox, bboxToTiles, geojsonCentroid } from '../../utils/geo';
 import { getMarker } from '../../utils/utils';
 import { mapConfig } from '../../config';
-import { showGlobalLoading, hideGlobalLoading } from '../common/global-loading';
 
 // Mapbox access token
 mapboxgl.accessToken = mapConfig.mapboxAccessToken;
@@ -33,91 +32,42 @@ class Map extends Component {
     super(props);
     this.state = {
       mapLoaded: false,
-      isSourceLoaded: false,
-      geojson: {
-        type: 'FeatureCollection',
-        features: []
-      },
-      filters: [
-        ['!=', 'id', ''],
-        ['==', 'id', '']
-      ],
-      bounds: null,
-      selectedFeature: null
-    };
-  }
-
-  static getDerivedStateFromProps (props, state) {
-    const { placeId, places, match, place } = props;
-
-    let geojson;
-    let bounds = null;
-    if (places.isReady()) {
-      geojson = {
-        type: 'FeatureCollection',
-        features: places.getData()
-      };
-      bounds = geojsonBbox(geojson);
-    }
-
-    let filters = state.filters;
-    let selectedFeature = false;
-    if (match && place.isReady()) {
-      filters[0] = ['==', 'id', placeId];
-      filters[1] = ['!=', 'id', placeId];
-      const feature = place.getData();
-      selectedFeature = feature.id;
-      bounds = geojsonBbox(feature);
-    } else {
-      filters[0] = ['!=', 'id', ''];
-      filters[1] = ['==', 'id', ''];
-    }
-
-    if (
-      _isEqual(state.geojson, geojson) &&
-      _isEqual(filters, state.filters) &&
-      _isEqual(bounds, state.bounds) &&
-      _isEqual(selectedFeature, state.selectedFeature)
-    ) {
-      return null;
-    }
-
-    // set icon names
-    if (geojson) {
-      geojson.features.forEach(feature => {
-        feature.properties.icon = getMarker(feature);
-      });
-    }
-
-    return {
-      geojson,
-      filters,
-      bounds,
-      selectedFeature
+      isSourceLoaded: false
     };
   }
 
   componentDidMount () {
     const { mapLoaded } = this.state;
-    const { isReady } = this.props.places;
-
     // Bypass if map is already loaded
     if (mapLoaded) {
       return;
-    }
-
-    if (!isReady()) {
-      showGlobalLoading();
     }
 
     // Mount the map on the net tick to prevent the right side gap.
     setTimeout(() => this.initMap(), 0);
   }
 
-  componentDidUpdate () {
+  shouldComponentUpdate (nextProps, nextState) {
+    if (
+      _isEqual(this.props.geojson, nextProps.geojson) &&
+      _isEqual(this.props.filters, nextProps.filters) &&
+      _isEqual(this.props.selectedFeature, nextProps.selectedFeature) &&
+      _isEqual(this.props.center, nextProps.center)
+    ) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  componentDidUpdate (prevProps, prevState) {
     if (this.state.isSourceLoaded) {
-      this.updateData();
       this.updateFilter();
+      this.updateData();
+
+      if (!_isEqual(prevProps.center, this.props.center) && this.props.center.length) {
+        this.map.setCenter(this.props.center);
+      }
     }
   }
 
@@ -133,12 +83,12 @@ class Map extends Component {
   }
 
   updateData () {
-    this.map.getSource('placesSource').setData(this.state.geojson);
+    this.map.getSource('placesSource').setData(this.props.geojson);
   }
 
   updateFilter () {
-    this.map.setFilter('selectedPlacesLayer', this.state.filters[1]);
-    this.map.setFilter('placesLayer', this.state.filters[0]);
+    this.map.setFilter('selectedPlacesLayer', this.props.filters[1]);
+    this.map.setFilter('placesLayer', this.props.filters[0]);
   }
 
   initMap () {
@@ -257,11 +207,7 @@ class Map extends Component {
   }
 
   renderMap () {
-    const { isReady, hasError } = this.props.places;
-
-    if (isReady()) {
-      hideGlobalLoading();
-    }
+    const { hasError } = this.props.places;
 
     if (hasError()) {
       // handle errors
@@ -297,13 +243,16 @@ Map.propTypes = {
   handleMapMove: T.func,
   initialBounds: T.array,
   places: T.object,
-  placeId: T.object,
-  place: T.object,
-  match: T.object,
-  history: T.object
+  history: T.object,
+  geojson: T.object,
+  selectedFeature: T.object,
+  center: T.array,
+  filters: T.array
 };
 
 function mapStateToProps (state, props) {
+  const places = wrapApiResult(getFromState(state, `places.list`));
+
   const match = matchPath(props.location.pathname, {
     path: '/explore/:type/:id',
     exact: true
@@ -316,11 +265,48 @@ function mapStateToProps (state, props) {
     placeId = `${type}/${id}`;
     place = wrapApiResult(getFromState(state, `places.individual.${placeId}`));
   }
+
+  let geojson = {
+    'type': 'FeatureCollection',
+    'features': []
+  };
+  if (places.isReady()) {
+    geojson = {
+      type: 'FeatureCollection',
+      features: places.getData()
+    };
+
+    geojson.features.forEach(feature => {
+      feature.properties.icon = getMarker(feature);
+    });
+  }
+
+  let filters = [
+    ['!=', 'id', ''],
+    ['==', 'id', '']
+  ];
+  let selectedFeature = {};
+  let center = [];
+  if (match && place.isReady()) {
+    filters[0] = ['==', 'id', placeId];
+    filters[1] = ['!=', 'id', placeId];
+    const feature = place.getData();
+    selectedFeature = feature;
+    center = geojsonCentroid(feature).geometry.coordinates;
+  } else {
+    filters[0] = ['!=', 'id', ''];
+    filters[1] = ['==', 'id', ''];
+  }
+
   return {
     places: wrapApiResult(getFromState(state, `places.list`)),
     match: match,
     placeId: placeId,
-    place: place
+    place: place,
+    geojson,
+    selectedFeature,
+    center,
+    filters
   };
 }
 

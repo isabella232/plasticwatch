@@ -3,6 +3,7 @@ import bboxPolygon from '@turf/bbox-polygon';
 import booleanContains from '@turf/boolean-contains';
 import tileCover from '@mapbox/tile-cover';
 import _flatten from 'lodash.flatten';
+import turfCentroid from '@turf/centroid';
 
 const tileLimits = {
   min_zoom: 16,
@@ -23,4 +24,8 @@ export function bboxToTiles (bbox) {
 export function featuresInBounds (features, bounds) {
   const polygon = bboxPolygon(_flatten(bounds));
   return features.filter((f) => booleanContains(polygon, f));
+}
+
+export function geojsonCentroid (geojson) {
+  return turfCentroid(geojson.geometry);
 }
