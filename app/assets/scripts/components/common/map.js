@@ -10,6 +10,7 @@ import _isEqual from 'lodash.isequal';
 import { bboxToTiles, geojsonCentroid } from '../../utils/geo';
 import { getMarker } from '../../utils/utils';
 import { mapConfig } from '../../config';
+import _throttle from 'lodash.throttle';
 
 // Mapbox access token
 mapboxgl.accessToken = mapConfig.mapboxAccessToken;
@@ -87,6 +88,17 @@ class Map extends Component {
       fitBoundsOptions: mapConfig.fitBoundsOptions
     });
 
+    const self = this;
+    const updateQueryBounds = _throttle(
+      function () {
+        self.props.handleMapMove(self.map.getBounds().toArray());
+      },
+      100,
+      {
+        'leading': true
+      }
+    );
+
     // Add attribution.
     this.map.addControl(
       new mapboxgl.AttributionControl({
@@ -116,9 +128,7 @@ class Map extends Component {
       })
     );
 
-    this.map.on('moveend', () => {
-      this.props.handleMapMove(this.map.getBounds().toArray());
-    });
+    this.map.on('moveend', updateQueryBounds);
 
     // ensure the source is added
     this.map.on('sourcedata', e => {
