@@ -7,7 +7,7 @@ import * as actions from '../../redux/actions/places';
 import { PropTypes as T } from 'prop-types';
 import { withRouter, matchPath } from 'react-router-dom';
 import _isEqual from 'lodash.isequal';
-import { geojsonBbox, bboxToTiles, geojsonCentroid } from '../../utils/geo';
+import { bboxToTiles, geojsonCentroid } from '../../utils/geo';
 import { getMarker } from '../../utils/utils';
 import { mapConfig } from '../../config';
 
@@ -47,27 +47,14 @@ class Map extends Component {
     setTimeout(() => this.initMap(), 0);
   }
 
-  shouldComponentUpdate (nextProps, nextState) {
-    if (
-      _isEqual(this.props.geojson, nextProps.geojson) &&
-      _isEqual(this.props.filters, nextProps.filters) &&
-      _isEqual(this.props.selectedFeature, nextProps.selectedFeature) &&
-      _isEqual(this.props.center, nextProps.center)
-    ) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-
   componentDidUpdate (prevProps, prevState) {
+    if (!_isEqual(prevProps.center, this.props.center) && this.props.center) {
+      this.map.setCenter(this.props.center);
+    }
+
     if (this.state.isSourceLoaded) {
       this.updateFilter();
       this.updateData();
-
-      if (!_isEqual(prevProps.center, this.props.center) && this.props.center.length) {
-        this.map.setCenter(this.props.center);
-      }
     }
   }
 
@@ -241,7 +228,7 @@ Map.propTypes = {
   places: T.object,
   history: T.object,
   geojson: T.object,
-  selectedFeature: T.object,
+  // selectedFeature: T.object,
   center: T.array,
   filters: T.array
 };
@@ -281,17 +268,14 @@ function mapStateToProps (state, props) {
     ['!=', 'id', ''],
     ['==', 'id', '']
   ];
-  let selectedFeature = {};
-  let center = [];
+  let selectedFeature;
+  let center;
   if (match && place.isReady()) {
     filters[0] = ['==', 'id', placeId];
     filters[1] = ['!=', 'id', placeId];
     const feature = place.getData();
     selectedFeature = feature;
     center = geojsonCentroid(feature).geometry.coordinates;
-  } else {
-    filters[0] = ['!=', 'id', ''];
-    filters[1] = ['==', 'id', ''];
   }
 
   return {
