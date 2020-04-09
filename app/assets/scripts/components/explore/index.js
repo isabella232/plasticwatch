@@ -78,13 +78,15 @@ class Explore extends React.Component {
     const { filterValues } = this.state;
     let newValue;
 
+    // As "placeType" filter is boolean, this will set it as null if value
+    // passed is the same, which means the user has clicked an active button
     if (!filterValues || filterValues.placeType !== value) {
       newValue = value;
     } else {
       newValue = null;
     }
 
-    // Set new filter value, if type is already set disable it
+    // Set new filter value
     this.setState(
       {
         ...this.state,
