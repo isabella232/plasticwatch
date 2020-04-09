@@ -61,15 +61,6 @@ class Explore extends React.Component {
     }
   }
 
-  async fetchData () {
-    // Get query params from state
-    const { filterValues } = this.qsState.getState(
-      this.props.location.search.substr(1)
-    );
-
-    await this.props.fetchPlaces(filterValues);
-  }
-
   async handleMapMove (bounds) {
     const qString = this.qsState.getQs({
       ...this.state,
@@ -137,7 +128,6 @@ if (environment !== 'production') {
   Explore.propTypes = {
     history: T.object,
     updatePlacesList: T.func,
-    fetchPlaces: T.func,
     location: T.object,
     isMobile: T.bool
   };
@@ -152,8 +142,7 @@ function mapStateToProps (state, props) {
 function dispatcher (dispatch) {
   return {
     updatePlacesList: (...args) => dispatch(actions.updatePlacesList(...args)),
-    fetchPlacesTile: (...args) => dispatch(actions.fetchPlacesTile(...args)),
-    fetchPlaces: (...args) => dispatch(actions.fetchPlaces(...args))
+    fetchPlacesTile: (...args) => dispatch(actions.fetchPlacesTile(...args))
   };
 }
 
