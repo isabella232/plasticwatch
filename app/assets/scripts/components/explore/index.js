@@ -63,8 +63,9 @@ class Explore extends React.Component {
     const { filterValues, bounds } = this.qsState.getState(
       this.props.location.search.substr(1)
     );
-
-    await this.props.updatePlacesList(bounds, filterValues);
+    if (bounds) {
+      await this.props.updatePlacesList(bounds, filterValues);
+    }
   }
 
   async updateBoundsQuerystring (bounds) {
