@@ -33,35 +33,42 @@ class Explore extends React.Component {
         accessor: 'filterValues.search'
       },
       bounds: {
-        accessor: 'bounds',
-        default: mapConfig.defaultInitialBounds
+        accessor: 'bounds'
       }
     });
 
     this.state = this.qsState.getState(this.props.location.search.substr(1));
 
     this.handleFilterChange = this.handleFilterChange.bind(this);
-    this.handleMapMove = this.handleMapMove.bind(this);
+    this.updateBoundsQuerystring = this.updateBoundsQuerystring.bind(this);
   }
 
   async componentDidMount () {
-    // This would load all tiles in the view port
-    this.props.updatePlacesList(mapConfig.defaultInitialBounds);
+    // If bounds querystring is not already set, apply defaults
+    if (!this.state.bounds) {
+      this.updateBoundsQuerystring(mapConfig.defaultInitialBounds);
+    } else {
+      this.fetchData();
+    }
   }
 
   async componentDidUpdate (prevProps) {
     if (prevProps.location.search !== this.props.location.search) {
-      const newState = this.qsState.getState(
-        this.props.location.search.substr(1)
-      );
-      this.setState(newState, () => {
-        const { bounds, filterValues } = newState;
-        this.props.updatePlacesList(bounds, filterValues);
-      });
+      await this.fetchData();
     }
   }
 
-  async handleMapMove (bounds) {
+  async fetchData () {
+    // Get query params from state
+    const { filterValues, bounds } = this.qsState.getState(
+      this.props.location.search.substr(1)
+    );
+    if (bounds) {
+      await this.props.updatePlacesList(bounds, filterValues);
+    }
+  }
+
+  async updateBoundsQuerystring (bounds) {
     const qString = this.qsState.getQs({
       ...this.state,
       bounds
@@ -101,7 +108,10 @@ class Explore extends React.Component {
 
   render () {
     const { location, isMobile } = this.props;
-
+    let { bounds } = this.state;
+    if (!bounds) {
+      bounds = mapConfig.defaultInitialBounds;
+    }
     const displayMap =
       !isMobile || (location && location.search.indexOf('viewAs=list') === -1);
     return (
@@ -119,7 +129,12 @@ class Explore extends React.Component {
             path='/explore/:type/:id/survey'
             component={PlaceSurvey}
           />
-          {displayMap && <Map handleMapMove={this.handleMapMove} />}
+          {displayMap && (
+            <Map
+              handleMapMove={this.updateBoundsQuerystring}
+              initialBounds={bounds}
+            />
+          )}
         </SidebarWrapper>
       </App>
     );
