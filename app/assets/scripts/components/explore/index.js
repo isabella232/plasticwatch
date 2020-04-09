@@ -29,6 +29,9 @@ class Explore extends React.Component {
       placeType: {
         accessor: 'filterValues.placeType'
       },
+      search: {
+        accessor: 'filterValues.search'
+      },
       bounds: {
         accessor: 'bounds',
         default: mapConfig.defaultInitialBounds
@@ -37,7 +40,7 @@ class Explore extends React.Component {
 
     this.state = this.qsState.getState(this.props.location.search.substr(1));
 
-    this.handleFilterTypeChange = this.handleFilterTypeChange.bind(this);
+    this.handleFilterChange = this.handleFilterChange.bind(this);
     this.handleMapMove = this.handleMapMove.bind(this);
   }
 
@@ -80,23 +83,23 @@ class Explore extends React.Component {
     this.props.history.push({ search: qString });
   }
 
-  handleFilterTypeChange (placeType) {
+  handleFilterChange (filter, value) {
     const { filterValues } = this.state;
     let newValue;
 
-    if (!filterValues || filterValues.placeType !== placeType) {
-      newValue = placeType;
+    if (!filterValues || filterValues.placeType !== value) {
+      newValue = value;
     } else {
       newValue = null;
     }
 
-    // Set new filter type, if type is already set, disable it
+    // Set new filter value, if type is already set disable it
     this.setState(
       {
         ...this.state,
         filterValues: {
           ...filterValues,
-          placeType: newValue
+          [filter]: newValue
         }
       },
       this.handleFilterChangeSubmit
@@ -113,7 +116,7 @@ class Explore extends React.Component {
         <SidebarWrapper>
           <Route exact path='/explore'>
             <PlacesIndex
-              handleFilterTypeChange={this.handleFilterTypeChange}
+              handleFilterChange={this.handleFilterChange}
               filterValues={this.state.filterValues}
             />
           </Route>

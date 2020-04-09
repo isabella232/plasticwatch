@@ -41,7 +41,7 @@ export const InputWrapper = styled.div`
 `;
 
 export const InputWithIcon = styled(FormInput)`
-  padding: 1rem 1.5rem;
+  padding: 1rem 0.5rem;
   background: #FFFFFF;
 `;
 
@@ -49,7 +49,7 @@ export const InputIcon = styled(filterComponentProps(FormLabel, ['useIcon']))`
   &::after {
     ${({ useIcon }) => collecticon(useIcon)}
     position: absolute;
-    left: 0.5rem;
+    right: 0.5rem;
     top: 50%;
     opacity: 0.64;
   }
