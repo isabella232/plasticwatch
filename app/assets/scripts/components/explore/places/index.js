@@ -106,7 +106,7 @@ class PlacesIndex extends Component {
           <FilterToolbar>
             <InputWrapper>
               <FilterLabel htmlFor='placeSearch'>
-                Search list
+                Search in list
               </FilterLabel>
               <InputWithIcon
                 type='text'
