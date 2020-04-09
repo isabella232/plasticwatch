@@ -5,6 +5,7 @@ import App from '../common/app';
 import { SidebarWrapper } from '../common/view-wrappers';
 import Introduction from './introduction';
 import Map from '../common/map';
+import { mapConfig } from '../../config';
 
 export default class Home extends React.Component {
   render () {
@@ -12,7 +13,9 @@ export default class Home extends React.Component {
       <App pageTitle='Welcome' hideFooter>
         <SidebarWrapper>
           <Introduction />
-          <Map />
+          <Map
+            initialBounds={mapConfig.defaultInitialBounds}
+          />
         </SidebarWrapper>
       </App>
     );
