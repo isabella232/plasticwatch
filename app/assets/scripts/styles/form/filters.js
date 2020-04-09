@@ -45,7 +45,7 @@ export const InputWithIcon = styled(FormInput)`
   background: #FFFFFF;
 `;
 
-export const InputIcon = filterComponentProps(styled(FormLabel)`
+export const InputIcon = styled(filterComponentProps(FormLabel, ['useIcon']))`
   &::after {
     ${({ useIcon }) => collecticon(useIcon)}
     position: absolute;
@@ -53,7 +53,7 @@ export const InputIcon = filterComponentProps(styled(FormLabel)`
     top: 50%;
     opacity: 0.64;
   }
-`, ['useIcon']);
+`;
 
 export const FilterLabel = styled(FormLabel)`
   font-size: 0.875rem;
