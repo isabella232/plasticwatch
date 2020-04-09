@@ -237,7 +237,7 @@ class Trends extends React.Component {
             <p>
               <strong>
                 {round(percentNonPlastic)}% (
-                {formatThousands(nonPlasticPlacesCount)} of ß{formatThousands(surveyedPlacesCount)})
+                {formatThousands(nonPlasticPlacesCount)} of {formatThousands(surveyedPlacesCount)})
               </strong> of surveyed Washington DC restaurants offer plastic-free options
             </p>
             <PanelStats>
