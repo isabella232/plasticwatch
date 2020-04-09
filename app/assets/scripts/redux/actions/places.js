@@ -159,15 +159,26 @@ export function updatePlacesList (bounds, filters = {}) {
         if (placeType === 'unsurveyed' && observations.total > 0) {
           return false;
         }
-        if (placeType === 'plasticFree' && (observations.total === 0 || observations.totalTrue < observations.totalFalse)) {
+        if (
+          placeType === 'plasticFree' &&
+          (observations.total === 0 ||
+            observations.totalTrue <= observations.totalFalse)
+        ) {
           return false;
         }
-        if (placeType === 'plastic' && (observations.total === 0 || observations.totalTrue >= observations.totalFalse)) {
+        if (
+          placeType === 'plastic' &&
+          (observations.total === 0 ||
+            observations.totalTrue > observations.totalFalse)
+        ) {
           return false;
         }
 
         // Discard place if name doesn't match search
-        if (search && (!name || !name.toUpperCase().includes(search.toUpperCase()))) {
+        if (
+          search &&
+          (!name || !name.toUpperCase().includes(search.toUpperCase()))
+        ) {
           return false;
         }
 
