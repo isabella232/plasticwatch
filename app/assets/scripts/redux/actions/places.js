@@ -151,22 +151,24 @@ export function updatePlacesList (bounds, filters = {}) {
     function applyFilters (features) {
       return features.filter((f) => {
         const {
-          properties: { observations }
+          properties: { observations, name }
         } = f;
-        const { placeType } = filters;
+        const { placeType, search } = filters;
 
-        if (placeType === 'plasticFree') {
-          return (
-            observations.total > 0 &&
-            observations.totalTrue > observations.totalFalse
-          );
-        } else if (placeType === 'plastic') {
-          return (
-            observations.total > 0 &&
-            observations.totalTrue <= observations.totalFalse
-          );
-        } else if (placeType === 'unsurveyed') {
-          return observations.total === 0;
+        // Discard place is type is not met
+        if (placeType === 'unsurveyed' && observations.total > 0) {
+          return false;
+        }
+        if (placeType === 'plasticFree' && (observations.total === 0 || observations.totalTrue < observations.totalFalse)) {
+          return false;
+        }
+        if (placeType === 'plastic' && (observations.total === 0 || observations.totalTrue >= observations.totalFalse)) {
+          return false;
+        }
+
+        // Discard place if name doesn't match search
+        if (search && (!name || !name.toUpperCase().includes(search.toUpperCase()))) {
+          return false;
         }
 
         return true;
