@@ -4,6 +4,7 @@ import booleanContains from '@turf/boolean-contains';
 import tileCover from '@mapbox/tile-cover';
 import _flatten from 'lodash.flatten';
 import turfCentroid from '@turf/centroid';
+import { func } from 'prop-types';
 
 const tileLimits = {
   min_zoom: 16,
@@ -28,4 +29,9 @@ export function featuresInBounds (features, bounds) {
 
 export function geojsonCentroid (geojson) {
   return turfCentroid(geojson.geometry);
+}
+
+export function featureTile (feature) {
+  const tile = tileCover.indexes(feature.geometry, tileLimits);
+  return tile;
 }

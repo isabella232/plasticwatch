@@ -1,6 +1,8 @@
 import { fetchDispatchFactory, postItem } from '../utils';
 import { apiUrl } from '../../config';
 import qs from 'qs';
+import { featureTile } from '../../utils/geo';
+import { invalidatePlacesTile } from '../actions/places';
 
 /*
  * Fetch survey metadata.
@@ -84,5 +86,7 @@ export function postSurvey (data) {
   return async (dispatch, getState) => {
     const state = getState();
     await postItem(state, 'observations', data);
+    const tile = featureTile(data.osmObject);
+    dispatch(invalidatePlacesTile(tile));
   };
 }
