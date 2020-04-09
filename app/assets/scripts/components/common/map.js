@@ -198,10 +198,6 @@ class Map extends Component {
           this.props.history.push(`/explore/${feature.properties.id}`);
           this.props.handleMapMove(this.map.getBounds().toArray());
         }
-
-        if (!feature || feature.properties.id === this.state.selectedFeature) {
-          this.props.history.push('/explore');
-        }
       });
     });
   }
