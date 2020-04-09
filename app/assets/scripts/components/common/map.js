@@ -10,6 +10,7 @@ import _isEqual from 'lodash.isequal';
 import { geojsonBbox, bboxToTiles } from '../../utils/geo';
 import { getMarker } from '../../utils/utils';
 import { mapConfig } from '../../config';
+import { showGlobalLoading, hideGlobalLoading } from '../common/global-loading';
 
 // Mapbox access token
 mapboxgl.accessToken = mapConfig.mapboxAccessToken;
@@ -98,14 +99,19 @@ class Map extends Component {
 
   componentDidMount () {
     const { mapLoaded } = this.state;
+    const { isReady } = this.props.places;
 
     // Bypass if map is already loaded
     if (mapLoaded) {
       return;
     }
 
+    if (!isReady()) {
+      showGlobalLoading();
+    }
+
     // Mount the map on the net tick to prevent the right side gap.
-    setTimeout(() => this.initMap(), 1);
+    setTimeout(() => this.initMap(), 0);
   }
 
   componentDidUpdate () {
@@ -240,6 +246,7 @@ class Map extends Component {
 
         if (feature && !this.state.selectedFeature) {
           this.props.history.push(`/explore/${feature.properties.id}`);
+          this.props.handleMapMove(this.map.getBounds().toArray());
         }
 
         if (!feature || feature.properties.id === this.state.selectedFeature) {
@@ -252,8 +259,8 @@ class Map extends Component {
   renderMap () {
     const { isReady, hasError } = this.props.places;
 
-    if (!isReady()) {
-      // add a loading indicator on the map
+    if (isReady()) {
+      hideGlobalLoading();
     }
 
     if (hasError()) {
