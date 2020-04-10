@@ -6,7 +6,7 @@ module.exports = {
   appDescription: 'A collaborative map of plastic usage by businesses.',
   baseUrl: 'http://localhost:9000',
   appPathname: '',
-  apiUrl: 'http://wikiplastic-dev.us-east-1.elasticbeanstalk.com',
+  apiUrl: 'https://wikiplastic-dev.us-east-1.elasticbeanstalk.com',
   osmUrl: 'https://master.apis.dev.openstreetmap.org',
   pageLimit: 15,
   refreshProfileInterval: 5 * 60 * 1000, // 5 min
@@ -19,6 +19,11 @@ module.exports = {
     ],
     fitBoundsOptions: {
       padding: 20
+    },
+    zoom: 15.2,
+    center: {
+      'lng': -77.03685000000002,
+      'lat': 38.89975039081824
     }
   }
 };

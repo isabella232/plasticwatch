@@ -121,6 +121,11 @@ class Explore extends React.Component {
   render () {
     const { location, isMobile } = this.props;
     let { zoom, lng, lat } = this.state;
+    if (!zoom || !lng || !lat) {
+      zoom = mapConfig.zoom;
+      lng = mapConfig.center.lng;
+      lat = mapConfig.center.lat;
+    }
     const displayMap =
       !isMobile || (location && location.search.indexOf('viewAs=list') === -1);
     return (
@@ -141,8 +146,8 @@ class Explore extends React.Component {
           {displayMap && (
             <Map
               handleMapMove={this.updateBoundsQuerystring}
-              zoom={parseInt(zoom)}
-              center={[parseFloat(lng), parseFloat(lat)]}
+              zoom={Number(zoom)}
+              center={[Number(lng), Number(lat)]}
             />
           )}
         </SidebarWrapper>
