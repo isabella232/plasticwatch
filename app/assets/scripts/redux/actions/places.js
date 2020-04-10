@@ -136,13 +136,13 @@ export function fetchPlacesTile (quadkey) {
 
 export const SET_PLACES_LIST = 'SET_PLACES_LIST';
 
-export function updatePlacesList (bounds, filters = {}) {
+export function updatePlacesList (filters = {}) {
   return async (dispatch, getState) => {
     // Fetch visible tiles
+    const state = getState();
+    const bounds = state.map.bounds;
     const visibleTiles = bboxToTiles(bounds);
     await Promise.all(visibleTiles.map((id) => dispatch(fetchPlacesTile(id))));
-
-    const state = getState();
 
     // Helper function to get tile from state
     const getTile = (id) =>
