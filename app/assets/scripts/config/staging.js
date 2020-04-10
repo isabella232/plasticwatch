@@ -2,6 +2,6 @@
 
 module.exports = {
   environment: 'staging',
-  baseUrl: 'http://plasticwatch.surge.sh',
-  apiUrl: 'http://ec2-52-44-206-165.compute-1.amazonaws.com'
+  baseUrl: 'https://plasticwatch.surge.sh',
+  apiUrl: 'https://wikiplastic-dev.us-east-1.elasticbeanstalk.com'
 };
