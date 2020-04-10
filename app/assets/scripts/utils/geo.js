@@ -29,3 +29,8 @@ export function featuresInBounds (features, bounds) {
 export function geojsonCentroid (geojson) {
   return turfCentroid(geojson.geometry);
 }
+
+export function featureTile (feature) {
+  const tile = tileCover.indexes(feature.geometry, tileLimits);
+  return tile;
+}
