@@ -42,8 +42,6 @@ class Map extends Component {
     const { mapLoaded } = this.state;
     // Bypass if map is already loaded
     if (mapLoaded) {
-      this.map.setZoom(this.props.zoom);
-      this.map.setCenter(this.props.center);
       return;
     }
 
@@ -52,6 +50,13 @@ class Map extends Component {
   }
 
   componentDidUpdate (prevProps, prevState) {
+    if (!_isEqual(prevState.mapLoaded, this.state.mapLoaded)) {
+      this.map.setZoom(this.props.zoom);
+      this.map.setCenter(this.props.center);
+      this.props.setMapBounds(this.map.getBounds().toArray());
+      this.props.updatePlacesList()
+    }
+
     if (!_isEqual(prevProps.featureCenter, this.props.featureCenter) && this.props.featureCenter) {
       this.map.setCenter(this.props.featureCenter);
     }
@@ -147,6 +152,8 @@ class Map extends Component {
 
     this.map.on('load', () => {
       this.setState({ mapLoaded: true });
+      console.log('map.on load');
+
       // add the geojson from state as a source to the map
       this.map.addSource('placesSource', {
         type: 'geojson',
@@ -249,7 +256,8 @@ Map.propTypes = {
   filters: T.array,
   // eslint-disable-next-line react/no-unused-prop-types
   setMapBounds: T.func,
-  featureCenter: T.array
+  featureCenter: T.array,
+  updatePlacesList: T.func
 };
 
 function mapStateToProps (state, props) {
@@ -313,7 +321,8 @@ function dispatcher (dispatch) {
     fetchTiles: (...args) => dispatch(actions.fetchTiles(...args)),
     fetchPlaces: (...args) => dispatch(actions.fetchPlaces(...args)),
     fetchPlace: (...args) => dispatch(actions.fetchPlace(...args)),
-    setMapBounds: (...args) => dispatch(mapActions.setMapBounds(...args))
+    setMapBounds: (...args) => dispatch(mapActions.setMapBounds(...args)),
+    updatePlacesList: (...args) => dispatch(actions.updatePlacesList(...args))
   };
 }
 

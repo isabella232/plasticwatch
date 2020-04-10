@@ -53,13 +53,15 @@ class Explore extends React.Component {
     // If bounds querystring is not already set, apply defaults
     if (!this.state.zoom || !this.state.lng || !this.state.lat) {
       this.updateBoundsQuerystring(mapConfig.zoom, mapConfig.center.lng, mapConfig.center.lat);
-    } else {
-      this.fetchData();
     }
+    //  else {
+    //   this.fetchData();
+    // }
   }
 
   async componentDidUpdate (prevProps) {
     if (prevProps.location.search !== this.props.location.search) {
+      console.log('componentDidUpdate');
       await this.fetchData();
     }
   }
@@ -73,7 +75,6 @@ class Explore extends React.Component {
     //   await this.props.updatePlacesList(zoom, lng, lat, filterValues);
     // }
     if (zoom > 14.5) {
-      console.log('here');
       await this.props.updatePlacesList(filterValues);
     }
   }
