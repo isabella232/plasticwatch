@@ -101,7 +101,7 @@ class Trends extends React.Component {
   renderTopSurveyors () {
     const { topSurveyors } = this.props;
 
-    if (!topSurveyors.isReady()) return <div>Loading...</div>;
+    if (!topSurveyors.isReady()) return null;
     if (topSurveyors.hasError()) {
       return <div>There was an error loading top surveyors.</div>;
     }
