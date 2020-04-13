@@ -68,7 +68,7 @@ class PlacesView extends Component {
           </Button>
           <PlaceDetails>
             {comments.length === 0 ? (
-              <div>This place did not received comments yet.</div>
+              <div>This place does not have any comments yet.</div>
             ) : (
               <>
                 <h4>Recent comments</h4>
