@@ -3,7 +3,7 @@ import styled, { css } from 'styled-components';
 import { PropTypes as T } from 'prop-types';
 import { rgba } from 'polished';
 import { connect } from 'react-redux';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, withRouter } from 'react-router-dom';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
 import { wrapApiResult } from '../../redux/utils';
@@ -250,7 +250,7 @@ class PageHeader extends React.Component {
   async componentDidMount () {
     // Expose function in window object. This will be called from the popup
     // in order to pass the access token at the final OAuth step.
-    window.authenticate = async accessToken => {
+    window.authenticate = async (accessToken) => {
       showGlobalLoading();
       await this.props.authenticate(accessToken);
       hideGlobalLoading();
@@ -286,7 +286,7 @@ class PageHeader extends React.Component {
   }
 
   renderNav () {
-    const { isMobile } = this.props;
+    const { isMobile, location } = this.props;
     return (
       <GlobalMenu>
         {isMobile ? (
@@ -297,7 +297,7 @@ class PageHeader extends React.Component {
               }
               title='View menu'
               onClick={() =>
-                this.setState(prevState => {
+                this.setState((prevState) => {
                   return { isMobileMenuOpened: !prevState.isMobileMenuOpened };
                 })}
             />
@@ -356,16 +356,18 @@ class PageHeader extends React.Component {
                 </li>
               </>
             ) : (
-              <li>
-                <GlobalMenuLink
-                  useIcon='login'
-                  size='xlarge'
-                  variation='primary-raised-dark'
-                  onClick={() => this.login()}
-                >
-                  Login
-                </GlobalMenuLink>
-              </li>
+              location.pathname !== '/' && (
+                <li>
+                  <GlobalMenuLink
+                    useIcon='login'
+                    size='xlarge'
+                    variation='primary-raised-dark'
+                    onClick={() => this.login()}
+                  >
+                    Login
+                  </GlobalMenuLink>
+                </li>
+              )
             )}
           </>
         )}
@@ -463,6 +465,7 @@ class PageHeader extends React.Component {
 if (environment !== 'production') {
   PageHeader.propTypes = {
     authenticate: T.func,
+    location: T.object,
     isLoggedIn: T.bool,
     isAdmin: T.bool,
     isMobile: T.bool
@@ -494,4 +497,4 @@ function dispatcher (dispatch) {
 export default connect(
   mapStateToProps,
   dispatcher
-)(withMobileState(PageHeader));
+)(withMobileState(withRouter(PageHeader)));

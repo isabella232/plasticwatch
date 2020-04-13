@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
+import { PropTypes as T } from 'prop-types';
+import { environment, apiUrl, appPathname } from '../../config';
 
 import { InnerPanel } from '../../styles/panel';
 import Heading from '../../styles/type/heading';
@@ -8,7 +10,8 @@ import media from '../../styles/utils/media-queries';
 import { themeVal } from '../../styles/utils/general';
 import { showAboutModal } from '../common/about-modal';
 
-import { apiUrl, appPathname } from '../../config';
+import { connect } from 'react-redux';
+import { wrapApiResult } from '../../redux/utils';
 
 const IntroPanel = styled(InnerPanel)`
   margin: 0;
@@ -97,7 +100,7 @@ const IntroSubHeading = styled(Heading)`
   }
 `;
 
-export default class Introduction extends Component {
+class Introduction extends Component {
   async login () {
     // Setting for popup window, parsed into DOMString
     const w = 600;
@@ -147,21 +150,47 @@ export default class Introduction extends Component {
         >
           Read more about the project
         </ModalButton>
-        <AboutLinks>
-          <Button
-            useIcon='login'
-            size='large'
-            variation='primary-raised-dark'
-            onClick={() => this.login()}
-          >
-            Login
-          </Button>
-          <p>
-            PlasticWatch uses OSM as a login provider. Login with OpenStreetMap
-            to start contributing to the map
-          </p>
-        </AboutLinks>
+        {!this.props.isLoggedIn && (
+          <AboutLinks>
+            <Button
+              useIcon='login'
+              size='large'
+              variation='primary-raised-dark'
+              onClick={() => this.login()}
+            >
+              Login
+            </Button>
+            <p>
+              PlasticWatch uses OSM as a login provider. Login with
+              OpenStreetMap to start contributing to the map
+            </p>
+          </AboutLinks>
+        )}
       </IntroPanel>
     );
   }
 }
+
+if (environment !== 'production') {
+  Introduction.propTypes = {
+    isLoggedIn: T.bool
+  };
+}
+
+function mapStateToProps (state) {
+  const { isReady, hasError, getData } = wrapApiResult(state.authenticatedUser);
+  let isLoggedIn = false;
+  let isAdmin = false;
+
+  if (isReady() && !hasError()) {
+    isLoggedIn = true;
+    isAdmin = getData().isAdmin;
+  }
+
+  return {
+    isLoggedIn,
+    isAdmin
+  };
+}
+
+export default connect(mapStateToProps)(Introduction);
