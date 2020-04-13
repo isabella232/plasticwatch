@@ -53,10 +53,9 @@ class Explore extends React.Component {
     // If bounds querystring is not already set, apply defaults
     if (!this.state.zoom || !this.state.lng || !this.state.lat) {
       this.updateBoundsQuerystring(mapConfig.zoom, mapConfig.center.lng, mapConfig.center.lat);
+    } else {
+      this.fetchData();
     }
-    //  else {
-    //   this.fetchData();
-    // }
   }
 
   async componentDidUpdate (prevProps) {
@@ -149,6 +148,7 @@ class Explore extends React.Component {
               handleMapMove={this.updateBoundsQuerystring}
               zoom={Number(zoom)}
               center={[Number(lng), Number(lat)]}
+              filterValues={this.state.filterValues}
             />
           )}
         </SidebarWrapper>

@@ -12,7 +12,6 @@ import { bboxToTiles, geojsonCentroid } from '../../utils/geo';
 import { getMarker } from '../../utils/utils';
 import { mapConfig } from '../../config';
 import _throttle from 'lodash.throttle';
-
 // Mapbox access token
 mapboxgl.accessToken = mapConfig.mapboxAccessToken;
 
@@ -49,12 +48,16 @@ class Map extends Component {
     setTimeout(() => this.initMap(), 0);
   }
 
+  // FIXME: We should somehow fix this otherwise the app will probably be unusable for lots of data.
+  // shouldComponentUpdate (nextProps, nextState) {
+  // }
+
   componentDidUpdate (prevProps, prevState) {
-    if (!_isEqual(prevState.mapLoaded, this.state.mapLoaded)) {
+    if (!_isEqual(prevState.mapLoaded, this.state.mapLoaded) && this.state.mapLoaded && this.props.zoom) {
       this.map.setZoom(this.props.zoom);
       this.map.setCenter(this.props.center);
       this.props.setMapBounds(this.map.getBounds().toArray());
-      this.props.updatePlacesList()
+      this.props.updatePlacesList(this.props.filterValues);
     }
 
     if (!_isEqual(prevProps.featureCenter, this.props.featureCenter) && this.props.featureCenter) {
@@ -91,8 +94,8 @@ class Map extends Component {
     this.map = new mapboxgl.Map({
       container: this.mapContainer,
       style: mapConfig.style,
-      zoom: this.props.zoom,
-      center: this.props.center,
+      zoom: mapConfig.zoom,
+      center: mapConfig.center,
       attributionControl: false,
       fitBoundsOptions: mapConfig.fitBoundsOptions
     });
@@ -152,7 +155,6 @@ class Map extends Component {
 
     this.map.on('load', () => {
       this.setState({ mapLoaded: true });
-      console.log('map.on load');
 
       // add the geojson from state as a source to the map
       this.map.addSource('placesSource', {
@@ -238,7 +240,6 @@ class Map extends Component {
       </>
     );
   }
-
   render () {
     return <div>{this.renderMap()}</div>;
   }
@@ -252,12 +253,12 @@ Map.propTypes = {
   places: T.object,
   history: T.object,
   geojson: T.object,
-  // selectedFeature: T.object,
   filters: T.array,
   // eslint-disable-next-line react/no-unused-prop-types
   setMapBounds: T.func,
   featureCenter: T.array,
-  updatePlacesList: T.func
+  updatePlacesList: T.func,
+  filterValues: T.object
 };
 
 function mapStateToProps (state, props) {
