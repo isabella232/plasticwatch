@@ -60,7 +60,6 @@ class Explore extends React.Component {
 
   async componentDidUpdate (prevProps) {
     if (prevProps.location.search !== this.props.location.search) {
-      console.log('componentDidUpdate');
       await this.fetchData();
     }
   }

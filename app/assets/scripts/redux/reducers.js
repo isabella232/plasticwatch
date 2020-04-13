@@ -133,7 +133,7 @@ const mapReducer = (state = mapInitalState, action) => {
       };
   }
   return state;
-}
+};
 
 /**
  * Export combined reducers
