@@ -4,6 +4,7 @@ import mapboxgl from 'mapbox-gl';
 import { connect } from 'react-redux';
 import { wrapApiResult, getFromState } from '../../redux/utils';
 import * as actions from '../../redux/actions/places';
+import * as mapActions from '../../redux/actions/map';
 import { PropTypes as T } from 'prop-types';
 import { withRouter, matchPath } from 'react-router-dom';
 import _isEqual from 'lodash.isequal';
@@ -11,7 +12,6 @@ import { bboxToTiles, geojsonCentroid } from '../../utils/geo';
 import { getMarker } from '../../utils/utils';
 import { mapConfig } from '../../config';
 import _throttle from 'lodash.throttle';
-
 // Mapbox access token
 mapboxgl.accessToken = mapConfig.mapboxAccessToken;
 
@@ -48,9 +48,20 @@ class Map extends Component {
     setTimeout(() => this.initMap(), 0);
   }
 
+  // FIXME: We should somehow fix this otherwise the app will probably be unusable for lots of data.
+  // shouldComponentUpdate (nextProps, nextState) {
+  // }
+
   componentDidUpdate (prevProps, prevState) {
-    if (!_isEqual(prevProps.center, this.props.center) && this.props.center) {
+    if (!_isEqual(prevState.mapLoaded, this.state.mapLoaded) && this.state.mapLoaded && this.props.zoom) {
+      this.map.setZoom(this.props.zoom);
       this.map.setCenter(this.props.center);
+      this.props.setMapBounds(this.map.getBounds().toArray());
+      this.props.updatePlacesList(this.props.filterValues);
+    }
+
+    if (!_isEqual(prevProps.featureCenter, this.props.featureCenter) && this.props.featureCenter) {
+      this.map.setCenter(this.props.featureCenter);
     }
 
     if (this.state.isSourceLoaded) {
@@ -83,7 +94,8 @@ class Map extends Component {
     this.map = new mapboxgl.Map({
       container: this.mapContainer,
       style: mapConfig.style,
-      bounds: this.props.initialBounds,
+      zoom: mapConfig.zoom,
+      center: mapConfig.center,
       attributionControl: false,
       fitBoundsOptions: mapConfig.fitBoundsOptions
     });
@@ -91,7 +103,9 @@ class Map extends Component {
     const self = this;
     const updateQueryBounds = _throttle(
       function () {
-        self.props.handleMapMove(self.map.getBounds().toArray());
+        const center = self.map.getCenter();
+        self.props.handleMapMove(self.map.getZoom(), center.lng, center.lat);
+        self.props.setMapBounds(self.map.getBounds().toArray());
       },
       100,
       {
@@ -141,6 +155,7 @@ class Map extends Component {
 
     this.map.on('load', () => {
       this.setState({ mapLoaded: true });
+
       // add the geojson from state as a source to the map
       this.map.addSource('placesSource', {
         type: 'geojson',
@@ -193,7 +208,6 @@ class Map extends Component {
 
         if (feature && !this.state.selectedFeature) {
           this.props.history.push(`/explore/${feature.properties.id}`);
-          this.props.handleMapMove(this.map.getBounds().toArray());
         }
       });
     });
@@ -226,26 +240,29 @@ class Map extends Component {
       </>
     );
   }
-
   render () {
     return <div>{this.renderMap()}</div>;
   }
 }
 
 Map.propTypes = {
+  // eslint-disable-next-line react/no-unused-prop-types
   handleMapMove: T.func,
-  initialBounds: T.array,
+  zoom: T.number,
+  center: T.array,
   places: T.object,
   history: T.object,
   geojson: T.object,
-  // selectedFeature: T.object,
-  center: T.array,
-  filters: T.array
+  filters: T.array,
+  // eslint-disable-next-line react/no-unused-prop-types
+  setMapBounds: T.func,
+  featureCenter: T.array,
+  updatePlacesList: T.func,
+  filterValues: T.object
 };
 
 function mapStateToProps (state, props) {
   const places = wrapApiResult(getFromState(state, `places.list`));
-
   const match = matchPath(props.location.pathname, {
     path: '/explore/:type/:id',
     exact: true
@@ -279,13 +296,13 @@ function mapStateToProps (state, props) {
     ['==', 'id', '']
   ];
   let selectedFeature;
-  let center;
+  let featureCenter;
   if (match && place.isReady()) {
     filters[0] = ['==', 'id', placeId];
     filters[1] = ['!=', 'id', placeId];
     const feature = place.getData();
     selectedFeature = feature;
-    center = geojsonCentroid(feature).geometry.coordinates;
+    featureCenter = geojsonCentroid(feature).geometry.coordinates;
   }
 
   return {
@@ -295,7 +312,7 @@ function mapStateToProps (state, props) {
     place: place,
     geojson,
     selectedFeature,
-    center,
+    featureCenter,
     filters
   };
 }
@@ -304,7 +321,9 @@ function dispatcher (dispatch) {
   return {
     fetchTiles: (...args) => dispatch(actions.fetchTiles(...args)),
     fetchPlaces: (...args) => dispatch(actions.fetchPlaces(...args)),
-    fetchPlace: (...args) => dispatch(actions.fetchPlace(...args))
+    fetchPlace: (...args) => dispatch(actions.fetchPlace(...args)),
+    setMapBounds: (...args) => dispatch(mapActions.setMapBounds(...args)),
+    updatePlacesList: (...args) => dispatch(actions.updatePlacesList(...args))
   };
 }
 

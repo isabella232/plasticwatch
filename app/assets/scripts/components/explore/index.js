@@ -32,8 +32,14 @@ class Explore extends React.Component {
       search: {
         accessor: 'filterValues.search'
       },
-      bounds: {
-        accessor: 'bounds'
+      zoom: {
+        accessor: 'zoom'
+      },
+      lng: {
+        accessor: 'lng'
+      },
+      lat: {
+        accessor: 'lat'
       }
     });
 
@@ -45,8 +51,8 @@ class Explore extends React.Component {
 
   async componentDidMount () {
     // If bounds querystring is not already set, apply defaults
-    if (!this.state.bounds) {
-      this.updateBoundsQuerystring(mapConfig.defaultInitialBounds);
+    if (!this.state.zoom || !this.state.lng || !this.state.lat) {
+      this.updateBoundsQuerystring(mapConfig.zoom, mapConfig.center.lng, mapConfig.center.lat);
     } else {
       this.fetchData();
     }
@@ -60,18 +66,23 @@ class Explore extends React.Component {
 
   async fetchData () {
     // Get query params from state
-    const { filterValues, bounds } = this.qsState.getState(
+    const { filterValues, zoom } = this.qsState.getState(
       this.props.location.search.substr(1)
     );
-    if (bounds) {
-      await this.props.updatePlacesList(bounds, filterValues);
+    // if (zoom && lng && lat) {
+    //   await this.props.updatePlacesList(zoom, lng, lat, filterValues);
+    // }
+    if (zoom > 14.5) {
+      await this.props.updatePlacesList(filterValues);
     }
   }
 
-  async updateBoundsQuerystring (bounds) {
+  async updateBoundsQuerystring (zoom, lng, lat) {
     const qString = this.qsState.getQs({
       ...this.state,
-      bounds
+      zoom,
+      lng,
+      lat
     });
     this.props.history.push({ search: qString });
   }
@@ -108,9 +119,11 @@ class Explore extends React.Component {
 
   render () {
     const { location, isMobile } = this.props;
-    let { bounds } = this.state;
-    if (!bounds) {
-      bounds = mapConfig.defaultInitialBounds;
+    let { zoom, lng, lat } = this.state;
+    if (!zoom || !lng || !lat) {
+      zoom = mapConfig.zoom;
+      lng = mapConfig.center.lng;
+      lat = mapConfig.center.lat;
     }
     const displayMap =
       !isMobile || (location && location.search.indexOf('viewAs=list') === -1);
@@ -132,7 +145,9 @@ class Explore extends React.Component {
           {displayMap && (
             <Map
               handleMapMove={this.updateBoundsQuerystring}
-              initialBounds={bounds}
+              zoom={Number(zoom)}
+              center={[Number(lng), Number(lat)]}
+              filterValues={this.state.filterValues}
             />
           )}
         </SidebarWrapper>

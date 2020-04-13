@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import { baseAPIReducer } from './utils';
+import { mapConfig } from '../config';
 
 /**
  * AUTHENTICATED USER reducer
@@ -118,6 +119,22 @@ const topSurveyorsReducerInitialState = {
 
 const topSurveyorsReducer = baseAPIReducer('TOP_SURVEYORS', topSurveyorsReducerInitialState);
 
+// Reducer for Map state
+const mapInitalState = {
+  bounds: mapConfig.defaultInitialBounds
+};
+
+const mapReducer = (state = mapInitalState, action) => {
+  switch (action.type) {
+    case 'SET_MAP_BOUNDS':
+      return {
+        ...state,
+        bounds: action.bounds
+      };
+  }
+  return state;
+};
+
 /**
  * Export combined reducers
  */
@@ -136,5 +153,6 @@ export default combineReducers({
   trends: combineReducers({
     stats: statsReducer,
     topSurveyors: topSurveyorsReducer
-  })
+  }),
+  map: mapReducer
 });
