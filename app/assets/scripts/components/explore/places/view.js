@@ -21,6 +21,7 @@ import { StyledLink } from '../../common/link';
 import { InpageBackLink } from '../../common/inpage';
 import withMobileState from '../../common/with-mobile-state';
 import Rating from './rating';
+import { fromNow } from '../../../utils/utils';
 
 class PlacesView extends Component {
   async componentDidMount () {
@@ -42,7 +43,7 @@ class PlacesView extends Component {
     }
 
     const { properties } = getData();
-    const { recentComments } = this.props;
+    const { comments } = properties;
 
     return (
       <Panel>
@@ -66,18 +67,22 @@ class PlacesView extends Component {
             Submit a survey
           </Button>
           <PlaceDetails>
-            <h4>Recent comments</h4>
-            {recentComments.length === 0 ? (
+            {comments.length === 0 ? (
               <div>This place did not received comments yet.</div>
             ) : (
-              recentComments.map(({ userId, comment }) => (
-                <PlaceComment key={userId}>
-                  <div>
-                    {comment}
-                    <span>- {userId}</span>
-                  </div>
-                </PlaceComment>
-              ))
+              <>
+                <h4>Recent comments</h4>
+                {comments.map(
+                  ({ observationId, osmDisplayName, createdAt, text }) => (
+                    <PlaceComment key={observationId}>
+                      <div>{text}</div>
+                      <span>
+                        {osmDisplayName}, {fromNow(createdAt)}
+                      </span>
+                    </PlaceComment>
+                  )
+                )}
+              </>
             )}
           </PlaceDetails>
         </InnerPanel>
@@ -90,8 +95,7 @@ if (environment !== 'production') {
   PlacesView.propTypes = {
     fetchPlace: T.func,
     match: T.object,
-    place: T.object,
-    recentComments: T.array
+    place: T.object
   };
 }
 
@@ -100,29 +104,7 @@ function mapStateToProps (state, props) {
   const placeId = `${type}/${id}`;
 
   return {
-    place: wrapApiResult(getFromState(state, `places.individual.${placeId}`)),
-    recentComments: [
-      {
-        userId: 'sunt',
-        comment:
-          'Velit veniam dolore labore aute ut. Adipisicing et tempor reprehenderit incididunt sit culpa in dolore.'
-      },
-      {
-        userId: 'reprehenderit',
-        comment:
-          'Ex quis quis sint amet dolor reprehenderit consectetur consequat. Cillum sit culpa cupidatat ex ipsum culpa .'
-      },
-      {
-        userId: 'tempor',
-        comment:
-          'Amet dolore velit velit pariatur irure et elit id do non enim ullamco velit. Consequat aute exercitation.'
-      },
-      {
-        userId: 'commodo',
-        comment:
-          'Reprehenderit anim Lorem ipsum sit ad magna incididunt cupidatat eiusmod fugiat. Cillum esse enim nisi reprehenderit.'
-      }
-    ]
+    place: wrapApiResult(getFromState(state, `places.individual.${placeId}`))
   };
 }
 

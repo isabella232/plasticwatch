@@ -1,5 +1,6 @@
 'use strict';
 import get from 'lodash.get';
+import moment from 'moment';
 
 /**
  * Gets the given path from the state or return the default:
@@ -173,4 +174,9 @@ export function getMarker (geojson) {
   } else {
     return 'markerX';
   }
+}
+
+// Helper function to display relative dates
+export function fromNow (date) {
+  return moment(date).fromNow();
 }
