@@ -178,7 +178,8 @@ class Trends extends React.Component {
             <PlaceTrends>
               <h2>Washington DC</h2>
               <p>
-                <strong>{formatThousands(surveyedPlacesCount)}</strong> restaurants surveyed
+                <strong>{formatThousands(surveyedPlacesCount)}</strong>
+                restaurants surveyed
               </p>
               <svg width='100%' height={barHeight}>
                 <rect
@@ -199,7 +200,8 @@ class Trends extends React.Component {
                 />
               </svg>
               <p>
-                <strong>{percentSurveyed}%</strong> of {formatThousands(placesCount)} Washington DC restaurants on
+                <strong>{percentSurveyed}%</strong> of
+                {formatThousands(placesCount)} Washington DC restaurants on
                 OpenStreetMap
               </p>
             </PlaceTrends>
@@ -211,14 +213,14 @@ class Trends extends React.Component {
                 </text>
                 <Pie
                   data={pieData}
-                  pieValue={d => d.value}
+                  pieValue={(d) => d.value}
                   cornerRadius={3}
                   padAngle={0}
                   fillOpacity={0.8}
                   outerRadius={radius}
                   innerRadius={radius - thickness}
                 >
-                  {pie => {
+                  {(pie) => {
                     return pie.arcs.map((arc, i) => {
                       return (
                         <g key={`letters-${arc.data.label}`}>
@@ -322,7 +324,8 @@ function mapStateToProps (state) {
 function dispatcher (dispatch) {
   return {
     fetchStats: (...args) => dispatch(actions.fetchStats(...args)),
-    fetchTopSurveyors: (...args) => dispatch(actions.fetchTopSurveyors(...args))
+    fetchTopSurveyors: (...args) =>
+      dispatch(actions.fetchTopSurveyors(...args))
   };
 }
 
