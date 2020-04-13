@@ -138,7 +138,7 @@ class Trends extends React.Component {
   render () {
     const { stats, isMobile } = this.props;
 
-    if (!stats.isReady()) return null;
+    if (!stats.isReady()) return <div />;
 
     const {
       placesCount,

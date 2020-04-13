@@ -37,7 +37,7 @@ class PlacesView extends Component {
   render () {
     const { isReady, hasError, getData } = this.props.place;
 
-    if (!isReady()) return null;
+    if (!isReady()) return <div />;
     if (hasError()) {
       return <div>As error occurred when fetching place data</div>;
     }
