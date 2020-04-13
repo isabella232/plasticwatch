@@ -33,7 +33,8 @@ class Explore extends React.Component {
         accessor: 'filterValues.search'
       },
       zoom: {
-        accessor: 'zoom'
+        accessor: 'zoom',
+        default: mapConfig.zoom
       },
       lng: {
         accessor: 'lng'
