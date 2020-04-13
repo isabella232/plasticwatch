@@ -1,6 +1,6 @@
 # Plasticwatch Website
 
-PlasticWatch is a collaborative website to browse and map plastic usage in shops, restaurants and other consumer oriented places.
+PlasticWatch is a platform to crowdsource single-use plastic usage and locate restaurants that offer plastic-free choices.
 
 ## Installation and Usage
 

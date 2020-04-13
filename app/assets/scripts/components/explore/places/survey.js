@@ -232,7 +232,7 @@ class SubmitSurvey extends Component {
 
     // Get place data
     if (!place.isReady() || !surveyAnswers.isReady() || !surveyMeta.isReady()) {
-      return null;
+      return <div />;
     }
 
     if (place.hasError() || surveyAnswers.hasError() || surveyMeta.hasError()) {
