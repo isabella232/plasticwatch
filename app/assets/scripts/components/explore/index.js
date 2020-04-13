@@ -52,7 +52,11 @@ class Explore extends React.Component {
   async componentDidMount () {
     // If bounds querystring is not already set, apply defaults
     if (!this.state.zoom || !this.state.lng || !this.state.lat) {
-      this.updateBoundsQuerystring(mapConfig.zoom, mapConfig.center.lng, mapConfig.center.lat);
+      this.updateBoundsQuerystring(
+        mapConfig.zoom,
+        mapConfig.center.lng,
+        mapConfig.center.lat
+      );
     } else {
       this.fetchData();
     }
@@ -118,15 +122,26 @@ class Explore extends React.Component {
   }
 
   render () {
-    const { location, isMobile } = this.props;
+    const { location, isMobile, match } = this.props;
     let { zoom, lng, lat } = this.state;
     if (!zoom || !lng || !lat) {
       zoom = mapConfig.zoom;
       lng = mapConfig.center.lng;
       lat = mapConfig.center.lat;
     }
-    const displayMap =
-      !isMobile || (location && location.search.indexOf('viewAs=list') === -1);
+
+    // Always display map on desktop. On mobile, display map only when param
+    // 'viewAs=list' is not set and route is '/explore'.
+    let displayMap = false;
+    if (!isMobile) {
+      displayMap = true;
+    } else if (
+      match.path === '/explore' &&
+      location.search.indexOf('viewAs=list') === -1
+    ) {
+      displayMap = true;
+    }
+
     return (
       <App pageTitle='About' hideFooter>
         <SidebarWrapper>
@@ -161,6 +176,7 @@ if (environment !== 'production') {
     history: T.object,
     updatePlacesList: T.func,
     location: T.object,
+    match: T.object,
     isMobile: T.bool
   };
 }
