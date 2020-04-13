@@ -235,10 +235,10 @@ class Trends extends React.Component {
               </Group>
             </svg>
             <p>
-              <strong>
-                {round(percentNonPlastic)}% (
-                {formatThousands(nonPlasticPlacesCount)} of {formatThousands(surveyedPlacesCount)})
-              </strong> of surveyed Washington DC restaurants offer plastic-free options
+              {formatThousands(nonPlasticPlacesCount)} of&nbsp;
+              {formatThousands(surveyedPlacesCount)}
+              &nbsp; surveyed Washington DC restaurants offer plastic-free
+              options.
             </p>
             <PanelStats>
               <PanelStat>
