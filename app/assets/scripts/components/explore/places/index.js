@@ -66,9 +66,9 @@ class PlacesIndex extends Component {
   renderPlacesCount (places) {
     const count = places.length;
 
-    if (count === 0) return <div>No places found.</div>;
-    else if (count.length === 1) return <div>1 place found.</div>;
-    else return <div>{count} places found.</div>;
+    if (count === 0) return <div />;
+    else if (count.length === 1) return <div>1 place found in the area.</div>;
+    else return <div>{count} places found in the area.</div>;
   }
 
   handleNameSearchChange (e) {
