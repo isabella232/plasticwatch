@@ -178,7 +178,7 @@ class Trends extends React.Component {
             <PlaceTrends>
               <h2>Washington DC</h2>
               <p>
-                <strong>{formatThousands(surveyedPlacesCount)}</strong>
+                <strong>{formatThousands(surveyedPlacesCount)}</strong>&nbsp;
                 restaurants surveyed
               </p>
               <svg width='100%' height={barHeight}>
@@ -200,7 +200,7 @@ class Trends extends React.Component {
                 />
               </svg>
               <p>
-                <strong>{percentSurveyed}%</strong> of
+                {percentSurveyed}% of &nbsp;
                 {formatThousands(placesCount)} Washington DC restaurants on
                 OpenStreetMap
               </p>
