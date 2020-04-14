@@ -17,37 +17,45 @@ import PlaceSurvey from './places/survey';
 import withMobileState from '../common/with-mobile-state';
 import { wrapApiResult, getFromState } from '../../redux/utils';
 
+const qsState = new QsState({
+  viewAs: {
+    accessor: 'viewAs'
+  },
+  placeType: {
+    accessor: 'filterValues.placeType'
+  },
+  search: {
+    accessor: 'filterValues.search'
+  },
+  zoom: {
+    accessor: 'zoom',
+    default: mapConfig.zoom
+  },
+  lng: {
+    accessor: 'lng'
+  },
+  lat: {
+    accessor: 'lat'
+  }
+});
+
 class Explore extends React.Component {
   constructor (props) {
     super(props);
 
-    // Setup the qsState for url state management.
-    this.qsState = new QsState({
-      viewAs: {
-        accessor: 'viewAs'
-      },
-      placeType: {
-        accessor: 'filterValues.placeType'
-      },
-      search: {
-        accessor: 'filterValues.search'
-      },
-      zoom: {
-        accessor: 'zoom',
-        default: mapConfig.zoom
-      },
-      lng: {
-        accessor: 'lng'
-      },
-      lat: {
-        accessor: 'lat'
-      }
-    });
-
-    this.state = this.qsState.getState(this.props.location.search.substr(1));
+    this.state = qsState.getState(this.props.location.search.substr(1));
 
     this.handleFilterChange = this.handleFilterChange.bind(this);
     this.updateBoundsQuerystring = this.updateBoundsQuerystring.bind(this);
+  }
+
+  static getDerivedStateFromProps (props, state) {
+    if (qsState && qsState.getQs(state) !== props.location.search.substr(1)) {
+      return {
+        ...state,
+        ...qsState.getState(props.location.search.substr(1))
+      };
+    } else return null;
   }
 
   async componentDidMount () {
@@ -71,19 +79,17 @@ class Explore extends React.Component {
 
   async fetchData () {
     // Get query params from state
-    const { filterValues, zoom } = this.qsState.getState(
+    const { filterValues, zoom } = qsState.getState(
       this.props.location.search.substr(1)
     );
-    // if (zoom && lng && lat) {
-    //   await this.props.updatePlacesList(zoom, lng, lat, filterValues);
-    // }
+
     if (zoom > 14.5) {
       await this.props.updatePlacesList(filterValues);
     }
   }
 
   async updateBoundsQuerystring (zoom, lng, lat) {
-    const qString = this.qsState.getQs({
+    const qString = qsState.getQs({
       ...this.state,
       zoom,
       lng,
@@ -93,7 +99,7 @@ class Explore extends React.Component {
   }
 
   handleFilterChangeSubmit () {
-    const qString = this.qsState.getQs(this.state);
+    const qString = qsState.getQs(this.state);
     this.props.history.push({ search: qString });
   }
 

@@ -4,7 +4,7 @@ import {
   wrapApiResult,
   getFromState
 } from '../utils';
-import { apiUrl } from '../../config';
+import { apiUrl, mapConfig } from '../../config';
 import qs from 'qs';
 import { bboxToTiles, featuresInBounds } from '../../utils/geo';
 
@@ -140,13 +140,14 @@ export function updatePlacesList (filters = {}) {
   return async (dispatch, getState) => {
     // Fetch visible tiles
     const state = getState();
-    const bounds = state.map.bounds;
+    const bounds = state.map.bounds || mapConfig.defaultInitialBounds;
     const visibleTiles = bboxToTiles(bounds);
-    await Promise.all(visibleTiles.map((id) => dispatch(fetchPlacesTile(id))));
 
     // Helper function to get tile from state
     const getTile = (id) =>
-      wrapApiResult(getFromState(state, `places.tiles.${id}`));
+      wrapApiResult(getFromState(getState(), `places.tiles.${id}`));
+
+    await Promise.all(visibleTiles.map((id) => dispatch(fetchPlacesTile(id))));
 
     function applyFilters (features) {
       return features.filter((f) => {
