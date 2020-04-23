@@ -107,6 +107,7 @@
     "@vx/gradient": "^0.0.195",
     "@vx/group": "^0.0.195",
     "@vx/shape": "^0.0.195",
+    "@welldone-software/why-did-you-render": "^4.1.1",
     "classnames": "^2.2.6",
     "formik": "^2.1.4",
     "history": "^4.10.1",
