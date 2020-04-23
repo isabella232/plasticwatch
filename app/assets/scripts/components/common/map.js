@@ -53,9 +53,49 @@ class Map extends Component {
     setTimeout(() => this.initMap(), 0);
   }
 
-  // FIXME: We should somehow fix this otherwise the app will probably be unusable for lots of data.
-  // shouldComponentUpdate (nextProps, nextState) {
-  // }
+  shouldComponentUpdate (nextProps, nextState) {
+    console.log('shouldComponentUpdate');
+    const { zoom, center, filterValues, geojson } = this.props;
+
+    // Map has just finished loading
+    if (this.state.mapLoaded !== nextState.mapLoaded) {
+      console.log('update: map has just loaded');
+      return true;
+    }
+
+    // Source has just finished loading
+    if (this.state.isSourceLoaded !== nextState.isSourceLoaded) {
+      console.log('update: map source has just loaded');
+      return true;
+    }
+
+    // Map is loaded and view has changed
+    // if (this.state.mapLoaded && this.state.isSourceLoaded) {
+    if (this.state.mapLoaded) {
+      if (zoom !== nextProps.zoom) {
+        console.log('update: zoom');
+        return true;
+      }
+
+      if (!isEqual(center, nextProps.center)) {
+        console.log('update: center');
+        return true;
+      }
+
+      if (!isEqual(filterValues, nextProps.filterValues)) {
+        console.log('update: filter');
+        return true;
+      }
+
+      // Source is loaded and data was updated
+      if (this.state.isSourceLoaded && !isEqual(geojson, nextProps.geojson)) {
+        console.log('update: geojson');
+        return true;
+      }
+    }
+
+    return false;
+  }
 
   componentDidUpdate (prevProps, prevState) {
     if (!_isEqual(prevState.mapLoaded, this.state.mapLoaded) && this.state.mapLoaded && this.props.zoom) {
@@ -225,6 +265,7 @@ class Map extends Component {
       // handle errors
       return <></>;
     }
+    console.log('will render');
 
     return (
       <Wrapper>
