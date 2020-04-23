@@ -15,7 +15,12 @@ import _throttle from 'lodash.throttle';
 // Mapbox access token
 mapboxgl.accessToken = mapConfig.mapboxAccessToken;
 
+const Wrapper = styled.div`
+  height: 100%;
+`;
+
 const MapContainer = styled.div`
+  width: 100%;
   height: 100%;
 `;
 
@@ -213,7 +218,7 @@ class Map extends Component {
     });
   }
 
-  renderMap () {
+  render () {
     const { hasError } = this.props.places;
 
     if (hasError()) {
@@ -222,26 +227,20 @@ class Map extends Component {
     }
 
     return (
-      <>
-        <MapContainer>
-          {mapboxgl.supported() ? (
-            <div
-              ref={r => {
-                this.mapContainer = r;
-              }}
-              style={{ width: '100%', height: '100%' }}
-            />
-          ) : (
-            <div className='mapbox-no-webgl'>
-              <p>WebGL is not supported or disabled.</p>
-            </div>
-          )}
-        </MapContainer>
-      </>
+      <Wrapper>
+        {mapboxgl.supported() ? (
+          <MapContainer
+            ref={(r) => {
+              this.mapContainer = r;
+            }}
+          />
+        ) : (
+          <div className='mapbox-no-webgl'>
+            <p>WebGL is not supported or disabled.</p>
+          </div>
+        )}
+      </Wrapper>
     );
-  }
-  render () {
-    return <div>{this.renderMap()}</div>;
   }
 }
 
