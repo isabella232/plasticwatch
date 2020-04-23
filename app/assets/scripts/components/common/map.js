@@ -7,7 +7,7 @@ import * as actions from '../../redux/actions/places';
 import * as mapActions from '../../redux/actions/map';
 import { PropTypes as T } from 'prop-types';
 import { withRouter, matchPath } from 'react-router-dom';
-import _isEqual from 'lodash.isequal';
+import isEqual from 'lodash.isequal';
 import { bboxToTiles, geojsonCentroid } from '../../utils/geo';
 import { getMarker } from '../../utils/utils';
 import { mapConfig } from '../../config';
@@ -98,14 +98,21 @@ class Map extends Component {
   }
 
   componentDidUpdate (prevProps, prevState) {
-    if (!_isEqual(prevState.mapLoaded, this.state.mapLoaded) && this.state.mapLoaded && this.props.zoom) {
+    if (
+      !isEqual(prevState.mapLoaded, this.state.mapLoaded) &&
+      this.state.mapLoaded &&
+      this.props.zoom
+    ) {
       this.map.setZoom(this.props.zoom);
       this.map.setCenter(this.props.center);
       this.props.setMapBounds(this.map.getBounds().toArray());
       this.props.updatePlacesList(this.props.filterValues);
     }
 
-    if (!_isEqual(prevProps.featureCenter, this.props.featureCenter) && this.props.featureCenter) {
+    if (
+      !isEqual(prevProps.featureCenter, this.props.featureCenter) &&
+      this.props.featureCenter
+    ) {
       this.map.setCenter(this.props.featureCenter);
     }
 
@@ -154,7 +161,7 @@ class Map extends Component {
       },
       100,
       {
-        'leading': true
+        leading: true
       }
     );
 
@@ -190,7 +197,7 @@ class Map extends Component {
     this.map.on('moveend', updateQueryBounds);
 
     // ensure the source is added
-    this.map.on('sourcedata', e => {
+    this.map.on('sourcedata', (e) => {
       if (e.sourceId === 'placesSource' && !this.state.isSourceLoaded) {
         this.setState({
           isSourceLoaded: true
@@ -238,7 +245,7 @@ class Map extends Component {
       });
 
       // bind an event to select the symbol
-      this.map.on('click', e => {
+      this.map.on('click', (e) => {
         // add a small buffer so clicks are registered properly
         const width = 10;
         const height = 10;
@@ -317,8 +324,8 @@ function mapStateToProps (state, props) {
   }
 
   let geojson = {
-    'type': 'FeatureCollection',
-    'features': []
+    type: 'FeatureCollection',
+    features: []
   };
   if (places.isReady()) {
     geojson = {
@@ -326,7 +333,7 @@ function mapStateToProps (state, props) {
       features: places.getData()
     };
 
-    geojson.features.forEach(feature => {
+    geojson.features.forEach((feature) => {
       feature.properties.icon = getMarker(feature);
     });
   }
