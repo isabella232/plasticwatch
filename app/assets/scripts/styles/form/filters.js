@@ -64,11 +64,15 @@ export const FilterLabel = styled(FormLabel)`
 export const FilterButtons = styled.div`
   margin-top: 0.5rem;
 `;
+
 export const FilterButton = styled(Button)`
   text-transform: none;
   box-shadow: none;
   font-size: 0.875rem;
   font-weight: ${themeVal('type.base.regular')};
   border: 1px solid ${themeVal('color.smoke')};
-  margin-right: ${themeVal('layout.space')};
+  margin-right: 0.5rem;
+  ${media.mediumUp`
+    margin-right: ${themeVal('layout.space')};
+  `}
 `;
