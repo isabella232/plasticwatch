@@ -50,7 +50,7 @@ export const InpageBackLink = styled(Link)`
   display:flex;
   position: relative;
   text-decoration: none;
-  margin-top: -2rem;
+  margin-top: 1rem;
   padding: 0.25rem 0;
   background: linear-gradient(90deg, white, rgba(255,255,255,0));
   &:before{
