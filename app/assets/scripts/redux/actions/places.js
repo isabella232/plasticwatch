@@ -140,7 +140,7 @@ export function updatePlacesList (filters = {}) {
   return async (dispatch, getState) => {
     // Fetch visible tiles
     const state = getState();
-    const bounds = state.map.bounds || mapConfig.defaultInitialBounds;
+    const bounds = state.explore.mapViewport.bounds || mapConfig.defaultInitialBounds;
     const visibleTiles = bboxToTiles(bounds);
 
     // Helper function to get tile from state

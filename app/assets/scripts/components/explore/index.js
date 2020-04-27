@@ -3,10 +3,12 @@ import React from 'react';
 import { Route } from 'react-router-dom';
 import { PropTypes as T } from 'prop-types';
 import QsState from '../../utils/qs-state';
-import { environment, mapConfig } from '../../config';
+import { environment } from '../../config';
 import { connect } from 'react-redux';
+import isEqual from 'lodash.isequal';
 
-import * as actions from '../../redux/actions/places';
+import * as placesActions from '../../redux/actions/places';
+import * as exploreActions from '../../redux/actions/explore';
 
 import App from '../common/app';
 import { SidebarWrapper } from '../common/view-wrappers';
@@ -28,8 +30,7 @@ const qsState = new QsState({
     accessor: 'filterValues.search'
   },
   zoom: {
-    accessor: 'zoom',
-    default: mapConfig.zoom
+    accessor: 'zoom'
   },
   lng: {
     accessor: 'lng'
@@ -40,62 +41,26 @@ const qsState = new QsState({
 });
 
 class Explore extends React.Component {
-  constructor (props) {
-    super(props);
-
-    this.state = qsState.getState(this.props.location.search.substr(1));
-
-    this.handleFilterChange = this.handleFilterChange.bind(this);
-    this.updateBoundsQuerystring = this.updateBoundsQuerystring.bind(this);
-  }
-
-  static getDerivedStateFromProps (props, state) {
-    if (qsState && qsState.getQs(state) !== props.location.search.substr(1)) {
-      return {
-        ...state,
-        ...qsState.getState(props.location.search.substr(1))
-      };
-    } else return null;
-  }
-
-  async componentDidMount () {
-    // If bounds querystring is not already set, apply defaults
-    if (!this.state.zoom || !this.state.lng || !this.state.lat) {
-      this.updateBoundsQuerystring(
-        mapConfig.zoom,
-        mapConfig.center.lng,
-        mapConfig.center.lat
-      );
-    } else {
-      this.fetchData();
-    }
-  }
-
   async componentDidUpdate (prevProps) {
-    if (prevProps.location.search !== this.props.location.search) {
-      await this.fetchData();
+    const { queryParams, mapViewport, places } = this.props;
+
+    // Start a new data fetch if viewport or query params changed
+    if (
+      mapViewport &&
+      mapViewport.bounds &&
+      !places.fetching &&
+      (!isEqual(prevProps.mapViewport, mapViewport) ||
+        !isEqual(prevProps.queryParams, queryParams))
+    ) {
+      await this.props.updatePlacesList();
+
+      // Then update querystring
+      const qString = qsState.getQs({
+        ...mapViewport,
+        ...queryParams
+      });
+      this.props.history.push({ search: qString });
     }
-  }
-
-  async fetchData () {
-    // Get query params from state
-    const { filterValues, zoom } = qsState.getState(
-      this.props.location.search.substr(1)
-    );
-
-    if (zoom > 14.5) {
-      await this.props.updatePlacesList(filterValues);
-    }
-  }
-
-  async updateBoundsQuerystring (zoom, lng, lat) {
-    const qString = qsState.getQs({
-      ...this.state,
-      zoom,
-      lng,
-      lat
-    });
-    this.props.history.push({ search: qString });
   }
 
   handleFilterChangeSubmit () {
@@ -130,12 +95,6 @@ class Explore extends React.Component {
 
   render () {
     const { location, isMobile, match } = this.props;
-    let { zoom, lng, lat } = this.state;
-    if (!zoom || !lng || !lat) {
-      zoom = mapConfig.zoom;
-      lng = mapConfig.center.lng;
-      lat = mapConfig.center.lat;
-    }
 
     // Always display map on desktop. On mobile, display map only when param
     // 'viewAs=list' is not set and route is '/explore'.
@@ -153,10 +112,7 @@ class Explore extends React.Component {
       <App pageTitle='About' hideFooter>
         <SidebarWrapper>
           <Route exact path='/explore'>
-            <PlacesIndex
-              handleFilterChange={this.handleFilterChange}
-              filterValues={this.state.filterValues}
-            />
+            <PlacesIndex handleFilterChange={this.handleFilterChange} />
           </Route>
           <Route exact path='/explore/:type/:id' component={PlacesView} />
           <Route
@@ -164,14 +120,7 @@ class Explore extends React.Component {
             path='/explore/:type/:id/survey'
             component={PlaceSurvey}
           />
-          {displayMap && (
-            <Map
-              handleMapMove={this.updateBoundsQuerystring}
-              zoom={Number(zoom)}
-              center={[Number(lng), Number(lat)]}
-              filterValues={this.state.filterValues}
-            />
-          )}
+          {displayMap && <Map />}
         </SidebarWrapper>
       </App>
     );
@@ -181,23 +130,32 @@ class Explore extends React.Component {
 if (environment !== 'production') {
   Explore.propTypes = {
     history: T.object,
-    updatePlacesList: T.func,
+    isMobile: T.bool,
     location: T.object,
+    mapViewport: T.object,
     match: T.object,
-    isMobile: T.bool
+    places: T.object,
+    queryParams: T.object,
+    updatePlacesList: T.func
   };
 }
 
 function mapStateToProps (state, props) {
   return {
-    getTile: (id) => wrapApiResult(getFromState(state, `places.tiles.${id}`))
+    queryParams: getFromState(state, `explore.queryParams`),
+    mapViewport: getFromState(state, `explore.mapViewport`),
+    places: wrapApiResult(getFromState(state, `places.list`))
   };
 }
 
 function dispatcher (dispatch) {
   return {
-    updatePlacesList: (...args) => dispatch(actions.updatePlacesList(...args)),
-    fetchPlacesTile: (...args) => dispatch(actions.fetchPlacesTile(...args))
+    updatePlacesList: (...args) =>
+      dispatch(placesActions.updatePlacesList(...args)),
+    fetchPlacesTile: (...args) =>
+      dispatch(placesActions.fetchPlacesTile(...args)),
+    updateQueryParams: (...args) =>
+      dispatch(exploreActions.updateQueryParams(...args))
   };
 }
 

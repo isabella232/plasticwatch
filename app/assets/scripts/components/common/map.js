@@ -2,16 +2,17 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import mapboxgl from 'mapbox-gl';
 import { connect } from 'react-redux';
-import { wrapApiResult, getFromState } from '../../redux/utils';
-import * as actions from '../../redux/actions/places';
-import * as mapActions from '../../redux/actions/map';
 import { PropTypes as T } from 'prop-types';
 import { withRouter, matchPath } from 'react-router-dom';
-import isEqual from 'lodash.isequal';
-import { bboxToTiles, geojsonCentroid } from '../../utils/geo';
-import { getMarker } from '../../utils/utils';
-import { mapConfig } from '../../config';
 import _throttle from 'lodash.throttle';
+import { mapConfig } from '../../config';
+import { wrapApiResult, getFromState } from '../../redux/utils';
+import { geojsonCentroid } from '../../utils/geo';
+import { getMarker } from '../../utils/utils';
+
+import * as actions from '../../redux/actions/places';
+import * as exploreActions from '../../redux/actions/explore';
+
 // Mapbox access token
 mapboxgl.accessToken = mapConfig.mapboxAccessToken;
 
@@ -53,72 +54,20 @@ class Map extends Component {
     setTimeout(() => this.initMap(), 0);
   }
 
-  shouldComponentUpdate (nextProps, nextState) {
-    console.log('shouldComponentUpdate');
-    const { zoom, center, filterValues, geojson } = this.props;
-
-    // Map has just finished loading
-    if (this.state.mapLoaded !== nextState.mapLoaded) {
-      console.log('update: map has just loaded');
-      return true;
-    }
-
-    // Source has just finished loading
-    if (this.state.isSourceLoaded !== nextState.isSourceLoaded) {
-      console.log('update: map source has just loaded');
-      return true;
-    }
-
-    // Map is loaded and view has changed
-    // if (this.state.mapLoaded && this.state.isSourceLoaded) {
-    if (this.state.mapLoaded) {
-      if (zoom !== nextProps.zoom) {
-        console.log('update: zoom');
-        return true;
-      }
-
-      if (!isEqual(center, nextProps.center)) {
-        console.log('update: center');
-        return true;
-      }
-
-      if (!isEqual(filterValues, nextProps.filterValues)) {
-        console.log('update: filter');
-        return true;
-      }
-
-      // Source is loaded and data was updated
-      if (this.state.isSourceLoaded && !isEqual(geojson, nextProps.geojson)) {
-        console.log('update: geojson');
-        return true;
-      }
-    }
-
-    return false;
-  }
-
   componentDidUpdate (prevProps, prevState) {
-    if (
-      !isEqual(prevState.mapLoaded, this.state.mapLoaded) &&
-      this.state.mapLoaded &&
-      this.props.zoom
-    ) {
-      this.map.setZoom(this.props.zoom);
-      this.map.setCenter(this.props.center);
-      this.props.setMapBounds(this.map.getBounds().toArray());
-      this.props.updatePlacesList(this.props.filterValues);
+    const { places, geojson } = this.props;
+
+    // Do not perform changes if map is not loaded
+    if (!this.state.mapLoaded) return;
+
+    // Add geojson to the map when map is loaded
+    if (prevState.isSourceLoaded !== this.state.isSourceLoaded) {
+      this.map.getSource('placesSource').setData(geojson);
     }
 
-    if (
-      !isEqual(prevProps.featureCenter, this.props.featureCenter) &&
-      this.props.featureCenter
-    ) {
-      this.map.setCenter(this.props.featureCenter);
-    }
-
-    if (this.state.isSourceLoaded) {
-      this.updateFilter();
-      this.updateData();
+    // If new places were received, update map
+    if (places.isReady() && prevProps.places.receivedAt !== places.receivedAt) {
+      this.map.getSource('placesSource').setData(geojson);
     }
   }
 
@@ -126,20 +75,6 @@ class Map extends Component {
     if (this.map) {
       this.map.remove();
     }
-  }
-
-  getVisibleTiles () {
-    const bounds = this.map.getBounds();
-    return bboxToTiles(bounds.toArray());
-  }
-
-  updateData () {
-    this.map.getSource('placesSource').setData(this.props.geojson);
-  }
-
-  updateFilter () {
-    this.map.setFilter('selectedPlacesLayer', this.props.filters[1]);
-    this.map.setFilter('placesLayer', this.props.filters[0]);
   }
 
   initMap () {
@@ -153,17 +88,6 @@ class Map extends Component {
     });
 
     const self = this;
-    const updateQueryBounds = _throttle(
-      function () {
-        const center = self.map.getCenter();
-        self.props.handleMapMove(self.map.getZoom(), center.lng, center.lat);
-        self.props.setMapBounds(self.map.getBounds().toArray());
-      },
-      100,
-      {
-        leading: true
-      }
-    );
 
     // Add attribution.
     this.map.addControl(
@@ -194,7 +118,26 @@ class Map extends Component {
       })
     );
 
-    this.map.on('moveend', updateQueryBounds);
+    function updateStateMapViewport () {
+      const center = self.map.getCenter();
+      const zoom = self.map.getZoom();
+
+      // Do not update state's map viewport if zoom is too high
+      if (zoom < 15) return;
+
+      self.props.updateMapViewport({
+        bounds: self.map.getBounds().toArray(),
+        zoom,
+        lng: center.lng,
+        lat: center.lat
+      });
+    }
+
+    const onMoveEnd = _throttle(updateStateMapViewport, 100, {
+      leading: true
+    });
+
+    this.map.on('moveend', onMoveEnd);
 
     // ensure the source is added
     this.map.on('sourcedata', (e) => {
@@ -207,6 +150,8 @@ class Map extends Component {
 
     this.map.on('load', () => {
       this.setState({ mapLoaded: true });
+
+      updateStateMapViewport();
 
       // add the geojson from state as a source to the map
       this.map.addSource('placesSource', {
@@ -272,7 +217,6 @@ class Map extends Component {
       // handle errors
       return <></>;
     }
-    console.log('will render');
 
     return (
       <Wrapper>
@@ -293,19 +237,9 @@ class Map extends Component {
 }
 
 Map.propTypes = {
-  // eslint-disable-next-line react/no-unused-prop-types
-  handleMapMove: T.func,
-  zoom: T.number,
-  center: T.array,
   places: T.object,
   history: T.object,
-  geojson: T.object,
-  filters: T.array,
-  // eslint-disable-next-line react/no-unused-prop-types
-  setMapBounds: T.func,
-  featureCenter: T.array,
-  updatePlacesList: T.func,
-  filterValues: T.object
+  geojson: T.object
 };
 
 function mapStateToProps (state, props) {
@@ -369,8 +303,9 @@ function dispatcher (dispatch) {
     fetchTiles: (...args) => dispatch(actions.fetchTiles(...args)),
     fetchPlaces: (...args) => dispatch(actions.fetchPlaces(...args)),
     fetchPlace: (...args) => dispatch(actions.fetchPlace(...args)),
-    setMapBounds: (...args) => dispatch(mapActions.setMapBounds(...args)),
-    updatePlacesList: (...args) => dispatch(actions.updatePlacesList(...args))
+    updatePlacesList: (...args) => dispatch(actions.updatePlacesList(...args)),
+    updateMapViewport: (...args) =>
+      dispatch(exploreActions.updateMapViewport(...args))
   };
 }
 
