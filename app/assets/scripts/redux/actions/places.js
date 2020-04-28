@@ -155,7 +155,7 @@ export function updatePlacesList () {
         const {
           properties: { observations, name }
         } = f;
-        const { placeType, search } = filters;
+        const { placeType, placeName } = filters;
 
         // Discard place is type is not met
         if (placeType === 'unsurveyed' && observations.total > 0) {
@@ -176,10 +176,10 @@ export function updatePlacesList () {
           return false;
         }
 
-        // Discard place if name doesn't match search
+        // Discard place if name doesn't match placeName
         if (
-          search &&
-          (!name || !name.toUpperCase().includes(search.toUpperCase()))
+          placeName &&
+          (!name || !name.toUpperCase().includes(placeName.toUpperCase()))
         ) {
           return false;
         }

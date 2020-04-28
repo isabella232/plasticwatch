@@ -25,7 +25,7 @@ const qsState = new QsState({
   placeType: {
     accessor: 'placeType'
   },
-  search: {
+  placeName: {
     accessor: 'placeName'
   },
   zoom: {

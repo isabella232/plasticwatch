@@ -1,6 +1,5 @@
 import { combineReducers } from 'redux';
 import { baseAPIReducer } from './utils';
-import { mapConfig } from '../config';
 
 /**
  * AUTHENTICATED USER reducer

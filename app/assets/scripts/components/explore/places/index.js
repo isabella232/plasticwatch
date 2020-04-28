@@ -93,9 +93,15 @@ class PlacesIndex extends Component {
     });
   }
 
+  handlePlaceNameChange (placeName) {
+    this.props.updateFilters({
+      placeName
+    });
+  }
+
   render () {
     const { filtersOpened } = this.state;
-    const { isMobile, location, handleFilterChange, filters } = this.props;
+    const { isMobile, location, filters } = this.props;
     const { isReady, getData, hasError } = this.props.places;
 
     if (isMobile && location && location.search.indexOf('viewAs=list') === -1) {
@@ -123,14 +129,15 @@ class PlacesIndex extends Component {
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     e.preventDefault();
-                    handleFilterChange('search', this.state.searchString);
+                    this.handlePlaceNameChange(this.state.searchString);
                   }
                 }}
               />
               <InputIcon
                 htmlFor='placeSearch'
                 useIcon='magnifier-left'
-                onClick={() => handleFilterChange('search', this.state.searchString)}
+                onClick={() =>
+                  this.handlePlaceNameChange(this.state.searchString)}
               />
             </InputWrapper>
             {isMobile && (
@@ -191,7 +198,6 @@ if (environment !== 'production') {
     places: T.object,
     updateFilters: T.object,
     filters: T.object,
-    handleFilterChange: T.func,
     isMobile: T.bool,
     location: T.object
   };
@@ -206,8 +212,7 @@ function mapStateToProps (state) {
 
 function dispatcher (dispatch) {
   return {
-    updateFilters: (...args) =>
-      dispatch(exploreActions.updateFilters(...args))
+    updateFilters: (...args) => dispatch(exploreActions.updateFilters(...args))
   };
 }
 
