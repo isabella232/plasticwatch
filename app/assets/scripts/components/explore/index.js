@@ -12,7 +12,7 @@ import * as exploreActions from '../../redux/actions/explore';
 
 import App from '../common/app';
 import { SidebarWrapper } from '../common/view-wrappers';
-import Map from '../common/map';
+import Map from './map';
 import PlacesIndex from './places';
 import PlacesView from './places/view';
 import PlaceSurvey from './places/survey';
