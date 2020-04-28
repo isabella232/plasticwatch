@@ -12,6 +12,7 @@ import { getMarker } from '../../utils/utils';
 
 import * as actions from '../../redux/actions/places';
 import * as exploreActions from '../../redux/actions/explore';
+import isEqual from 'lodash.isequal';
 
 // Mapbox access token
 mapboxgl.accessToken = mapConfig.mapboxAccessToken;
@@ -69,12 +70,24 @@ class Map extends Component {
     if (places.isReady() && prevProps.places.receivedAt !== places.receivedAt) {
       this.map.getSource('placesSource').setData(geojson);
     }
+
+    if (
+      !isEqual(prevProps.featureCenter, this.props.featureCenter)
+    ) {
+      this.map.setCenter(this.props.featureCenter);
+      this.updateFilter();
+    }
   }
 
   componentWillUnmount () {
     if (this.map) {
       this.map.remove();
     }
+  }
+
+  updateFilter () {
+    this.map.setFilter('selectedPlacesLayer', this.props.filters[1]);
+    this.map.setFilter('placesLayer', this.props.filters[0]);
   }
 
   initMap () {
@@ -242,10 +255,12 @@ class Map extends Component {
 }
 
 Map.propTypes = {
-  places: T.object,
-  mapViewport: T.object,
+  filters: T.array,
+  featureCenter: T.array,
+  geojson: T.object,
   history: T.object,
-  geojson: T.object
+  mapViewport: T.object,
+  places: T.object
 };
 
 function mapStateToProps (state, props) {
