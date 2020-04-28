@@ -19,7 +19,7 @@ import PlaceSurvey from './places/survey';
 import withMobileState from '../common/with-mobile-state';
 import { wrapApiResult, getFromState } from '../../redux/utils';
 
-const qsState = new QsState({
+export const qsState = new QsState({
   viewAs: {
     accessor: 'viewAs'
   },
@@ -94,19 +94,10 @@ class Explore extends React.Component {
   }
 
   render () {
-    const { location, isMobile, match } = this.props;
+    const { isMobile, activeMobileTab } = this.props;
 
-    // Always display map on desktop. On mobile, display map only when param
-    // 'viewAs=list' is not set and route is '/explore'.
-    let displayMap = false;
-    if (!isMobile) {
-      displayMap = true;
-    } else if (
-      match.path === '/explore' &&
-      location.search.indexOf('viewAs=list') === -1
-    ) {
-      displayMap = true;
-    }
+    let displayMap = true;
+    if (isMobile && activeMobileTab !== 'map') displayMap = false;
 
     return (
       <App pageTitle='About' hideFooter>
@@ -127,11 +118,11 @@ class Explore extends React.Component {
 
 if (environment !== 'production') {
   Explore.propTypes = {
+    activeMobileTab: T.string,
     history: T.object,
     isMobile: T.bool,
     location: T.object,
     mapViewport: T.object,
-    match: T.object,
     places: T.object,
     filters: T.object,
     updatePlacesList: T.func,
@@ -143,6 +134,7 @@ function mapStateToProps (state, props) {
   return {
     filters: getFromState(state, `explore.filters`),
     mapViewport: getFromState(state, `explore.mapViewport`),
+    activeMobileTab: getFromState(state, `explore.activeMobileTab`),
     places: wrapApiResult(getFromState(state, `places.list`))
   };
 }

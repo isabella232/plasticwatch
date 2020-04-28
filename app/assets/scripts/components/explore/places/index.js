@@ -101,10 +101,10 @@ class PlacesIndex extends Component {
 
   render () {
     const { filtersOpened } = this.state;
-    const { isMobile, location, filters } = this.props;
+    const { isMobile, filters, activeMobileTab } = this.props;
     const { isReady, getData, hasError } = this.props.places;
 
-    if (isMobile && location && location.search.indexOf('viewAs=list') === -1) {
+    if (isMobile && activeMobileTab !== 'list') {
       return null;
     }
 
@@ -196,18 +196,19 @@ class PlacesIndex extends Component {
 
 if (environment !== 'production') {
   PlacesIndex.propTypes = {
+    activeMobileTab: T.string,
     places: T.object,
     updateFilters: T.func,
     filters: T.object,
-    isMobile: T.bool,
-    location: T.object
+    isMobile: T.bool
   };
 }
 
 function mapStateToProps (state) {
   return {
     filters: getFromState(state, `explore.filters`),
-    places: wrapApiResult(getFromState(state, `places.list`))
+    places: wrapApiResult(getFromState(state, `places.list`)),
+    activeMobileTab: getFromState(state, `explore.activeMobileTab`)
   };
 }
 

@@ -25,10 +25,10 @@ export function updateFiltersAndMapViewport ({ mapViewport, filters }) {
   };
 }
 
-export const UPDATE_MOBILE_TAB = 'UPDATE_MOBILE_TAB';
-export function updateMobileTab (tabId) {
+export const UPDATE_ACTIVE_MOBILE_TAB = 'UPDATE_ACTIVE_MOBILE_TAB';
+export function updateActiveMobileTab (tabId) {
   return {
-    type: UPDATE_MOBILE_TAB,
+    type: UPDATE_ACTIVE_MOBILE_TAB,
     tabId
   };
 }

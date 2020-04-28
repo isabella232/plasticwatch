@@ -128,7 +128,7 @@ const topSurveyorsReducer = baseAPIReducer(
  * EXPLORE VIEW reducer
  */
 const exploreInitialState = {
-  mobileView: 'list',
+  activeMobileTab: 'map',
   mapViewport: {},
   filters: {
     placeName: null,
@@ -156,6 +156,11 @@ const exploreReducer = (state = exploreInitialState, action) => {
           ...state.filters,
           ...action.filters
         }
+      };
+    case 'UPDATE_ACTIVE_MOBILE_TAB':
+      return {
+        ...state,
+        activeMobileTab: action.tabId
       };
   }
   return state;
