@@ -78,11 +78,16 @@ class Map extends Component {
   }
 
   initMap () {
+    const { zoom, lng, lat } = this.props.mapViewport;
+
     this.map = new mapboxgl.Map({
       container: this.mapContainer,
       style: mapConfig.style,
-      zoom: mapConfig.zoom,
-      center: mapConfig.center,
+      zoom: zoom || mapConfig.zoom,
+      center: {
+        lng: lng || mapConfig.center.lng,
+        lat: lat || mapConfig.center.lat
+      },
       attributionControl: false,
       fitBoundsOptions: mapConfig.fitBoundsOptions
     });
@@ -238,6 +243,7 @@ class Map extends Component {
 
 Map.propTypes = {
   places: T.object,
+  mapViewport: T.object,
   history: T.object,
   geojson: T.object
 };
@@ -287,14 +293,15 @@ function mapStateToProps (state, props) {
   }
 
   return {
-    places: wrapApiResult(getFromState(state, `places.list`)),
-    match: match,
-    placeId: placeId,
-    place: place,
-    geojson,
-    selectedFeature,
     featureCenter,
-    filters
+    filters,
+    geojson,
+    mapViewport: getFromState(state, `explore.mapViewport`),
+    match: match,
+    place: place,
+    placeId: placeId,
+    places: wrapApiResult(getFromState(state, `places.list`)),
+    selectedFeature
   };
 }
 
