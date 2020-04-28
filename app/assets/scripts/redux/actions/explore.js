@@ -1,9 +1,9 @@
-export const UPDATE_QUERY_PARAMS = 'UPDATE_QUERY_PARAMS';
+export const UPDATE_FILTERS = 'UPDATE_FILTERS';
 
-export function updateQueryParams (queryParams = {}) {
+export function updateFilters (filters = {}) {
   return {
-    type: UPDATE_QUERY_PARAMS,
-    queryParams
+    type: UPDATE_FILTERS,
+    filters
   };
 }
 

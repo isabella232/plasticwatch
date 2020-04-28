@@ -126,40 +126,19 @@ const topSurveyorsReducer = baseAPIReducer(
 );
 
 /**
- * MAP reducer
- */
-const mapInitialState = {
-  bounds: mapConfig.defaultInitialBounds
-};
-
-const mapReducer = (state = mapInitialState, action) => {
-  switch (action.type) {
-    case 'SET_MAP_BOUNDS':
-      return {
-        ...state,
-        bounds: action.bounds
-      };
-  }
-  return state;
-};
-
-/**
  * EXPLORE VIEW reducer
  */
 const exploreInitialState = {
   mobileView: 'list',
   mapViewport: {},
-  filters: null
+  filters: {
+    placeName: null,
+    placeType: null
+  }
 };
 
 const exploreReducer = (state = exploreInitialState, action) => {
   switch (action.type) {
-    case 'UPDATE_ALL':
-      return {
-        ...state,
-        mapViewport: action.mapViewport,
-        filters: action.filters
-      };
     case 'UPDATE_MAP_VIEWPORT':
       return {
         ...state,
@@ -168,7 +147,10 @@ const exploreReducer = (state = exploreInitialState, action) => {
     case 'UPDATE_FILTERS':
       return {
         ...state,
-        filters: action.filters
+        filters: {
+          ...state.filters,
+          ...action.filters
+        }
       };
   }
   return state;

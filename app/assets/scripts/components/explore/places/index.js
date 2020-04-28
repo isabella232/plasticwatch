@@ -5,6 +5,7 @@ import { PropTypes as T } from 'prop-types';
 import { connect } from 'react-redux';
 
 import { wrapApiResult, getFromState } from '../../../redux/utils';
+import * as exploreActions from '../../../redux/actions/explore';
 
 import withMobileState from '../../common/with-mobile-state';
 import { StyledLink } from '../../common/link';
@@ -86,9 +87,15 @@ class PlacesIndex extends Component {
     });
   }
 
+  handlePlaceTypeChange (placeType) {
+    this.props.updateFilters({
+      placeType: this.props.filters.placeType !== placeType ? placeType : null
+    });
+  }
+
   render () {
     const { filtersOpened } = this.state;
-    const { isMobile, location, filterValues, handleFilterChange } = this.props;
+    const { isMobile, location, handleFilterChange, filters } = this.props;
     const { isReady, getData, hasError } = this.props.places;
 
     if (isMobile && location && location.search.indexOf('viewAs=list') === -1) {
@@ -136,24 +143,20 @@ class PlacesIndex extends Component {
               <FilterButtons>
                 <FilterLabel>Filters:</FilterLabel>
                 <FilterButton
-                  onClick={() => handleFilterChange('placeType', 'plasticFree')}
-                  active={
-                    filterValues && filterValues.placeType === 'plasticFree'
-                  }
+                  onClick={() => this.handlePlaceTypeChange('plasticFree')}
+                  active={filters && filters.placeType === 'plasticFree'}
                 >
                   Plastic Free
                 </FilterButton>
                 <FilterButton
-                  onClick={() => handleFilterChange('placeType', 'plastic')}
-                  active={filterValues && filterValues.placeType === 'plastic'}
+                  onClick={() => this.handlePlaceTypeChange('plastic')}
+                  active={filters && filters.placeType === 'plastic'}
                 >
                   Plastic
                 </FilterButton>
                 <FilterButton
-                  onClick={() => handleFilterChange('placeType', 'unsurveyed')}
-                  active={
-                    filterValues && filterValues.placeType === 'unsurveyed'
-                  }
+                  onClick={() => this.handlePlaceTypeChange('unsurveyed')}
+                  active={filters && filters.placeType === 'unsurveyed'}
                 >
                   Unsurveyed
                 </FilterButton>
@@ -186,7 +189,8 @@ class PlacesIndex extends Component {
 if (environment !== 'production') {
   PlacesIndex.propTypes = {
     places: T.object,
-    filterValues: T.object,
+    updateFilters: T.object,
+    filters: T.object,
     handleFilterChange: T.func,
     isMobile: T.bool,
     location: T.object
@@ -195,10 +199,19 @@ if (environment !== 'production') {
 
 function mapStateToProps (state) {
   return {
+    filters: getFromState(state, `explore.filters`),
     places: wrapApiResult(getFromState(state, `places.list`))
   };
 }
 
-export default connect(mapStateToProps)(
-  withRouter(withMobileState(PlacesIndex))
-);
+function dispatcher (dispatch) {
+  return {
+    updateFilters: (...args) =>
+      dispatch(exploreActions.updateFilters(...args))
+  };
+}
+
+export default connect(
+  mapStateToProps,
+  dispatcher
+)(withRouter(withMobileState(PlacesIndex)));
