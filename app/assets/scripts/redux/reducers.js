@@ -193,6 +193,5 @@ export default combineReducers({
     stats: statsReducer,
     topSurveyors: topSurveyorsReducer
   }),
-  map: mapReducer,
   explore: exploreReducer
 });
