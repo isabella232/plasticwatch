@@ -15,6 +15,16 @@ export function updateMapViewport (mapViewport) {
   };
 }
 
+export const UPDATE_FILTERS_AND_MAP_VIEWPORT =
+  'UPDATE_FILTERS_AND_MAP_VIEWPORT';
+export function updateFiltersAndMapViewport ({ mapViewport, filters }) {
+  return {
+    type: UPDATE_FILTERS_AND_MAP_VIEWPORT,
+    mapViewport,
+    filters
+  };
+}
+
 export const UPDATE_MOBILE_TAB = 'UPDATE_MOBILE_TAB';
 export function updateMobileTab (tabId) {
   return {

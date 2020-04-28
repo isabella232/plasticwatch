@@ -138,6 +138,12 @@ const exploreInitialState = {
 
 const exploreReducer = (state = exploreInitialState, action) => {
   switch (action.type) {
+    case 'UPDATE_FILTERS_AND_MAP_VIEWPORT':
+      return {
+        ...state,
+        mapViewport: action.mapViewport || {},
+        filters: action.filters || {}
+      };
     case 'UPDATE_MAP_VIEWPORT':
       return {
         ...state,

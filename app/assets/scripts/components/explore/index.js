@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import isEqual from 'lodash.isequal';
 
 import * as placesActions from '../../redux/actions/places';
+import * as exploreActions from '../../redux/actions/explore';
 
 import App from '../common/app';
 import { SidebarWrapper } from '../common/view-wrappers';
@@ -40,6 +41,30 @@ const qsState = new QsState({
 });
 
 class Explore extends React.Component {
+  componentDidMount () {
+    const qs = this.props.location.search.substr(1);
+    if (!qs) {
+      // If no query string is provided, build one from app state
+      this.updateQuerystring();
+    } else {
+      // Or update the state with the query string passed
+      const { placeName, placeType, zoom, lng, lat } = qsState.getState(
+        this.props.location.search.substr(1)
+      );
+      this.props.updateFiltersAndMapViewport({
+        filters: {
+          placeName,
+          placeType
+        },
+        mapViewport: {
+          zoom,
+          lng,
+          lat
+        }
+      });
+    }
+  }
+
   async componentDidUpdate (prevProps) {
     const { mapViewport, filters, places } = this.props;
 
@@ -53,17 +78,18 @@ class Explore extends React.Component {
     ) {
       await this.props.updatePlacesList();
 
-      // Then update querystring
-      const qString = qsState.getQs({
-        ...mapViewport,
-        ...filters
-      });
-      this.props.history.push({ search: qString });
+      this.updateQuerystring();
     }
   }
 
-  handleFilterChangeSubmit () {
-    const qString = qsState.getQs(this.state);
+  updateQuerystring () {
+    const { mapViewport, filters } = this.props;
+
+    // Then update querystring
+    const qString = qsState.getQs({
+      ...mapViewport,
+      ...filters
+    });
     this.props.history.push({ search: qString });
   }
 
@@ -108,7 +134,8 @@ if (environment !== 'production') {
     match: T.object,
     places: T.object,
     filters: T.object,
-    updatePlacesList: T.func
+    updatePlacesList: T.func,
+    updateFiltersAndMapViewport: T.func
   };
 }
 
@@ -123,7 +150,9 @@ function mapStateToProps (state, props) {
 function dispatcher (dispatch) {
   return {
     updatePlacesList: (...args) =>
-      dispatch(placesActions.updatePlacesList(...args))
+      dispatch(placesActions.updatePlacesList(...args)),
+    updateFiltersAndMapViewport: (...args) =>
+      dispatch(exploreActions.updateFiltersAndMapViewport(...args))
   };
 }
 

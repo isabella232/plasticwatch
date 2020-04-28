@@ -125,6 +125,7 @@ class PlacesIndex extends Component {
                 type='text'
                 id='placeSearch'
                 placeholder='Enter place name'
+                defaultValue={this.props.filters.placeName}
                 onChange={this.handleNameSearchChange}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
@@ -196,7 +197,7 @@ class PlacesIndex extends Component {
 if (environment !== 'production') {
   PlacesIndex.propTypes = {
     places: T.object,
-    updateFilters: T.object,
+    updateFilters: T.func,
     filters: T.object,
     isMobile: T.bool,
     location: T.object
