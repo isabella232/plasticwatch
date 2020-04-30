@@ -15,7 +15,7 @@ import { wrapApiResult } from '../../redux/utils';
 
 const IntroPanel = styled(InnerPanel)`
   margin: 0;
-  margin-bottom: -30vh;
+  order: 2;
   padding: 2rem;
   align-items: flex-start;
   z-index: 10;
@@ -24,6 +24,7 @@ const IntroPanel = styled(InnerPanel)`
   box-shadow: 0 -2px 12px 1px ${themeVal('color.smoke')};
   ${media.mediumUp`
     justify-content: flex-end;
+    order: initial;
     padding-bottom: 4rem;
     margin-bottom: 0;
     background: ${themeVal('color.background')};

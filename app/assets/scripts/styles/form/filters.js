@@ -38,6 +38,7 @@ export const InputWrapper = styled.div`
   display: flex;
   flex-flow: column nowrap;
   justify-content: flex-end;
+  flex: 0 0 50%;
 `;
 
 export const InputWithIcon = styled(FormInput)`
@@ -58,17 +59,25 @@ export const InputIcon = styled(filterComponentProps(FormLabel, ['useIcon']))`
 export const FilterLabel = styled(FormLabel)`
   font-size: 0.875rem;
   font-weight: ${themeVal('type.base.regular')};
-  margin-right: 1rem;
+  margin-right: 0.5rem;
+  ${media.mediumUp`
+    margin-right: ${themeVal('layout.space')};
+  `}
 `;
 
 export const FilterButtons = styled.div`
   margin-top: 0.5rem;
 `;
+
 export const FilterButton = styled(Button)`
   text-transform: none;
   box-shadow: none;
   font-size: 0.875rem;
   font-weight: ${themeVal('type.base.regular')};
   border: 1px solid ${themeVal('color.smoke')};
-  margin-right: ${themeVal('layout.space')};
+  margin-right: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  ${media.largeUp`
+    margin-right: ${themeVal('layout.space')};
+  `}
 `;

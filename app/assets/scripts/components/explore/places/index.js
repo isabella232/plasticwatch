@@ -44,6 +44,11 @@ const Results = styled.ul`
 const ResultsItem = styled.li`
   margin-bottom: ${themeVal('layout.space')};
   text-decoration: none;
+  &:first-child {
+    margin-bottom: 0;
+    margin-left: 0.5rem;
+    font-size: 0.875rem;
+  }
 `;
 
 class PlacesIndex extends Component {
@@ -175,7 +180,7 @@ class PlacesIndex extends Component {
 
         {isReady() && !hasError() && (
           <Results>
-            {this.renderPlacesCount(data)}
+            <ResultsItem>{this.renderPlacesCount(data)}</ResultsItem>
             {data.map(({ id, properties: { name, amenity, observations } }) => (
               <ResultsItem key={id} as={StyledLink} to={`/explore/${id}`}>
                 <Place>
