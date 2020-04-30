@@ -1,6 +1,5 @@
 import { combineReducers } from 'redux';
 import { baseAPIReducer } from './utils';
-import { mapConfig } from '../config';
 
 /**
  * AUTHENTICATED USER reducer
@@ -53,7 +52,10 @@ const placesTilesReducerInitialState = {
   // data: []
 };
 
-const placesTilesReducer = baseAPIReducer('PLACES_TILE', placesTilesReducerInitialState);
+const placesTilesReducer = baseAPIReducer(
+  'PLACES_TILE',
+  placesTilesReducerInitialState
+);
 
 /**
  * PLACE reducer
@@ -117,19 +119,48 @@ const topSurveyorsReducerInitialState = {
   data: []
 };
 
-const topSurveyorsReducer = baseAPIReducer('TOP_SURVEYORS', topSurveyorsReducerInitialState);
+const topSurveyorsReducer = baseAPIReducer(
+  'TOP_SURVEYORS',
+  topSurveyorsReducerInitialState
+);
 
-// Reducer for Map state
-const mapInitalState = {
-  bounds: mapConfig.defaultInitialBounds
+/**
+ * EXPLORE VIEW reducer
+ */
+const exploreInitialState = {
+  activeMobileTab: 'map',
+  mapViewport: {},
+  filters: {
+    placeName: null,
+    placeType: null
+  }
 };
 
-const mapReducer = (state = mapInitalState, action) => {
+const exploreReducer = (state = exploreInitialState, action) => {
   switch (action.type) {
-    case 'SET_MAP_BOUNDS':
+    case 'UPDATE_FILTERS_AND_MAP_VIEWPORT':
       return {
         ...state,
-        bounds: action.bounds
+        mapViewport: action.mapViewport || {},
+        filters: action.filters || {}
+      };
+    case 'UPDATE_MAP_VIEWPORT':
+      return {
+        ...state,
+        mapViewport: action.mapViewport
+      };
+    case 'UPDATE_FILTERS':
+      return {
+        ...state,
+        filters: {
+          ...state.filters,
+          ...action.filters
+        }
+      };
+    case 'UPDATE_ACTIVE_MOBILE_TAB':
+      return {
+        ...state,
+        activeMobileTab: action.tabId
       };
   }
   return state;
@@ -154,5 +185,5 @@ export default combineReducers({
     stats: statsReducer,
     topSurveyors: topSurveyorsReducer
   }),
-  map: mapReducer
+  explore: exploreReducer
 });

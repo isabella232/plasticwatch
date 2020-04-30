@@ -5,6 +5,7 @@ import { PropTypes as T } from 'prop-types';
 import { connect } from 'react-redux';
 
 import { wrapApiResult, getFromState } from '../../../redux/utils';
+import * as exploreActions from '../../../redux/actions/explore';
 
 import withMobileState from '../../common/with-mobile-state';
 import { StyledLink } from '../../common/link';
@@ -86,12 +87,24 @@ class PlacesIndex extends Component {
     });
   }
 
+  handlePlaceTypeChange (placeType) {
+    this.props.updateFilters({
+      placeType: this.props.filters.placeType !== placeType ? placeType : null
+    });
+  }
+
+  handlePlaceNameChange (placeName) {
+    this.props.updateFilters({
+      placeName
+    });
+  }
+
   render () {
     const { filtersOpened } = this.state;
-    const { isMobile, location, filterValues, handleFilterChange } = this.props;
+    const { isMobile, filters, activeMobileTab } = this.props;
     const { isReady, getData, hasError } = this.props.places;
 
-    if (isMobile && location && location.search.indexOf('viewAs=list') === -1) {
+    if (isMobile && activeMobileTab !== 'list') {
       return null;
     }
 
@@ -112,18 +125,20 @@ class PlacesIndex extends Component {
                 type='text'
                 id='placeSearch'
                 placeholder='Enter place name'
+                defaultValue={this.props.filters.placeName}
                 onChange={this.handleNameSearchChange}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     e.preventDefault();
-                    handleFilterChange('search', this.state.searchString);
+                    this.handlePlaceNameChange(this.state.searchString);
                   }
                 }}
               />
               <InputIcon
                 htmlFor='placeSearch'
                 useIcon='magnifier-left'
-                onClick={() => handleFilterChange('search', this.state.searchString)}
+                onClick={() =>
+                  this.handlePlaceNameChange(this.state.searchString)}
               />
             </InputWrapper>
             {isMobile && (
@@ -136,24 +151,20 @@ class PlacesIndex extends Component {
               <FilterButtons>
                 <FilterLabel>Filters:</FilterLabel>
                 <FilterButton
-                  onClick={() => handleFilterChange('placeType', 'plasticFree')}
-                  active={
-                    filterValues && filterValues.placeType === 'plasticFree'
-                  }
+                  onClick={() => this.handlePlaceTypeChange('plasticFree')}
+                  active={filters && filters.placeType === 'plasticFree'}
                 >
                   Plastic Free
                 </FilterButton>
                 <FilterButton
-                  onClick={() => handleFilterChange('placeType', 'plastic')}
-                  active={filterValues && filterValues.placeType === 'plastic'}
+                  onClick={() => this.handlePlaceTypeChange('plastic')}
+                  active={filters && filters.placeType === 'plastic'}
                 >
                   Plastic
                 </FilterButton>
                 <FilterButton
-                  onClick={() => handleFilterChange('placeType', 'unsurveyed')}
-                  active={
-                    filterValues && filterValues.placeType === 'unsurveyed'
-                  }
+                  onClick={() => this.handlePlaceTypeChange('unsurveyed')}
+                  active={filters && filters.placeType === 'unsurveyed'}
                 >
                   Unsurveyed
                 </FilterButton>
@@ -185,20 +196,29 @@ class PlacesIndex extends Component {
 
 if (environment !== 'production') {
   PlacesIndex.propTypes = {
+    activeMobileTab: T.string,
     places: T.object,
-    filterValues: T.object,
-    handleFilterChange: T.func,
-    isMobile: T.bool,
-    location: T.object
+    updateFilters: T.func,
+    filters: T.object,
+    isMobile: T.bool
   };
 }
 
 function mapStateToProps (state) {
   return {
-    places: wrapApiResult(getFromState(state, `places.list`))
+    filters: getFromState(state, `explore.filters`),
+    places: wrapApiResult(getFromState(state, `places.list`)),
+    activeMobileTab: getFromState(state, `explore.activeMobileTab`)
   };
 }
 
-export default connect(mapStateToProps)(
-  withRouter(withMobileState(PlacesIndex))
-);
+function dispatcher (dispatch) {
+  return {
+    updateFilters: (...args) => dispatch(exploreActions.updateFilters(...args))
+  };
+}
+
+export default connect(
+  mapStateToProps,
+  dispatcher
+)(withRouter(withMobileState(PlacesIndex)));

@@ -136,11 +136,12 @@ export function fetchPlacesTile (quadkey) {
 
 export const SET_PLACES_LIST = 'SET_PLACES_LIST';
 
-export function updatePlacesList (filters = {}) {
+export function updatePlacesList () {
   return async (dispatch, getState) => {
     // Fetch visible tiles
     const state = getState();
-    const bounds = state.map.bounds || mapConfig.defaultInitialBounds;
+    const bounds = state.explore.mapViewport.bounds || mapConfig.defaultInitialBounds;
+    const filters = state.explore.filters;
     const visibleTiles = bboxToTiles(bounds);
 
     // Helper function to get tile from state
@@ -154,7 +155,7 @@ export function updatePlacesList (filters = {}) {
         const {
           properties: { observations, name }
         } = f;
-        const { placeType, search } = filters;
+        const { placeType, placeName } = filters;
 
         // Discard place is type is not met
         if (placeType === 'unsurveyed' && observations.total > 0) {
@@ -175,10 +176,10 @@ export function updatePlacesList (filters = {}) {
           return false;
         }
 
-        // Discard place if name doesn't match search
+        // Discard place if name doesn't match placeName
         if (
-          search &&
-          (!name || !name.toUpperCase().includes(search.toUpperCase()))
+          placeName &&
+          (!name || !name.toUpperCase().includes(placeName.toUpperCase()))
         ) {
           return false;
         }

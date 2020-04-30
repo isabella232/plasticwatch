@@ -3,12 +3,16 @@ import styled, { css } from 'styled-components';
 import { NavLink, withRouter } from 'react-router-dom';
 import { environment } from '../../config';
 import { PropTypes as T } from 'prop-types';
-import qs from 'qs';
+import { connect } from 'react-redux';
+
+import * as exploreActions from '../../redux/actions/explore';
 
 import { visuallyHidden } from '../../styles/helpers';
 import { themeVal } from '../../styles/utils/general';
 import collecticon from '../../styles/collecticons';
 import { filterComponentProps } from '../../utils';
+import { getFromState } from '../../redux/utils';
+import { qsState } from '../explore';
 
 const PageFoot = styled.footer`
   position: sticky;
@@ -100,13 +104,9 @@ const propsToFilter = ['variation', 'size', 'hideText', 'useIcon', 'active'];
 const NavLinkFilter = filterComponentProps(NavLink, propsToFilter);
 
 class PageFooter extends React.Component {
-  setQuerystringAs (viewType) {
-    const parsedQS = qs.parse(this.props.location.search.substr(1));
-    parsedQS.viewAs = viewType;
-    return qs.stringify(parsedQS);
-  }
-
   render () {
+    const { activeMobileTab, exploreQs } = this.props;
+
     return (
       <PageFoot>
         <PageFootInner>
@@ -127,12 +127,10 @@ class PageFooter extends React.Component {
                 <FooterMenuLink
                   as={NavLinkFilter}
                   exact
-                  to={`/explore?${this.setQuerystringAs('list')}`}
+                  to={`/explore?${exploreQs}`}
+                  onClick={() => this.props.updateActiveMobileTab('list')}
                   useIcon='list'
-                  isActive={(match, { pathname, search }) =>
-                    match &&
-                    pathname === '/explore' &&
-                    search.indexOf('viewAs=list') > -1}
+                  isActive={() => activeMobileTab === 'list'}
                   title='Go to the list'
                 >
                   <span>List</span>
@@ -142,12 +140,10 @@ class PageFooter extends React.Component {
                 <FooterMenuLink
                   as={NavLinkFilter}
                   exact
-                  to={`/explore?${this.setQuerystringAs('map')}`}
+                  to={`/explore?${exploreQs}`}
                   useIcon='map'
-                  isActive={(match, { pathname, search }) =>
-                    match &&
-                    pathname === '/explore' &&
-                    search.indexOf('viewAs=list') === -1}
+                  isActive={() => activeMobileTab === 'map'}
+                  onClick={() => this.props.updateActiveMobileTab('map')}
                   title='Go to the map'
                 >
                   <span>Map</span>
@@ -163,8 +159,30 @@ class PageFooter extends React.Component {
 
 if (environment !== 'production') {
   PageFooter.propTypes = {
-    location: T.object
+    activeMobileTab: T.string,
+    exploreQs: T.string,
+    updateActiveMobileTab: T.func
   };
 }
 
-export default withRouter(PageFooter);
+function mapStateToProps (state) {
+  const filters = getFromState(state, `explore.filters`);
+  const mapViewport = getFromState(state, `explore.mapViewport`);
+
+  return {
+    activeMobileTab: getFromState(state, `explore.activeMobileTab`),
+    exploreQs: qsState.getQs({
+      ...mapViewport,
+      ...filters
+    })
+  };
+}
+
+function dispatcher (dispatch) {
+  return {
+    updateActiveMobileTab: (...args) =>
+      dispatch(exploreActions.updateActiveMobileTab(...args))
+  };
+}
+
+export default connect(mapStateToProps, dispatcher)(withRouter(PageFooter));
