@@ -20,10 +20,23 @@ const FakeMap = styled.div`
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
   height: 20rem;
   ${media.mediumUp`
     height: 100%;
   `};
+
+  h4 {
+    text-transform: uppercase;
+    background: rgba(240,240,240, 0.85);
+    padding: 0.75rem 1rem;
+    border-radius: 0.25rem;
+    font-weight: normal;
+    letter-spacing: 0.5px;
+  }
 `;
 
 export default class Home extends React.Component {
@@ -32,7 +45,9 @@ export default class Home extends React.Component {
       <App pageTitle='Welcome' hideFooter>
         <HomeWrapper>
           <Introduction />
-          <FakeMap as={StyledLink} to='/explore' />
+          <FakeMap as={StyledLink} to='/explore'>
+            <h4>Click the map to start exploring</h4>
+          </FakeMap>
         </HomeWrapper>
       </App>
     );
