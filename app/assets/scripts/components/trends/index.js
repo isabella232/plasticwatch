@@ -147,11 +147,14 @@ class Trends extends React.Component {
       surveyorsCount
     } = stats.getData();
 
-    const percentSurveyed = round((surveyedPlacesCount / placesCount) * 100, 1);
-    const percentNonPlastic = round(
-      (nonPlasticPlacesCount / surveyedPlacesCount) * 100,
-      1
-    );
+    const percentSurveyed =
+      surveyedPlacesCount > 0
+        ? round((surveyedPlacesCount / placesCount) * 100, 1)
+        : 0;
+    const percentNonPlastic =
+      surveyedPlacesCount > 0
+        ? round((nonPlasticPlacesCount / surveyedPlacesCount) * 100, 1)
+        : 0;
 
     const barHeight = 20;
     const pieSize = 200;

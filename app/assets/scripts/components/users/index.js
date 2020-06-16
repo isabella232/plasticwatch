@@ -299,14 +299,11 @@ class Users extends React.Component {
             <th scope='col'>
               {this.renderColumnHead('Mapper Since', 'createdAt')}
             </th>
-            <th scope='col' style={{ width: '20%' }}>
-              {this.renderColumnHead('Surveys', 'surveys')}
-            </th>
-            <th scope='col' style={{ width: '12%', textAlign: 'center' }}>
+            <th scope='col' style={{ textAlign: 'center' }}>
               {this.renderColumnHead('Admin', 'isAdmin')}
             </th>
             {isAdmin && (
-              <th scope='col' style={{ width: '12%', textAlign: 'center' }}>
+              <th scope='col' style={{ textAlign: 'center' }}>
                 <span>Action</span>
               </th>
             )}
@@ -334,7 +331,6 @@ class Users extends React.Component {
             </a>
           </td>
           <td>{getUTCDate(user.osmCreatedAt)}</td>
-          <td style={{ textAlign: 'center' }}>N/A</td>
           <td style={{ textAlign: 'center' }}>
             {user.isAdmin && (
               <Button useIcon='tick' size='small' hideText>
