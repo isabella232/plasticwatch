@@ -22,7 +22,8 @@
     "build-staging": "DS_ENV=staging NODE_ENV=staging gulp",
     "lint": "eslint app/assets/scripts/ --ext .js",
     "lint:css": "stylelint 'app/assets/styles/**/**' 'app/assets/scripts/**/*.js'",
-    "test": "echo \"No tests\" && exit 0"
+    "test": "echo \"No tests\" && exit 0",
+    "download": "node utils/prepare-osm-data.js"
   },
   "engines": {
     "node": ">=12"
