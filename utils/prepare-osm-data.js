@@ -10,6 +10,7 @@ const writeFileSync = require('fs').writeFileSync;
 const argv = require('yargs').argv;
 const cover = require('@mapbox/tile-cover');
 const centroid = require('@turf/centroid').default;
+const path = require('path');
 
 if (!argv.query) {
   // eslint-disable-next-line no-console
@@ -19,6 +20,9 @@ if (!argv.query) {
 
 const query = readFileSync(argv.query, { 'encoding': 'UTF-8' });
 console.log('Querying Overpass...');
+
+const basename = path.basename(argv.query);
+const filename = path.parse(basename).name;
 
 queryOverpass(query, (error, data) => {
   if (error) {
@@ -37,7 +41,7 @@ queryOverpass(query, (error, data) => {
 
       feature.quadkey = quadkey;
     });
-    writeFileSync('/tmp/data.geojson', JSON.stringify(data));
+    writeFileSync(`/tmp/${filename}.geojson`, JSON.stringify(data));
   }
 }, { flatProperties: true });
 

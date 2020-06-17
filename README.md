@@ -11,7 +11,8 @@ The steps below will walk you through setting up a development environment.
 The website needs a running instance of [Observe API](https://github.com/developmentseed/observe-api). Please refer to the [Config files](#config-files) section if the API instance has a different hostname than specified at [config/defaults.js](app/assets/scripts/config/defaults.js).
 
 ### Prepare OSM Data
-To prepare OSM data to be loaded as part PlasticWatch, use the util script in `/utils`. The script takes an Overpass query and dumps GeoJSON FeatureCollection in `/tmp/data.geojson`. This  can be directly uploaded to Observe API using the end point  `POST /osmobjects`.
+
+To prepare OSM data to be loaded as part PlasticWatch, run the script in `yarn download --query <path-to-overpass-query>` with queries available in directory [utils/overpass-queries](). The script takes an Overpass query and dumps GeoJSON FeatureCollection in `/tmp/{query-id}.geojson`. This  can be directly uploaded to Observe API using the end point  `POST /osmobjects`.
 
 ### Install modules dependencies
 
