@@ -84,6 +84,7 @@ export const PlaceDetails = styled.div`
 export const PlaceComment = styled.li`
   display: flex;
   justify-content: space-between;
+  flex-flow: column nowrap;
   margin: 0.75rem 0;
 
   img {
