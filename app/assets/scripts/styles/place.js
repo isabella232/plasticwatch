@@ -85,7 +85,7 @@ export const PlaceComment = styled.li`
   display: flex;
   justify-content: space-between;
   flex-flow: column nowrap;
-  margin: 0.75rem 0;
+  margin: 1rem 0;
 
   img {
     max-width: 100%;
@@ -93,7 +93,13 @@ export const PlaceComment = styled.li`
   }
   span {
     display: block;
-    text-align: right;
-    font-size: 0.875rem;
+    &:first-of-type {
+      font-weight: bold;
+    }
+    &:last-of-type {
+      font-size: 0.875rem;
+      margin-bottom: 0.5rem;
+      opacity: 0.9;
+    }
   }
 `;
