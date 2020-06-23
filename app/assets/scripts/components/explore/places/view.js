@@ -75,10 +75,13 @@ class PlacesView extends Component {
                 {comments.map(
                   ({ observationId, osmDisplayName, createdAt, text }) => (
                     <PlaceComment key={observationId}>
-                      <div>{text}</div>
                       <span>
-                        {osmDisplayName}, {fromNow(createdAt)}
+                        {osmDisplayName}
                       </span>
+                      <span>
+                        {fromNow(createdAt)}
+                      </span>
+                      <div>{text}</div>
                     </PlaceComment>
                   )
                 )}
