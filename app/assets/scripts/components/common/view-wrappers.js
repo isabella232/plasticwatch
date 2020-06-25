@@ -36,7 +36,10 @@ export const SidebarWrapper = styled.div`
     grid-template-columns: 36rem 1fr;
   `}
   >${Panel} {
-    margin-bottom: -24rem;
+    margin-top: -2.75rem;
+    ${media.mediumUp`
+      margin-top: 0;
+    `}
   }
 `;
 
