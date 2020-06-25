@@ -10,7 +10,6 @@ import { wrapApiResult, getFromState } from '../../redux/utils';
 import { geojsonCentroid } from '../../utils/geo';
 import { getMarker } from '../../utils/utils';
 
-import * as actions from '../../redux/actions/places';
 import * as exploreActions from '../../redux/actions/explore';
 import isEqual from 'lodash.isequal';
 
@@ -322,10 +321,6 @@ function mapStateToProps (state, props) {
 
 function dispatcher (dispatch) {
   return {
-    fetchTiles: (...args) => dispatch(actions.fetchTiles(...args)),
-    fetchPlaces: (...args) => dispatch(actions.fetchPlaces(...args)),
-    fetchPlace: (...args) => dispatch(actions.fetchPlace(...args)),
-    updatePlacesList: (...args) => dispatch(actions.updatePlacesList(...args)),
     updateMapViewport: (...args) =>
       dispatch(exploreActions.updateMapViewport(...args))
   };
