@@ -128,7 +128,7 @@ class Introduction extends Component {
   render () {
     return (
       <IntroPanel>
-        <IntroHeading size='x-large' variation='primary'>
+        <IntroHeading size='xlarge' variation='primary'>
           <img
             src='../../../assets/graphics/content/Oceana_2.svg'
             alt='Oceana logo'
