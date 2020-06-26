@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
 import mapboxgl from 'mapbox-gl';
 import { connect } from 'react-redux';
 import { PropTypes as T } from 'prop-types';
@@ -10,21 +9,14 @@ import { wrapApiResult, getFromState } from '../../redux/utils';
 import { geojsonCentroid } from '../../utils/geo';
 import { getMarker } from '../../utils/utils';
 
+import { Wrapper, MapContainer } from '../common/view-wrappers';
+
 import * as actions from '../../redux/actions/places';
 import * as exploreActions from '../../redux/actions/explore';
 import isEqual from 'lodash.isequal';
 
 // Mapbox access token
 mapboxgl.accessToken = mapConfig.mapboxAccessToken;
-
-const Wrapper = styled.div`
-  height: 100%;
-`;
-
-const MapContainer = styled.div`
-  width: 100%;
-  height: 100%;
-`;
 
 const markerQuestion = new Image(45, 60);
 markerQuestion.src = './assets/graphics/map/marker-question.png';

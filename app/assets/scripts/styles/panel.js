@@ -46,10 +46,12 @@ export const InnerPanel = styled.article`
   background: ${themeVal('color.surface')};
   box-shadow: 0 0 6px 1px ${themeVal('color.shadow')};
   padding: 1rem;
+  max-height: calc(100vh - 10.5rem);
   ${media.mediumUp`
     padding: 1.5rem;
     flex: 1;
     justify-content: flex-start;
+    max-height: calc(100% - 2.75rem);
   `}
 
   a {

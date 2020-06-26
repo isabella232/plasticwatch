@@ -79,6 +79,7 @@ export const PlaceMeta = styled.div`
 
 export const PlaceDetails = styled.div`
   margin: ${themeVal('layout.space')} 0;
+  overflow-y: auto;
 `;
 
 export const PlaceComment = styled.li`

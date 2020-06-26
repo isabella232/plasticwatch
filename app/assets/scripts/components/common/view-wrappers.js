@@ -2,7 +2,16 @@ import styled from 'styled-components';
 import { cardSkin } from '../../styles/skins';
 import { themeVal } from '../../styles/utils/general';
 import media from '../../styles/utils/media-queries';
-import { Panel } from '../../styles/panel';
+import { Panel, InnerPanel } from '../../styles/panel';
+
+export const Wrapper = styled.div`
+  height: 100%;
+`;
+
+export const MapContainer = styled.div`
+  width: 100%;
+  height: 100%;
+`;
 
 export const SidebarWrapper = styled.div`
   display: flex;
@@ -35,10 +44,19 @@ export const SidebarWrapper = styled.div`
   ${media.largeUp`
     grid-template-columns: 36rem 1fr;
   `}
-  >${Panel} {
-    margin-top: -2.75rem;
+  >${Panel}:not(:only-child) {
+    max-height: 50%;
+    position: sticky;
+    top: 0;
+    ~ ${Wrapper} {
+      margin-top: -2.75rem;
+    }
+    >${InnerPanel} {
+      max-height: calc(100vh - 16rem);
+    }
     ${media.mediumUp`
       margin-top: 0;
+      max-height: none;
     `}
   }
 `;
