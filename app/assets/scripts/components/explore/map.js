@@ -278,7 +278,8 @@ class Map extends Component {
         )}
         {mapZoom && mapZoom < minZoomToLoadPlaces && (
           <ZoomButton
-            variation='base-raised-light'
+            variation='primary-raised-light'
+            size='large'
             onClick={() => {
               this.map.zoomTo(minZoomToLoadPlaces);
               this.setState({ mapZoom: minZoomToLoadPlaces });
