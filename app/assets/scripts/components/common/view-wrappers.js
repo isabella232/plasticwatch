@@ -55,9 +55,20 @@ export const SidebarWrapper = styled.div`
       max-height: calc(100vh - 16rem);
     }
     ${media.mediumUp`
-      margin-top: 0;
       max-height: none;
+      ~ ${Wrapper} {
+        margin-top: 0;
+      }
+      >${InnerPanel} {
+        max-height: calc(100% - 2.75rem);
+      }
     `}
+  }
+  >${Panel}:only-child {
+    >${InnerPanel} {
+      height: calc(100vh - 10.5rem);
+      justify-content: flex-start;
+    }
   }
 `;
 

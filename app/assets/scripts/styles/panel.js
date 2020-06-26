@@ -51,7 +51,6 @@ export const InnerPanel = styled.article`
     padding: 1.5rem;
     flex: 1;
     justify-content: flex-start;
-    max-height: calc(100% - 2.75rem);
   `}
 
   a {

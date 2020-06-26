@@ -22,6 +22,7 @@ const IntroPanel = styled(InnerPanel)`
   border-radius: 0.5rem;
   border: 2px solid ${themeVal('color.baseLight')};
   box-shadow: 0 -2px 12px 1px ${themeVal('color.smoke')};
+  max-height: 100%;
   ${media.mediumUp`
     justify-content: flex-end;
     order: initial;
