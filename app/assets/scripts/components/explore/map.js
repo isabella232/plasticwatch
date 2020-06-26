@@ -10,15 +10,31 @@ import { wrapApiResult, getFromState } from '../../redux/utils';
 import { geojsonCentroid } from '../../utils/geo';
 import { getMarker } from '../../utils/utils';
 
-import * as actions from '../../redux/actions/places';
 import * as exploreActions from '../../redux/actions/explore';
 import isEqual from 'lodash.isequal';
+
+import Button from '../../styles/button/button';
+
+const minZoomToLoadPlaces = 15;
 
 // Mapbox access token
 mapboxgl.accessToken = mapConfig.mapboxAccessToken;
 
 const Wrapper = styled.div`
   height: 100%;
+`;
+
+const ZoomButton = styled(Button)`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: 50% 50%;
+  transform: translate(-50%,-50%);
+  z-index: 1000;
+  &.active,
+  &:active {
+      transform: translate(-50%,-50%);
+  }
 `;
 
 const MapContainer = styled.div`
@@ -141,7 +157,7 @@ class Map extends Component {
       const zoom = self.map.getZoom();
 
       // Do not update state's map viewport if zoom is too high
-      if (zoom < 15) return;
+      if (zoom < minZoomToLoadPlaces) return;
 
       self.props.updateMapViewport({
         bounds: self.map.getBounds().toArray(),
@@ -156,6 +172,11 @@ class Map extends Component {
     });
 
     this.map.on('moveend', onMoveEnd);
+    this.map.on('zoomend', () => {
+      this.setState({
+        mapZoom: self.map.getZoom()
+      });
+    });
 
     // ensure the source is added
     this.map.on('sourcedata', (e) => {
@@ -170,6 +191,10 @@ class Map extends Component {
       this.setState({ mapLoaded: true });
 
       updateStateMapViewport();
+
+      this.setState({
+        mapZoom: self.map.getZoom()
+      });
 
       // add the geojson from state as a source to the map
       this.map.addSource('placesSource', {
@@ -236,6 +261,8 @@ class Map extends Component {
       return <></>;
     }
 
+    const { mapZoom } = this.state;
+
     return (
       <Wrapper>
         {mapboxgl.supported() ? (
@@ -248,6 +275,18 @@ class Map extends Component {
           <div className='mapbox-no-webgl'>
             <p>WebGL is not supported or disabled.</p>
           </div>
+        )}
+        {mapZoom && mapZoom < minZoomToLoadPlaces && (
+          <ZoomButton
+            variation='primary-raised-light'
+            size='large'
+            onClick={() => {
+              this.map.zoomTo(minZoomToLoadPlaces);
+              this.setState({ mapZoom: minZoomToLoadPlaces });
+            }}
+          >
+            Zoom in to load places
+          </ZoomButton>
         )}
       </Wrapper>
     );
@@ -322,10 +361,6 @@ function mapStateToProps (state, props) {
 
 function dispatcher (dispatch) {
   return {
-    fetchTiles: (...args) => dispatch(actions.fetchTiles(...args)),
-    fetchPlaces: (...args) => dispatch(actions.fetchPlaces(...args)),
-    fetchPlace: (...args) => dispatch(actions.fetchPlace(...args)),
-    updatePlacesList: (...args) => dispatch(actions.updatePlacesList(...args)),
     updateMapViewport: (...args) =>
       dispatch(exploreActions.updateMapViewport(...args))
   };
