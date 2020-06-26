@@ -22,6 +22,7 @@ const IntroPanel = styled(InnerPanel)`
   border-radius: 0.5rem;
   border: 2px solid ${themeVal('color.baseLight')};
   box-shadow: 0 -2px 12px 1px ${themeVal('color.smoke')};
+  max-height: 100%;
   ${media.mediumUp`
     justify-content: flex-end;
     order: initial;
@@ -128,7 +129,7 @@ class Introduction extends Component {
   render () {
     return (
       <IntroPanel>
-        <IntroHeading size='x-large' variation='primary'>
+        <IntroHeading size='xlarge' variation='primary'>
           <img
             src='../../../assets/graphics/content/Oceana_2.svg'
             alt='Oceana logo'

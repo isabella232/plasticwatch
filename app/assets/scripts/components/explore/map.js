@@ -10,6 +10,8 @@ import { wrapApiResult, getFromState } from '../../redux/utils';
 import { geojsonCentroid } from '../../utils/geo';
 import { getMarker } from '../../utils/utils';
 
+import { Wrapper, MapContainer } from '../common/view-wrappers';
+
 import * as exploreActions from '../../redux/actions/explore';
 import isEqual from 'lodash.isequal';
 
@@ -19,10 +21,6 @@ const minZoomToLoadPlaces = 15;
 
 // Mapbox access token
 mapboxgl.accessToken = mapConfig.mapboxAccessToken;
-
-const Wrapper = styled.div`
-  height: 100%;
-`;
 
 const ZoomButton = styled(Button)`
   position: absolute;
@@ -35,11 +33,6 @@ const ZoomButton = styled(Button)`
   &:active {
       transform: translate(-50%,-50%);
   }
-`;
-
-const MapContainer = styled.div`
-  width: 100%;
-  height: 100%;
 `;
 
 const markerQuestion = new Image(45, 60);

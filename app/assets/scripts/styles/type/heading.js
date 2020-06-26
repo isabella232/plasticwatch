@@ -5,14 +5,14 @@ const sizeMapping = {
   small: '0.875rem',
   medium: '1rem',
   large: '1.125rem',
-  xlarge: '1.25rem'
+  xlarge: '2rem'
 };
 
 const lineHeightMapping = {
   small: '1rem',
   medium: '1.25rem',
   large: '1.5rem',
-  xlarge: '1.75rem'
+  xlarge: '2.25rem'
 };
 
 const getHeadingColor = ({ variation, theme }) => {
