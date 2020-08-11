@@ -43,7 +43,7 @@ jobs:
           name: Deploy to staging
           command: |
             cp ./dist/index.html ./dist/200.html
-            ./node_modules/surge/lib/cli.js --project ./dist --domain http://plasticwatch.surge.sh
+            ./node_modules/surge/lib/cli.js --project ./dist --domain https://plasticwatch.surge.sh
 
 workflows:
   version: 2
