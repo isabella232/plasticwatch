@@ -6,8 +6,8 @@ import _flatten from 'lodash.flatten';
 import turfCentroid from '@turf/centroid';
 
 const tileLimits = {
-  min_zoom: 16,
-  max_zoom: 16
+  min_zoom: 12,
+  max_zoom: 12
 };
 
 export function geojsonBbox (geojson) {
