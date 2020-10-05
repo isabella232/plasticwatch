@@ -12,7 +12,7 @@ export async function fetchJSONPaginate (url, options) {
     const response = await fetchJSON(nextUrl, options);
     nextPage = !!(response.meta && response.meta.next);
     nextUrl = (response.meta && response.meta.next) ? response.meta.next : null;
-    results = results.concat(response);
+    results = results.concat(response.results);
   });
   return results;
 }

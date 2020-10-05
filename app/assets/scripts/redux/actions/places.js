@@ -92,8 +92,7 @@ export function fetchPlace (id) {
     statePath: ['places', 'individual', id],
     url: `${apiUrl}/osmobjects/${id}`,
     requestFn: requestPlace.bind(this, id),
-    receiveFn: receivePlace.bind(this, id),
-    paginate: true
+    receiveFn: receivePlace.bind(this, id)
   });
 }
 
@@ -128,7 +127,8 @@ export function fetchPlacesTile (quadkey) {
     statePath: ['places', 'tiles', quadkey],
     url: `${apiUrl}/osmobjects?limit=100&quadkey=${quadkey}`,
     requestFn: requestPlacesTile.bind(this, quadkey),
-    receiveFn: receivePlacesTile.bind(this, quadkey)
+    receiveFn: receivePlacesTile.bind(this, quadkey),
+    paginate: true
   });
 }
 
