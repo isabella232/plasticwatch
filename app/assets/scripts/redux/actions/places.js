@@ -5,8 +5,9 @@ import {
   getFromState
 } from '../utils';
 import { apiUrl, mapConfig } from '../../config';
-import qs from 'qs';
+// import qs from 'qs';
 import { bboxToTiles, featuresInBounds } from '../../utils/geo';
+import _uniqBy from 'lodash.uniqby';
 
 /*
  * List of places
@@ -91,7 +92,8 @@ export function fetchPlace (id) {
     statePath: ['places', 'individual', id],
     url: `${apiUrl}/osmobjects/${id}`,
     requestFn: requestPlace.bind(this, id),
-    receiveFn: receivePlace.bind(this, id)
+    receiveFn: receivePlace.bind(this, id),
+    paginate: true
   });
 }
 
@@ -195,6 +197,7 @@ export function updatePlacesList () {
       const { isReady, hasError, getData } = getTile(visibleTiles[i]);
       if (isReady() && !hasError()) {
         features = features.concat(applyFilters(getData()));
+        features = _uniqBy(features, 'properties.id');
       }
     }
 
