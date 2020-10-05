@@ -54,7 +54,7 @@ export function fetchPlaces ({ placeType }) {
   const searchParams = qs.stringify({ observations });
   return fetchDispatchFactory({
     statePath: ['places', 'list'],
-    url: `${apiUrl}/osmobjects?limit=100&${searchParams}`,
+    url: `${apiUrl}/osmobjects?limit=1000&${searchParams}`,
     requestFn: requestPlaces,
     receiveFn: receivePlaces
   });
@@ -141,8 +141,9 @@ export function updatePlacesList () {
     // Fetch visible tiles
     const state = getState();
     const bounds = state.explore.mapViewport.bounds || mapConfig.defaultInitialBounds;
+    const zoom = state.explore.mapViewport.zoom || mapConfig.zoom;
     const filters = state.explore.filters;
-    const visibleTiles = bboxToTiles(bounds);
+    const visibleTiles = bboxToTiles(bounds, zoom);
 
     // Helper function to get tile from state
     const getTile = (id) =>
@@ -198,7 +199,6 @@ export function updatePlacesList () {
     }
 
     features = featuresInBounds(features, bounds);
-
     dispatch(receivePlaces(features));
   };
 }

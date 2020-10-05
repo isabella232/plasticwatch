@@ -2,7 +2,20 @@ import get from 'lodash.get';
 import merge from 'lodash.merge';
 import { delay } from '../utils';
 import { apiUrl } from '../config';
+import pWhilst from 'p-whilst';
 
+export async function fetchJSONPaginate (url, options) {
+  let nextPage = true;
+  let nextUrl = url;
+  let results = [];
+  await pWhilst(() => nextPage === true, async () => {
+    const response = await fetchJSON(nextUrl, options);
+    nextPage = !!(response.meta && response.meta.next);
+    nextUrl = (response.meta && response.meta.next) ? response.meta.next : null;
+    results = results.concat(response.results);
+  });
+  return results;
+}
 /**
  * Performs a request to the given url returning the response in json format
  * or throwing an error.
@@ -184,7 +197,7 @@ export function fetchDispatchFactory (opts) {
     dispatch(requestFn());
 
     try {
-      const response = await fetchJSON(url, options);
+      const response = await fetchJSONPaginate(url, options);
       const content = mutator(response);
       if (__devDelay) await delay(__devDelay);
       return dispatch(receiveFn(content));
