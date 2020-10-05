@@ -12,7 +12,7 @@ export async function fetchJSONPaginate (url, options) {
     const response = await fetchJSON(nextUrl, options);
     nextPage = !!(response.meta && response.meta.next);
     nextUrl = (response.meta && response.meta.next) ? response.meta.next : null;
-    results = results.concat(response.results);
+    results = results.concat(response);
   });
   return results;
 }
@@ -191,13 +191,18 @@ export function fetchDispatchCacheFactory (opts) {
  * }
  */
 export function fetchDispatchFactory (opts) {
-  let { url, requestFn, receiveFn, mutator, options, __devDelay } = opts;
+  let { url, requestFn, receiveFn, mutator, options, __devDelay, paginate } = opts;
   mutator = mutator || (v => v);
   return async function (dispatch, getState) {
     dispatch(requestFn());
 
     try {
-      const response = await fetchJSONPaginate(url, options);
+      let response;
+      if (paginate) {
+        response = await fetchJSONPaginate(url, options);
+      } else {
+        response = await fetchJSON(url, options);
+      }
       const content = mutator(response);
       if (__devDelay) await delay(__devDelay);
       return dispatch(receiveFn(content));
