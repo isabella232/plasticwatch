@@ -144,12 +144,12 @@ export function updatePlacesList () {
     const filters = state.explore.filters;
     const visibleTiles = bboxToTiles(bounds);
 
-    const placeName = filters.placeName ? filters.placeName : null;
+    const searchString = filters.searchString ? filters.searchString : null;
     // Helper function to get tile from state
     const getTile = (id) =>
       wrapApiResult(getFromState(getState(), `places.tiles.${id}`));
 
-    await Promise.all(visibleTiles.map((id) => dispatch(fetchPlacesTile(id, placeName))));
+    await Promise.all(visibleTiles.map((id) => dispatch(fetchPlacesTile(id, searchString))));
 
     function applyFilters (features) {
       return features.filter((f) => {

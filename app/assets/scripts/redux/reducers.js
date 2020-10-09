@@ -131,7 +131,7 @@ const exploreInitialState = {
   activeMobileTab: 'map',
   mapViewport: {},
   filters: {
-    placeName: null,
+    searchString: null,
     placeType: null
   }
 };

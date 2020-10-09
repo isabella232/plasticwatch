@@ -98,9 +98,9 @@ class PlacesIndex extends Component {
     });
   }
 
-  handlePlaceNameChange (placeName) {
+  handleSearchStringChange (searchString) {
     this.props.updateFilters({
-      placeName
+      searchString
     });
   }
 
@@ -130,12 +130,12 @@ class PlacesIndex extends Component {
                 type='text'
                 id='placeSearch'
                 placeholder='Enter place name'
-                defaultValue={this.props.filters.placeName}
+                defaultValue={this.props.filters.searchString}
                 onChange={this.handleNameSearchChange}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     e.preventDefault();
-                    this.handlePlaceNameChange(this.state.searchString);
+                    this.handleSearchStringChange(this.state.searchString);
                   }
                 }}
               />
@@ -143,7 +143,7 @@ class PlacesIndex extends Component {
                 htmlFor='placeSearch'
                 useIcon='magnifier-left'
                 onClick={() =>
-                  this.handlePlaceNameChange(this.state.searchString)}
+                  this.handleSearchStringChange(this.state.searchString)}
               />
             </InputWrapper>
             {isMobile && (
