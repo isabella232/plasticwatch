@@ -121,10 +121,10 @@ export function receivePlacesTile (id, data, error = null) {
   };
 }
 
-export function fetchPlacesTile (quadkey) {
+export function fetchPlacesTile (quadkey, q) {
   return fetchDispatchCacheFactory({
-    statePath: ['places', 'tiles', quadkey],
-    url: `${apiUrl}/osmobjects?limit=100&quadkey=${quadkey}`,
+    statePath: ['places', 'tiles', quadkey, q],
+    url: q ? `${apiUrl}/osmobjects?limit=100&quadkey=${quadkey}&q=${q}` : `${apiUrl}/osmobjects?limit=100&quadkey=${quadkey}`,
     requestFn: requestPlacesTile.bind(this, quadkey),
     receiveFn: receivePlacesTile.bind(this, quadkey)
   });
@@ -144,18 +144,19 @@ export function updatePlacesList () {
     const filters = state.explore.filters;
     const visibleTiles = bboxToTiles(bounds);
 
+    const searchString = filters.searchString ? filters.searchString : null;
     // Helper function to get tile from state
     const getTile = (id) =>
       wrapApiResult(getFromState(getState(), `places.tiles.${id}`));
 
-    await Promise.all(visibleTiles.map((id) => dispatch(fetchPlacesTile(id))));
+    await Promise.all(visibleTiles.map((id) => dispatch(fetchPlacesTile(id, searchString))));
 
     function applyFilters (features) {
       return features.filter((f) => {
         const {
-          properties: { observations, name }
+          properties: { observations }
         } = f;
-        const { placeType, placeName } = filters;
+        const { placeType } = filters;
 
         // Discard place is type is not met
         if (placeType === 'unsurveyed' && observations.total > 0) {
@@ -172,14 +173,6 @@ export function updatePlacesList () {
           placeType === 'plastic' &&
           (observations.total === 0 ||
             observations.totalTrue > observations.totalFalse)
-        ) {
-          return false;
-        }
-
-        // Discard place if name doesn't match placeName
-        if (
-          placeName &&
-          (!name || !name.toUpperCase().includes(placeName.toUpperCase()))
         ) {
           return false;
         }
