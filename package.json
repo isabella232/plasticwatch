@@ -17,9 +17,9 @@
   "homepage": "https://github.com/developmentseed/plasticwatch",
   "scripts": {
     "postinstall": "[ -f app/assets/scripts/config/local.js ] || echo \"module.exports = {\n  environment: 'development'\n};\" > app/assets/scripts/config/local.js",
-    "serve": "DS_ENV=development NODE_ENV=development gulp serve",
-    "build": "DS_ENV=production NODE_ENV=production gulp",
-    "build-staging": "DS_ENV=staging NODE_ENV=staging gulp",
+    "serve": "gulp serve",
+    "build": "NODE_ENV=production gulp",
+    "build-staging": "NODE_ENV=staging gulp",
     "lint": "eslint app/assets/scripts/ --ext .js",
     "lint:css": "stylelint 'app/assets/styles/**/**' 'app/assets/scripts/**/*.js'",
     "test": "echo \"No tests\" && exit 0",

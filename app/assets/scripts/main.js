@@ -26,17 +26,6 @@ import ProfileListener from './components/common/profile-listener';
 import ErrorBoundary from './fatal-error-boundary';
 import { ToastContainerCustom } from './components/common/toasts';
 
-// if (process.env.NODE_ENV === 'development') {
-//   const whyDidYouRender = require('@welldone-software/why-did-you-render');
-//   const ReactRedux = require('react-redux');
-//   whyDidYouRender(React, {
-//     trackAllPureComponents: true,
-//     trackExtraHooks: [
-//       [ReactRedux, 'useSelector']
-//     ]
-//   });
-// }
-
 // Root component. Used by the router.
 const Root = () => (
   <Provider store={store}>
