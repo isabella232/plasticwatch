@@ -2,6 +2,6 @@
 
 module.exports = {
   environment: 'staging',
-  baseUrl: 'https://plasticwatch.surge.sh',
+  baseUrl: 'https://plasticwatch-dev.surge.sh',
   apiUrl: 'https://plasticwatch.ds.io'
 };
