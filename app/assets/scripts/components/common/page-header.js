@@ -262,7 +262,7 @@ class PageHeader extends React.Component {
     delete window.authenticate;
   }
 
-  async login () {
+  async login (idp) {
     // Setting for popup window, parsed into DOMString
     const w = 600;
     const h = 550;
@@ -277,9 +277,14 @@ class PageHeader extends React.Component {
       })
       .join(',');
 
+    let loginStr = '/login?';
+    if (idp) {
+      loginStr = `/login/${idp}?`;
+    }
+
     // Open API login route in popup window to start OAuth
     window.open(
-      `${apiUrl}/login?redirect=${window.location.origin}${appPathname}/login/redirect`,
+      `${apiUrl}${loginStr}redirect=${window.location.origin}${appPathname}/login/redirect`,
       'oauth_window',
       settings
     );
@@ -357,16 +362,28 @@ class PageHeader extends React.Component {
               </>
             ) : (
               location.pathname !== '/' && (
-                <li>
-                  <GlobalMenuLink
-                    useIcon='login'
-                    size='xlarge'
-                    variation='primary-raised-dark'
-                    onClick={() => this.login()}
-                  >
-                    Login
-                  </GlobalMenuLink>
-                </li>
+                <>
+                  <li>
+                    <GlobalMenuLink
+                      useIcon='login'
+                      size='xlarge'
+                      variation='primary-raised-dark'
+                      onClick={() => this.login()}
+                    >
+                      Login
+                    </GlobalMenuLink>
+                  </li>
+                  <li>
+                    <GlobalMenuLink
+                      useIcon='login'
+                      size='xlarge'
+                      variation='primary-raised-dark'
+                      onClick={() => this.login('google')}
+                    >
+                      Login - Google
+                    </GlobalMenuLink>
+                  </li>
+                </>
               )
             )}
           </>
