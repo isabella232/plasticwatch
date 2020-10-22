@@ -103,7 +103,7 @@ const IntroSubHeading = styled(Heading)`
 `;
 
 class Introduction extends Component {
-  async login () {
+  async login (idp) {
     // Setting for popup window, parsed into DOMString
     const w = 600;
     const h = 550;
@@ -118,9 +118,14 @@ class Introduction extends Component {
       })
       .join(',');
 
+    let loginStr = '/login?';
+    if (idp) {
+      loginStr = `/login/${idp}?`;
+    }
+
     // Open API login route in popup window to start OAuth
     window.open(
-      `${apiUrl}/login?redirect=${window.location.origin}${appPathname}/login/redirect`,
+      `${apiUrl}${loginStr}redirect=${window.location.origin}${appPathname}/login/redirect`,
       'oauth_window',
       settings
     );
@@ -161,6 +166,14 @@ class Introduction extends Component {
               onClick={() => this.login()}
             >
               Login
+            </Button>
+            <Button
+              useIcon='login'
+              size='large'
+              variation='primary-raised-dark'
+              onClick={() => this.login('google')}
+            >
+              Login - Google
             </Button>
             <p>
               PlasticWatch uses OSM as a login provider. Login with
