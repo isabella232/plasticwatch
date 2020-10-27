@@ -34,33 +34,6 @@ export function receivePlaces (data, error = null) {
   };
 }
 
-// export function fetchPlaces ({ placeType }) {
-//   // Translate placeType filter to Observe API query param
-//   let observations;
-//   switch (placeType) {
-//     case 'plasticFree':
-//       observations = 'true';
-//       break;
-//     case 'plastic':
-//       observations = 'false';
-//       break;
-//     case 'unsurveyed':
-//       observations = 'no';
-//       break;
-
-//     default:
-//       break;
-//   }
-
-//   const searchParams = qs.stringify({ observations });
-//   return fetchDispatchFactory({
-//     statePath: ['places', 'list'],
-//     url: `${apiUrl}/osmobjects?limit=1000&${searchParams}`,
-//     requestFn: requestPlaces,
-//     receiveFn: receivePlaces
-//   });
-// }
-
 /*
  * Fetch individual place
  */
