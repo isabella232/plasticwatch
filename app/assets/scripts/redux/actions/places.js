@@ -140,9 +140,12 @@ export const SET_PLACES_LIST = 'SET_PLACES_LIST';
 
 export function updatePlacesList () {
   return async (dispatch, getState) => {
+    dispatch(requestPlaces());
+
     // Fetch visible tiles
     const state = getState();
-    const bounds = state.explore.mapViewport.bounds || mapConfig.defaultInitialBounds;
+    const bounds =
+      state.explore.mapViewport.bounds || mapConfig.defaultInitialBounds;
     const zoom = state.explore.mapViewport.zoom || mapConfig.zoom;
     const filters = state.explore.filters;
     const visibleTiles = bboxToTiles(bounds, zoom);
@@ -150,8 +153,6 @@ export function updatePlacesList () {
     // Helper function to get tile from state
     const getTile = (id) =>
       wrapApiResult(getFromState(getState(), `places.tiles.${id}`));
-
-    await Promise.all(visibleTiles.map((id) => dispatch(fetchPlacesTile(id))));
 
     function applyFilters (features) {
       return features.filter((f) => {
@@ -191,17 +192,26 @@ export function updatePlacesList () {
       });
     }
 
-    // Get all features on visible tiles
-    let features = [];
-    for (let i = 0; i < visibleTiles.length; i++) {
-      const { isReady, hasError, getData } = getTile(visibleTiles[i]);
-      if (isReady() && !hasError()) {
-        features = features.concat(applyFilters(getData()));
-        features = _uniqBy(features, 'properties.id');
-      }
-    }
+    try {
+      // Fetch all visible tiles
+      await Promise.all(
+        visibleTiles.map((id) => dispatch(fetchPlacesTile(id)))
+      );
 
-    features = featuresInBounds(features, bounds);
-    dispatch(receivePlaces(features));
+      // Get all features on visible tiles
+      let features = [];
+      for (let i = 0; i < visibleTiles.length; i++) {
+        const { isReady, hasError, getData } = getTile(visibleTiles[i]);
+        if (isReady() && !hasError()) {
+          features = features.concat(applyFilters(getData()));
+          features = _uniqBy(features, 'properties.id');
+        }
+      }
+
+      features = featuresInBounds(features, bounds);
+      dispatch(receivePlaces(features));
+    } catch (error) {
+      dispatch(invalidatePlaces());
+    }
   };
 }
