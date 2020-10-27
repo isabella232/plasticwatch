@@ -28,7 +28,6 @@ const bs = browserSync.create();
 // Environment
 // Set the correct environment, which controls what happens in config.js
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
-process.env.DS_ENV = process.env.DS_ENV || process.env.NODE_ENV;
 
 // When being built by circle is set to staging unless we're in the prod branch
 if (process.env.CIRCLE_BRANCH) {

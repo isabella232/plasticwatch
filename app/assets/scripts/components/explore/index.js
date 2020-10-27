@@ -27,8 +27,8 @@ export const qsState = new QsState({
   placeType: {
     accessor: 'placeType'
   },
-  placeName: {
-    accessor: 'placeName'
+  searchString: {
+    accessor: 'searchString'
   },
   zoom: {
     accessor: 'zoom'
@@ -49,12 +49,12 @@ class Explore extends React.Component {
       this.updateQuerystring();
     } else {
       // Or update the state with the query string passed
-      const { placeName, placeType, zoom, lng, lat } = qsState.getState(
+      const { searchString, placeType, zoom, lng, lat } = qsState.getState(
         this.props.location.search.substr(1)
       );
       this.props.updateFiltersAndMapViewport({
         filters: {
-          placeName,
+          searchString,
           placeType
         },
         mapViewport: {
