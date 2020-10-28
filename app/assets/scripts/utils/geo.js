@@ -15,9 +15,12 @@ export function geojsonBbox (geojson) {
   return bbox;
 }
 
-export function bboxToTiles (bbox) {
+export function bboxToTiles (bbox, zoom) {
   const polygon = bboxPolygon(_flatten(bbox));
-  const tiles = tileCover.indexes(polygon.geometry, tileLimits);
+  const tiles = tileCover.indexes(polygon.geometry, {
+    min_zoom: Math.min(Math.floor(zoom), tileLimits.min_zoom),
+    max_zoom: Math.min(Math.floor(zoom), tileLimits.max_zoom)
+  });
   return tiles;
 }
 

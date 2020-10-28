@@ -16,8 +16,9 @@ import * as exploreActions from '../../redux/actions/explore';
 import isEqual from 'lodash.isequal';
 
 import Button from '../../styles/button/button';
+import Spinner from '../../styles/spinner/index';
 
-const minZoomToLoadPlaces = 15;
+const minZoomToLoadPlaces = 12;
 
 // Mapbox access token
 mapboxgl.accessToken = mapConfig.mapboxAccessToken;
@@ -254,10 +255,19 @@ class Map extends Component {
       return <></>;
     }
 
+    function ShowSpinner (props) {
+      if (props.fetching) {
+        return <Spinner />;
+      } else {
+        return <></>;
+      }
+    }
+
     const { mapZoom } = this.state;
 
     return (
       <Wrapper>
+        <ShowSpinner fetching={this.props.places.fetching} />
         {mapboxgl.supported() ? (
           <MapContainer
             ref={(r) => {

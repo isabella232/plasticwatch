@@ -18,7 +18,6 @@ import PlacesView from './places/view';
 import PlaceSurvey from './places/survey';
 import withMobileState from '../common/with-mobile-state';
 import { wrapApiResult, getFromState } from '../../redux/utils';
-import { hideGlobalLoading, showGlobalLoadingMessage } from '../common/global-loading';
 
 export const qsState = new QsState({
   viewAs: {
@@ -77,10 +76,7 @@ class Explore extends React.Component {
       (!isEqual(prevProps.mapViewport, mapViewport) ||
         !isEqual(prevProps.filters, filters))
     ) {
-      showGlobalLoadingMessage('Loading places');
       await this.props.updatePlacesList();
-      hideGlobalLoading();
-
       this.updateQuerystring();
     }
   }

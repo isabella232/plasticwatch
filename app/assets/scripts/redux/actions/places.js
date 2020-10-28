@@ -5,8 +5,9 @@ import {
   getFromState
 } from '../utils';
 import { apiUrl, mapConfig } from '../../config';
-import qs from 'qs';
+// import qs from 'qs';
 import { bboxToTiles, featuresInBounds } from '../../utils/geo';
+import _uniqBy from 'lodash.uniqby';
 
 /*
  * List of places
@@ -31,33 +32,6 @@ export function receivePlaces (data, error = null) {
     error,
     receivedAt: Date.now()
   };
-}
-
-export function fetchPlaces ({ placeType }) {
-  // Translate placeType filter to Observe API query param
-  let observations;
-  switch (placeType) {
-    case 'plasticFree':
-      observations = 'true';
-      break;
-    case 'plastic':
-      observations = 'false';
-      break;
-    case 'unsurveyed':
-      observations = 'no';
-      break;
-
-    default:
-      break;
-  }
-
-  const searchParams = qs.stringify({ observations });
-  return fetchDispatchFactory({
-    statePath: ['places', 'list'],
-    url: `${apiUrl}/osmobjects?limit=100&${searchParams}`,
-    requestFn: requestPlaces,
-    receiveFn: receivePlaces
-  });
 }
 
 /*
@@ -126,7 +100,8 @@ export function fetchPlacesTile (quadkey, q) {
     statePath: ['places', 'tiles', quadkey, q],
     url: q ? `${apiUrl}/osmobjects?limit=100&quadkey=${quadkey}&q=${q}` : `${apiUrl}/osmobjects?limit=100&quadkey=${quadkey}`,
     requestFn: requestPlacesTile.bind(this, quadkey),
-    receiveFn: receivePlacesTile.bind(this, quadkey)
+    receiveFn: receivePlacesTile.bind(this, quadkey),
+    paginate: true
   });
 }
 
@@ -138,18 +113,20 @@ export const SET_PLACES_LIST = 'SET_PLACES_LIST';
 
 export function updatePlacesList () {
   return async (dispatch, getState) => {
+    dispatch(requestPlaces());
+
     // Fetch visible tiles
     const state = getState();
-    const bounds = state.explore.mapViewport.bounds || mapConfig.defaultInitialBounds;
+    const bounds =
+      state.explore.mapViewport.bounds || mapConfig.defaultInitialBounds;
+    const zoom = state.explore.mapViewport.zoom || mapConfig.zoom;
     const filters = state.explore.filters;
-    const visibleTiles = bboxToTiles(bounds);
+    const visibleTiles = bboxToTiles(bounds, zoom);
 
     const searchString = filters.searchString ? filters.searchString : null;
     // Helper function to get tile from state
     const getTile = (id) =>
       wrapApiResult(getFromState(getState(), `places.tiles.${id}`));
-
-    await Promise.all(visibleTiles.map((id) => dispatch(fetchPlacesTile(id, searchString))));
 
     function applyFilters (features) {
       return features.filter((f) => {
@@ -181,17 +158,26 @@ export function updatePlacesList () {
       });
     }
 
-    // Get all features on visible tiles
-    let features = [];
-    for (let i = 0; i < visibleTiles.length; i++) {
-      const { isReady, hasError, getData } = getTile(visibleTiles[i]);
-      if (isReady() && !hasError()) {
-        features = features.concat(applyFilters(getData()));
+    try {
+      // Fetch all visible tiles
+      await Promise.all(
+        visibleTiles.map((id) => dispatch(fetchPlacesTile(id, searchString)))
+      );
+
+      // Get all features on visible tiles
+      let features = [];
+      for (let i = 0; i < visibleTiles.length; i++) {
+        const { isReady, hasError, getData } = getTile(visibleTiles[i]);
+        if (isReady() && !hasError()) {
+          features = features.concat(applyFilters(getData()));
+          features = _uniqBy(features, 'properties.id');
+        }
       }
+
+      features = featuresInBounds(features, bounds);
+      dispatch(receivePlaces(features));
+    } catch (error) {
+      dispatch(invalidatePlaces());
     }
-
-    features = featuresInBounds(features, bounds);
-
-    dispatch(receivePlaces(features));
   };
 }
