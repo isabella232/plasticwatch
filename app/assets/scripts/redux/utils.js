@@ -2,18 +2,29 @@ import get from 'lodash.get';
 import merge from 'lodash.merge';
 import { delay } from '../utils';
 import { apiUrl } from '../config';
-import pWhilst from 'p-whilst';
+
+const pWhilst = async (condition, action) => {
+  const loop = async (actionResult) => {
+    if (condition(actionResult)) {
+      return loop(await action());
+    }
+  };
+  return loop();
+};
 
 export async function fetchJSONPaginate (url, options) {
   let nextPage = true;
   let nextUrl = url;
   let results = [];
-  await pWhilst(() => nextPage === true, async () => {
-    const response = await fetchJSON(nextUrl, options);
-    nextPage = !!(response.meta && response.meta.next);
-    nextUrl = (response.meta && response.meta.next) ? response.meta.next : null;
-    results = results.concat(response.results);
-  });
+  await pWhilst(
+    () => nextPage === true,
+    async () => {
+      const response = await fetchJSON(nextUrl, options);
+      nextPage = !!(response.meta && response.meta.next);
+      nextUrl = response.meta && response.meta.next ? response.meta.next : null;
+      results = results.concat(response.results);
+    }
+  );
   return results;
 }
 /**
