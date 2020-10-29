@@ -157,6 +157,11 @@ const MobileMenu = styled.ul`
       color: ${themeVal('color.primary')};
     }
   }
+  h5 {
+    text-align: right;
+    text-transform: uppercase;
+    margin: 0.75rem;
+  }
   &::before {
     content: "";
     position: fixed;
@@ -444,12 +449,15 @@ class PageHeader extends React.Component {
         ) : (
           <>
             <li>
+              <h5>Log in with:</h5>
+            </li>
+            <li>
               <GlobalMenuLink
                 useIcon='openstreetmap'
                 onClick={() => this.login()}
                 title='Log in with OpenStreetMap'
               >
-                Log in with openstreetmap
+                openstreetmap
               </GlobalMenuLink>
             </li>
             <li>
@@ -458,7 +466,7 @@ class PageHeader extends React.Component {
                 onClick={() => this.login('google')}
                 title='Log in with Google'
               >
-                Login in with Google
+                Google
               </GlobalMenuLink>
             </li>
           </>
