@@ -23,6 +23,7 @@ import { environment, apiUrl, appPathname } from '../../config';
 import { showGlobalLoading, hideGlobalLoading } from '../common/global-loading';
 import withMobileState from './with-mobile-state';
 import { showAboutModal } from './about-modal';
+import Dropdown, { DropTitle, DropMenu } from './dropdown';
 
 const _rgba = stylizeFunction(rgba);
 
@@ -291,7 +292,7 @@ class PageHeader extends React.Component {
   }
 
   renderNav () {
-    const { isMobile, location } = this.props;
+    const { isMobile } = this.props;
     return (
       <GlobalMenu>
         {isMobile ? (
@@ -361,28 +362,35 @@ class PageHeader extends React.Component {
                 </li>
               </>
             ) : (
-              location.pathname !== '/' && (
-                <>
-                  <li>
-                    <GlobalMenuLink
-                      useIcon='openstreetmap'
-                      onClick={() => this.login()}
-                      title='Log in with OpenStreetMap'
-                    >
-                      Log in with openstreetmap
-                    </GlobalMenuLink>
-                  </li>
-                  <li>
-                    <GlobalMenuLink
-                      useIcon='google'
-                      onClick={() => this.login('google')}
-                      title='Log in with Google'
-                    >
-                      Login in with Google
-                    </GlobalMenuLink>
-                  </li>
-                </>
-              )
+              <Dropdown
+                triggerElement={
+                  <GlobalMenuLink
+                    useIcon='login'
+                  >
+                    Log In
+                  </GlobalMenuLink>
+                }
+                direction='down'
+                alignment='right'
+              >
+                <DropTitle>Choose Login Provider</DropTitle>
+                <DropMenu>
+                  <GlobalMenuLink
+                    useIcon='google'
+                    onClick={() => this.login('google')}
+                    title='Log in with Google'
+                  >
+                    Google
+                  </GlobalMenuLink>
+                  <GlobalMenuLink
+                    useIcon='openstreetmap'
+                    onClick={() => this.login()}
+                    title='Log in with OpenStreetMap'
+                  >
+                    Openstreetmap
+                  </GlobalMenuLink>
+                </DropMenu>
+              </Dropdown>
             )}
           </>
         )}
@@ -490,7 +498,6 @@ class PageHeader extends React.Component {
 if (environment !== 'production') {
   PageHeader.propTypes = {
     authenticate: T.func,
-    location: T.object,
     isLoggedIn: T.bool,
     isAdmin: T.bool,
     isMobile: T.bool
