@@ -232,6 +232,10 @@ const GlobalMenuLink = styled.a.attrs({
       opacity: 1;
     }
   }
+  ${DropMenu} & {
+    text-align: left;
+    justify-content: flex-start; 
+  }
 `;
 // Special components to prevent styled-components error when properties are
 // passed to the DOM element.

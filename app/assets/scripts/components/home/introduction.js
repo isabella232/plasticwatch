@@ -78,6 +78,9 @@ const LoginButtons = styled.div`
   ${Button} {
     margin-bottom: 1rem;
     text-align: left;
+    &:before {
+      margin-right: 0.5rem;
+    }
   }
 `;
 
