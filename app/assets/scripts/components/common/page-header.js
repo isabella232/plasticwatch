@@ -168,7 +168,7 @@ const MobileMenu = styled.ul`
     z-index: -1;
     transition: all 0.24s ease 0s;
   }
-  & > li:last-of-type {
+  & > li:nth-of-type(2) {
     margin-top: 1rem;
     padding-top: 1rem;
     border-top: 1px solid ${themeVal('color.smoke')};
@@ -365,22 +365,20 @@ class PageHeader extends React.Component {
                 <>
                   <li>
                     <GlobalMenuLink
-                      useIcon='login'
-                      size='xlarge'
-                      variation='primary-raised-dark'
+                      useIcon='openstreetmap'
                       onClick={() => this.login()}
+                      title='Log in with OpenStreetMap'
                     >
-                      Login
+                      Log in with openstreetmap
                     </GlobalMenuLink>
                   </li>
                   <li>
                     <GlobalMenuLink
-                      useIcon='login'
-                      size='xlarge'
-                      variation='primary-raised-dark'
+                      useIcon='google'
                       onClick={() => this.login('google')}
+                      title='Log in with Google'
                     >
-                      Login - Google
+                      Login in with Google
                     </GlobalMenuLink>
                   </li>
                 </>
@@ -432,16 +430,26 @@ class PageHeader extends React.Component {
             </li>
           </>
         ) : (
-          <li>
-            <GlobalMenuLink
-              useIcon='login'
-              size='xlarge'
-              variation='primary-raised-dark'
-              onClick={() => this.login()}
-            >
-              Login
-            </GlobalMenuLink>
-          </li>
+          <>
+            <li>
+              <GlobalMenuLink
+                useIcon='openstreetmap'
+                onClick={() => this.login()}
+                title='Log in with OpenStreetMap'
+              >
+                Log in with openstreetmap
+              </GlobalMenuLink>
+            </li>
+            <li>
+              <GlobalMenuLink
+                useIcon='google'
+                onClick={() => this.login('google')}
+                title='Log in with Google'
+              >
+                Login in with Google
+              </GlobalMenuLink>
+            </li>
+          </>
         )}
       </MobileMenu>
     );
