@@ -23,6 +23,7 @@
     "no-extra-semi": 2,
     "semi-spacing": [2, { "before": false, "after": true }],
     "prefer-promise-reject-errors": 0,
+    "space-before-function-paren": 0,
 
     // Additional rules besides plugin:react/recommended
     "react/button-has-type": 2,
