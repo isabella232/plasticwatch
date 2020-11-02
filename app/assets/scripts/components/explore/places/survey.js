@@ -60,7 +60,7 @@ const InnerSurveyForm = (props) => {
     handleChange,
     place,
     survey,
-    campaignSlug
+    campaign
   } = props;
 
   function renderQuestion(q) {
@@ -127,7 +127,7 @@ const InnerSurveyForm = (props) => {
         </Button>
         <Button
           as={StyledLink}
-          to={`/explore/${campaignSlug}/${place.id}`}
+          to={`/explore/${campaign.slug}/${place.id}`}
           variation='danger-raised-light'
           size='large'
           data-tip='Cancel survey'
@@ -142,7 +142,7 @@ const InnerSurveyForm = (props) => {
 
 if (environment !== 'production') {
   InnerSurveyForm.propTypes = {
-    campaignSlug: T.string,
+    campaign: T.object,
     place: T.object,
     survey: T.object,
     values: T.object.isRequired,
@@ -240,12 +240,10 @@ class SubmitSurvey extends Component {
       place,
       surveyMeta,
       surveyAnswers,
-      match: {
-        params: { campaignSlug }
-      }
+      campaign
     } = this.props;
 
-    // Get place data
+    // Delay rendering until all needed data is loaded
     if (!place.isReady() || !surveyAnswers.isReady() || !surveyMeta.isReady()) {
       return <div />;
     }
@@ -278,11 +276,12 @@ class SubmitSurvey extends Component {
           <SurveyForm
             survey={data.survey}
             place={data.place}
-            campaignSlug={campaignSlug}
+            campaign={campaign}
             handleSubmit={(values) =>
               this.postSurvey({
                 surveyId: data.survey.id,
                 osmObject: data.place,
+                campaignId: campaign.id,
                 createdAt: new Date().toISOString(),
                 answers: data.survey.questions.map((q) => {
                   return {
@@ -311,6 +310,7 @@ if (environment !== 'production') {
     isLoggedIn: T.bool,
     match: T.object,
     place: T.object,
+    campaign: T.object,
     user: T.object,
     surveyMeta: T.object,
     surveyAnswers: T.object
@@ -318,12 +318,18 @@ if (environment !== 'production') {
 }
 
 function mapStateToProps(state, props) {
-  const { type, id } = props.match.params;
+  const { type, id, campaignSlug } = props.match.params;
   const placeId = `${type}/${id}`;
+
+  // Load campaign right away as it should be already loaded by
+  // Explorer view
+  const campaigns = wrapApiResult(getFromState(state, `campaigns`));
+  const campaign = campaigns.getData()[campaignSlug];
 
   return {
     user: wrapApiResult(state.authenticatedUser),
     place: wrapApiResult(getFromState(state, `places.individual.${placeId}`)),
+    campaign,
     surveyMeta: wrapApiResult(getFromState(state, `activeSurvey.meta`)),
     surveyAnswers: wrapApiResult(getFromState(state, `activeSurvey.answers`)),
     isLoggedIn: isLoggedIn(state)
