@@ -63,7 +63,7 @@ class PlacesView extends Component {
             variation='primary-raised-dark'
             size='large'
             as={StyledLink}
-            to={`/explore/${properties.id}/survey`}
+            to={`/explore/${campaignSlug}/${properties.id}/survey`}
           >
             Submit a survey
           </Button>

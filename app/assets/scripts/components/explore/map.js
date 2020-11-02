@@ -241,13 +241,15 @@ class Map extends Component {
         )[0];
 
         if (feature && !this.state.selectedFeature) {
-          this.props.history.push(`/explore/${this.props.campaignSlug}/${feature.properties.id}`);
+          this.props.history.push(
+            `/explore/${this.props.campaignSlug}/${feature.properties.id}`
+          );
         }
       });
     });
   }
 
-  render () {
+  render() {
     const { hasError } = this.props.places;
 
     if (hasError()) {
@@ -306,16 +308,16 @@ Map.propTypes = {
   places: T.object
 };
 
-function mapStateToProps (state, props) {
+function mapStateToProps(state, props) {
   const places = wrapApiResult(getFromState(state, `places.list`));
   const {
-    params: {
-      campaignSlug,
-      type,
-      id
-    }
+    params: { campaignSlug, type, id }
   } = matchPath(props.location.pathname, {
-    path: ['/explore/:campaignSlug', '/explore/:campaignSlug/:type/:id'],
+    path: [
+      '/explore/:campaignSlug',
+      '/explore/:campaignSlug/:type/:id',
+      '/explore/:campaignSlug/:type/:id/survey'
+    ],
     exact: true
   });
 

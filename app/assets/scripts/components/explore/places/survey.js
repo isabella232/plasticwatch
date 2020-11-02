@@ -59,10 +59,11 @@ const InnerSurveyForm = (props) => {
     handleSubmit,
     handleChange,
     place,
-    survey
+    survey,
+    campaignSlug
   } = props;
 
-  function renderQuestion (q) {
+  function renderQuestion(q) {
     const value = values[q.id];
     return (
       <FormGroup key={q.id}>
@@ -126,7 +127,7 @@ const InnerSurveyForm = (props) => {
         </Button>
         <Button
           as={StyledLink}
-          to={`/explore/${place.id}`}
+          to={`/explore/${campaignSlug}/${place.id}`}
           variation='danger-raised-light'
           size='large'
           data-tip='Cancel survey'
@@ -141,6 +142,7 @@ const InnerSurveyForm = (props) => {
 
 if (environment !== 'production') {
   InnerSurveyForm.propTypes = {
+    campaignSlug: T.string,
     place: T.object,
     survey: T.object,
     values: T.object.isRequired,
@@ -172,24 +174,24 @@ const SurveyForm = withFormik({
 })(InnerSurveyForm);
 
 class SubmitSurvey extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props);
 
     this.postSurvey = this.postSurvey.bind(this);
   }
 
-  async componentDidMount () {
+  async componentDidMount() {
     await this.fetchData();
   }
 
-  async fetchData () {
-    const { type, id } = this.props.match.params;
+  async fetchData() {
+    const { type, id, campaignSlug } = this.props.match.params;
     const placeId = `${type}/${id}`;
 
     // Disallow unlogged users
     if (!this.props.isLoggedIn) {
       toasts.info(`You must be logged in to submit surveys.`);
-      this.props.history.push(`/explore/${placeId}`);
+      this.props.history.push(`/explore/${campaignSlug}/${placeId}`);
       return;
     }
 
@@ -215,20 +217,33 @@ class SubmitSurvey extends Component {
     }
   }
 
-  async postSurvey (data) {
+  async postSurvey(data) {
+    const {
+      match: {
+        params: { campaignSlug }
+      }
+    } = this.props;
+
     showGlobalLoading();
     try {
       await this.props.postSurvey(data);
       toasts.info('Survey sent successfully');
-      this.props.history.push(`/explore/${data.osmObject.id}`);
+      this.props.history.push(`/explore/${campaignSlug}/${data.osmObject.id}`);
     } catch (error) {
       toasts.error('There was an error sending the survey.');
     }
     hideGlobalLoading();
   }
 
-  render () {
-    const { place, surveyMeta, surveyAnswers } = this.props;
+  render() {
+    const {
+      place,
+      surveyMeta,
+      surveyAnswers,
+      match: {
+        params: { campaignSlug }
+      }
+    } = this.props;
 
     // Get place data
     if (!place.isReady() || !surveyAnswers.isReady() || !surveyMeta.isReady()) {
@@ -263,6 +278,7 @@ class SubmitSurvey extends Component {
           <SurveyForm
             survey={data.survey}
             place={data.place}
+            campaignSlug={campaignSlug}
             handleSubmit={(values) =>
               this.postSurvey({
                 surveyId: data.survey.id,
@@ -301,7 +317,7 @@ if (environment !== 'production') {
   };
 }
 
-function mapStateToProps (state, props) {
+function mapStateToProps(state, props) {
   const { type, id } = props.match.params;
   const placeId = `${type}/${id}`;
 
@@ -314,7 +330,7 @@ function mapStateToProps (state, props) {
   };
 }
 
-function dispatcher (dispatch) {
+function dispatcher(dispatch) {
   return {
     fetchPlace: (...args) => dispatch(fetchPlace(...args)),
     fetchSurveyMeta: (...args) => dispatch(fetchSurveyMeta(...args)),
