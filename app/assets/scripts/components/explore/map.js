@@ -241,7 +241,7 @@ class Map extends Component {
         )[0];
 
         if (feature && !this.state.selectedFeature) {
-          this.props.history.push(`/explore/${feature.properties.id}`);
+          this.props.history.push(`/explore/${this.props.campaignSlug}/${feature.properties.id}`);
         }
       });
     });
@@ -297,6 +297,7 @@ class Map extends Component {
 }
 
 Map.propTypes = {
+  campaignSlug: T.string,
   filters: T.array,
   featureCenter: T.array,
   geojson: T.object,
@@ -307,15 +308,20 @@ Map.propTypes = {
 
 function mapStateToProps (state, props) {
   const places = wrapApiResult(getFromState(state, `places.list`));
-  const match = matchPath(props.location.pathname, {
-    path: '/explore/:type/:id',
+  const {
+    params: {
+      campaignSlug,
+      type,
+      id
+    }
+  } = matchPath(props.location.pathname, {
+    path: ['/explore/:campaignSlug', '/explore/:campaignSlug/:type/:id'],
     exact: true
   });
 
   let placeId = null;
   let place = null;
-  if (match) {
-    const { type, id } = match.params;
+  if (type && id) {
     placeId = `${type}/${id}`;
     place = wrapApiResult(getFromState(state, `places.individual.${placeId}`));
   }
@@ -341,7 +347,7 @@ function mapStateToProps (state, props) {
   ];
   let selectedFeature;
   let featureCenter;
-  if (match && place.isReady()) {
+  if (placeId && place.isReady()) {
     filters[0] = ['==', 'id', placeId];
     filters[1] = ['!=', 'id', placeId];
     const feature = place.getData();
@@ -354,7 +360,7 @@ function mapStateToProps (state, props) {
     filters,
     geojson,
     mapViewport: getFromState(state, `explore.mapViewport`),
-    match: match,
+    campaignSlug,
     place: place,
     placeId: placeId,
     places: wrapApiResult(getFromState(state, `places.list`)),

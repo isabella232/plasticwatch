@@ -36,6 +36,7 @@ class PlacesView extends Component {
 
   render () {
     const { isReady, hasError, getData } = this.props.place;
+    const { campaignSlug } = this.props.match.params;
 
     if (!isReady()) return <div />;
     if (hasError()) {
@@ -47,7 +48,7 @@ class PlacesView extends Component {
 
     return (
       <Panel>
-        <InpageBackLink to='/explore'>View all places</InpageBackLink>
+        <InpageBackLink to={`/explore/${campaignSlug}`}>View all places</InpageBackLink>
         <InnerPanel>
           <PlaceMeta>
             <PlaceHeader>

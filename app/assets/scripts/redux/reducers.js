@@ -31,6 +31,18 @@ const usersReducerInitialState = {
 const usersReducer = baseAPIReducer('USERS', usersReducerInitialState);
 
 /**
+ * CAMPAIGNS reducer
+ */
+const campaignsReducerInitialState = {
+  fetching: false,
+  fetched: false,
+  error: null,
+  data: []
+};
+
+const campaignsReducer = baseAPIReducer('CAMPAIGNS', campaignsReducerInitialState);
+
+/**
  * PLACES reducer
  */
 const placesReducerInitialState = {
@@ -171,6 +183,7 @@ const exploreReducer = (state = exploreInitialState, action) => {
  */
 export default combineReducers({
   authenticatedUser: authenticatedUserReducer,
+  campaigns: campaignsReducer,
   users: usersReducer,
   activeSurvey: combineReducers({
     meta: surveyMetaReducer,

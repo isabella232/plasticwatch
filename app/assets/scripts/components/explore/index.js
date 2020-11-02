@@ -9,9 +9,12 @@ import isEqual from 'lodash.isequal';
 
 import * as placesActions from '../../redux/actions/places';
 import * as exploreActions from '../../redux/actions/explore';
+import { fetchCampaigns } from '../../redux/actions/campaigns';
 
 import App from '../common/app';
 import { SidebarWrapper } from '../common/view-wrappers';
+import UhOh from '../uhoh';
+
 import Map from './map';
 import PlacesIndex from './places';
 import PlacesView from './places/view';
@@ -41,7 +44,12 @@ export const qsState = new QsState({
 });
 
 class Explore extends React.Component {
-  componentDidMount () {
+  async componentDidMount() {
+    await this.props.fetchCampaigns();
+
+    const { hasError } = this.props.campaigns;
+    if (hasError()) return;
+
     const qs = this.props.location.search.substr(1);
     if (!qs) {
       // If no query string is provided, build one from app state
@@ -65,7 +73,7 @@ class Explore extends React.Component {
     }
   }
 
-  async componentDidUpdate (prevProps) {
+  async componentDidUpdate(prevProps) {
     const { mapViewport, filters, places } = this.props;
 
     // Start a new data fetch if viewport or filters have changed
@@ -81,7 +89,7 @@ class Explore extends React.Component {
     }
   }
 
-  updateQuerystring () {
+  updateQuerystring() {
     const { mapViewport, filters } = this.props;
 
     // Then update querystring
@@ -92,8 +100,24 @@ class Explore extends React.Component {
     this.props.history.push({ search: qString });
   }
 
-  render () {
-    const { isMobile, activeMobileTab } = this.props;
+  render() {
+    const { isMobile, activeMobileTab, campaigns } = this.props;
+
+    const {
+      params: { campaignSlug }
+    } = this.props.match;
+
+    if (!campaigns.isReady()) {
+      return <></>;
+    }
+
+    if (
+      campaigns.hasError() ||
+      !campaignSlug ||
+      typeof campaigns.getData()[campaignSlug] === 'undefined'
+    ) {
+      return <UhOh />;
+    }
 
     let displayMap = true;
     if (isMobile && activeMobileTab !== 'map') displayMap = false;
@@ -101,11 +125,15 @@ class Explore extends React.Component {
     return (
       <App pageTitle='About' hideFooter>
         <SidebarWrapper>
-          <Route exact path='/explore' component={PlacesIndex} />
-          <Route exact path='/explore/:type/:id' component={PlacesView} />
+          <Route exact path='/explore/:campaignSlug' component={PlacesIndex} />
           <Route
             exact
-            path='/explore/:type/:id/survey'
+            path='/explore/:campaignSlug/:type/:id'
+            component={PlacesView}
+          />
+          <Route
+            exact
+            path='/explore/:campaignSlug/:type/:id/survey'
             component={PlaceSurvey}
           />
           {displayMap && <Map />}
@@ -118,10 +146,13 @@ class Explore extends React.Component {
 if (environment !== 'production') {
   Explore.propTypes = {
     activeMobileTab: T.string,
+    campaigns: T.object,
+    fetchCampaigns: T.func,
     history: T.object,
     isMobile: T.bool,
     location: T.object,
     mapViewport: T.object,
+    match: T.object,
     places: T.object,
     filters: T.object,
     updatePlacesList: T.func,
@@ -129,17 +160,19 @@ if (environment !== 'production') {
   };
 }
 
-function mapStateToProps (state, props) {
+function mapStateToProps(state, props) {
   return {
     filters: getFromState(state, `explore.filters`),
     mapViewport: getFromState(state, `explore.mapViewport`),
     activeMobileTab: getFromState(state, `explore.activeMobileTab`),
-    places: wrapApiResult(getFromState(state, `places.list`))
+    places: wrapApiResult(getFromState(state, `places.list`)),
+    campaigns: wrapApiResult(state.campaigns)
   };
 }
 
-function dispatcher (dispatch) {
+function dispatcher(dispatch) {
   return {
+    fetchCampaigns: (...args) => dispatch(fetchCampaigns(...args)),
     updatePlacesList: (...args) =>
       dispatch(placesActions.updatePlacesList(...args)),
     updateFiltersAndMapViewport: (...args) =>
