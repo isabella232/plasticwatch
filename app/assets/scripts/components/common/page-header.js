@@ -1,28 +1,40 @@
 import React from 'react';
-import styled, { css } from 'styled-components';
 import { PropTypes as T } from 'prop-types';
-import { rgba } from 'polished';
-import { connect } from 'react-redux';
+
+// Routing
 import { Link, NavLink, withRouter } from 'react-router-dom';
-import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
-import { wrapApiResult } from '../../redux/utils';
-import { visuallyHidden } from '../../styles/helpers';
-import { themeVal, stylizeFunction } from '../../styles/utils/general';
-import { multiply } from '../../styles/utils/math';
-import { stackSkin } from '../../styles/skins';
-import collecticon from '../../styles/collecticons';
-import { filterComponentProps } from '../../utils';
-
-import media from '../../styles/utils/media-queries';
-
-import * as authActions from '../../redux/actions/auth';
-
+// Config
 import { environment, apiUrl, appPathname } from '../../config';
 
-import { showGlobalLoading, hideGlobalLoading } from '../common/global-loading';
+// State management
+import { connect } from 'react-redux';
+import { wrapApiResult } from '../../redux/utils';
+import * as authActions from '../../redux/actions/auth';
 import withMobileState from './with-mobile-state';
+
+// Styles
+import { rgba } from 'polished';
+import collecticon from '../../styles/collecticons';
+import styled, { css } from 'styled-components';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
+import { themeVal, stylizeFunction } from '../../styles/utils/general';
+import { visuallyHidden } from '../../styles/helpers';
+import { multiply } from '../../styles/utils/math';
+import { stackSkin } from '../../styles/skins';
+import { filterComponentProps } from '../../utils';
+import media from '../../styles/utils/media-queries';
+
+// Components
+import Button from '../../styles/button/button';
+import { StyledLink } from '../common/link';
 import { showAboutModal } from './about-modal';
+import { showGlobalLoading, hideGlobalLoading } from '../common/global-loading';
+import Dropdown, {
+  DropTitle,
+  DropMenu,
+  DropMenuItem
+} from '../common/dropdown';
 
 const _rgba = stylizeFunction(rgba);
 
@@ -157,7 +169,7 @@ const MobileMenu = styled.ul`
     }
   }
   &::before {
-    content: "";
+    content: '';
     position: fixed;
     top: 4rem;
     bottom: 0;
@@ -239,15 +251,18 @@ const propsToFilter = ['variation', 'size', 'hideText', 'useIcon', 'active'];
 const NavLinkFilter = filterComponentProps(NavLink, propsToFilter);
 
 class PageHeader extends React.Component {
-  constructor (props) {
+  constructor(props) {
     super(props);
 
     this.state = {
       isMobileMenuOpened: false
     };
+
+    this.renderCampaignNav = this.renderCampaignNav.bind(this);
+    this.dropdownRef = React.createRef();
   }
 
-  async componentDidMount () {
+  async componentDidMount() {
     // Expose function in window object. This will be called from the popup
     // in order to pass the access token at the final OAuth step.
     window.authenticate = async (accessToken) => {
@@ -257,12 +272,12 @@ class PageHeader extends React.Component {
     };
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     // Remove exposed authenticated function when page is unmounted
     delete window.authenticate;
   }
 
-  async login () {
+  async login() {
     // Setting for popup window, parsed into DOMString
     const w = 600;
     const h = 550;
@@ -285,7 +300,67 @@ class PageHeader extends React.Component {
     );
   }
 
-  renderNav () {
+  renderCampaignNav() {
+    // Get campaign slug
+    const {
+      campaigns,
+      match: {
+        params: { campaignSlug }
+      }
+    } = this.props;
+
+    // Do not render until campaigns are available
+    if (!campaigns.isReady() || campaigns.hasError()) return <></>;
+
+    // Get data
+    const allCampaigns = campaigns.getData();
+    const campaign = allCampaigns[campaignSlug];
+
+    // Do not render if campaign is not available
+    if (!campaign) return <></>;
+
+    return (
+      <Dropdown
+        ref={this.dropdownRef}
+        alignment='center'
+        direction='down'
+        triggerElement={(props) => (
+          <Button
+            variation='base-raised-light'
+            useIcon={['chevron-down--small', 'after']}
+            title='Open dropdown'
+            {...props}
+          >
+            {campaign.name}
+          </Button>
+        )}
+      >
+        <React.Fragment>
+          <DropTitle>Go to another campaign</DropTitle>
+          <DropMenu>
+            {Object.keys(allCampaigns).map((cSlug) => {
+              const c = allCampaigns[cSlug];
+              if (cSlug !== campaignSlug) {
+                return (
+                  <DropMenuItem
+                    key={cSlug}
+                    as={StyledLink}
+                    to={`/explore/${c.slug}`}
+                    data-tip={`Go to ${c.name} campaign`}
+                    onClick={() => this.dropdownRef.current.close()}
+                  >
+                    {c.name}
+                  </DropMenuItem>
+                );
+              }
+            })}
+          </DropMenu>
+        </React.Fragment>
+      </Dropdown>
+    );
+  }
+
+  renderNav() {
     const { isMobile, location } = this.props;
     return (
       <GlobalMenu>
@@ -304,6 +379,7 @@ class PageHeader extends React.Component {
           </li>
         ) : (
           <>
+            {this.renderCampaignNav()}
             <li>
               <GlobalMenuLink
                 as={NavLinkFilter}
@@ -375,7 +451,7 @@ class PageHeader extends React.Component {
     );
   }
 
-  renderMobileNav () {
+  renderMobileNav() {
     return (
       <MobileMenu>
         <li>
@@ -430,7 +506,7 @@ class PageHeader extends React.Component {
     );
   }
 
-  render () {
+  render() {
     const { isMobileMenuOpened } = this.state;
     return (
       <PageHead>
@@ -465,14 +541,16 @@ class PageHeader extends React.Component {
 if (environment !== 'production') {
   PageHeader.propTypes = {
     authenticate: T.func,
+    campaigns: T.object,
     location: T.object,
+    match: T.object,
     isLoggedIn: T.bool,
     isAdmin: T.bool,
     isMobile: T.bool
   };
 }
 
-function mapStateToProps (state) {
+function mapStateToProps(state, props) {
   const { isReady, hasError, getData } = wrapApiResult(state.authenticatedUser);
   let isLoggedIn = false;
   let isAdmin = false;
@@ -484,17 +562,17 @@ function mapStateToProps (state) {
 
   return {
     isLoggedIn,
-    isAdmin
+    isAdmin,
+    campaigns: wrapApiResult(state.campaigns)
   };
 }
 
-function dispatcher (dispatch) {
+function dispatcher(dispatch) {
   return {
     authenticate: (...args) => dispatch(authActions.authenticate(...args))
   };
 }
 
-export default connect(
-  mapStateToProps,
-  dispatcher
-)(withMobileState(withRouter(PageHeader)));
+export default withMobileState(
+  withRouter(connect(mapStateToProps, dispatcher)(PageHeader))
+);
