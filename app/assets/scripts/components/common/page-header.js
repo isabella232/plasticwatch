@@ -23,6 +23,7 @@ import { environment, apiUrl, appPathname } from '../../config';
 import { showGlobalLoading, hideGlobalLoading } from '../common/global-loading';
 import withMobileState from './with-mobile-state';
 import { showAboutModal } from './about-modal';
+import Dropdown, { DropTitle, DropMenu } from './dropdown';
 
 const _rgba = stylizeFunction(rgba);
 
@@ -156,6 +157,11 @@ const MobileMenu = styled.ul`
       color: ${themeVal('color.primary')};
     }
   }
+  h5 {
+    text-align: right;
+    text-transform: uppercase;
+    margin: 0.75rem;
+  }
   &::before {
     content: "";
     position: fixed;
@@ -168,7 +174,7 @@ const MobileMenu = styled.ul`
     z-index: -1;
     transition: all 0.24s ease 0s;
   }
-  & > li:last-of-type {
+  & > li:nth-of-type(2) {
     margin-top: 1rem;
     padding-top: 1rem;
     border-top: 1px solid ${themeVal('color.smoke')};
@@ -231,6 +237,10 @@ const GlobalMenuLink = styled.a.attrs({
       opacity: 1;
     }
   }
+  ${DropMenu} & {
+    text-align: left;
+    justify-content: flex-start; 
+  }
 `;
 // Special components to prevent styled-components error when properties are
 // passed to the DOM element.
@@ -291,7 +301,7 @@ class PageHeader extends React.Component {
   }
 
   renderNav () {
-    const { isMobile, location } = this.props;
+    const { isMobile } = this.props;
     return (
       <GlobalMenu>
         {isMobile ? (
@@ -361,30 +371,35 @@ class PageHeader extends React.Component {
                 </li>
               </>
             ) : (
-              location.pathname !== '/' && (
-                <>
-                  <li>
-                    <GlobalMenuLink
-                      useIcon='login'
-                      size='xlarge'
-                      variation='primary-raised-dark'
-                      onClick={() => this.login()}
-                    >
-                      Login
-                    </GlobalMenuLink>
-                  </li>
-                  <li>
-                    <GlobalMenuLink
-                      useIcon='login'
-                      size='xlarge'
-                      variation='primary-raised-dark'
-                      onClick={() => this.login('google')}
-                    >
-                      Login - Google
-                    </GlobalMenuLink>
-                  </li>
-                </>
-              )
+              <Dropdown
+                triggerElement={
+                  <GlobalMenuLink
+                    useIcon='login'
+                  >
+                    Log In
+                  </GlobalMenuLink>
+                }
+                direction='down'
+                alignment='right'
+              >
+                <DropTitle>Choose Login Provider</DropTitle>
+                <DropMenu>
+                  <GlobalMenuLink
+                    useIcon='google'
+                    onClick={() => this.login('google')}
+                    title='Log in with Google'
+                  >
+                    Google
+                  </GlobalMenuLink>
+                  <GlobalMenuLink
+                    useIcon='openstreetmap'
+                    onClick={() => this.login()}
+                    title='Log in with OpenStreetMap'
+                  >
+                    Openstreetmap
+                  </GlobalMenuLink>
+                </DropMenu>
+              </Dropdown>
             )}
           </>
         )}
@@ -432,16 +447,29 @@ class PageHeader extends React.Component {
             </li>
           </>
         ) : (
-          <li>
-            <GlobalMenuLink
-              useIcon='login'
-              size='xlarge'
-              variation='primary-raised-dark'
-              onClick={() => this.login()}
-            >
-              Login
-            </GlobalMenuLink>
-          </li>
+          <>
+            <li>
+              <h5>Log in with:</h5>
+            </li>
+            <li>
+              <GlobalMenuLink
+                useIcon='openstreetmap'
+                onClick={() => this.login()}
+                title='Log in with OpenStreetMap'
+              >
+                openstreetmap
+              </GlobalMenuLink>
+            </li>
+            <li>
+              <GlobalMenuLink
+                useIcon='google'
+                onClick={() => this.login('google')}
+                title='Log in with Google'
+              >
+                Google
+              </GlobalMenuLink>
+            </li>
+          </>
         )}
       </MobileMenu>
     );
@@ -482,7 +510,6 @@ class PageHeader extends React.Component {
 if (environment !== 'production') {
   PageHeader.propTypes = {
     authenticate: T.func,
-    location: T.object,
     isLoggedIn: T.bool,
     isAdmin: T.bool,
     isMobile: T.bool

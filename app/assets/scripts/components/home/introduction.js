@@ -71,31 +71,23 @@ const ModalButton = styled(Button)`
   letter-spacing: 0;
 `;
 
-const AboutLinks = styled.div`
+const LoginButtons = styled.div`
   display: flex;
-  align-items: flex-start;
   flex-flow: column nowrap;
   justify-content: space-between;
   ${Button} {
-    flex: 1;
     margin-bottom: 1rem;
-    min-width: inherit;
-  }
-  ${media.mediumUp`
-    align-items: center;
-    flex-flow: row nowrap;
-    ${Button} {
-      margin-bottom: 0;
-      margin-right: 1rem;
+    text-align: left;
+    &:before {
+      margin-right: 0.5rem;
     }
-  `};
+  }
 `;
 
 const IntroSubHeading = styled(Heading)`
   &:after {
     content: "";
-    width: 12rem;
-    max-width: 22vw;
+    width: 8rem;
     display: block;
     margin: 0.25rem 0;
     border: 0.25rem solid ${themeVal('color.primary')};
@@ -158,28 +150,25 @@ class Introduction extends Component {
           Read more about the project
         </ModalButton>
         {!this.props.isLoggedIn && (
-          <AboutLinks>
+          <LoginButtons>
+            <IntroSubHeading>Log in to contribute</IntroSubHeading>
             <Button
-              useIcon='login'
+              useIcon='google'
               size='large'
-              variation='primary-raised-dark'
-              onClick={() => this.login()}
-            >
-              Login
-            </Button>
-            <Button
-              useIcon='login'
-              size='large'
-              variation='primary-raised-dark'
+              variation='secondary-raised-dark'
               onClick={() => this.login('google')}
             >
-              Login - Google
+              Log In With Google
             </Button>
-            <p>
-              PlasticWatch uses OSM as a login provider. Login with
-              OpenStreetMap to start contributing to the map
-            </p>
-          </AboutLinks>
+            <Button
+              useIcon='openstreetmap'
+              size='large'
+              variation='secondary-raised-dark'
+              onClick={() => this.login()}
+            >
+              Log In With OpenStreetMap
+            </Button>
+          </LoginButtons>
         )}
       </IntroPanel>
     );
