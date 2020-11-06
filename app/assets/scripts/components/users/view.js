@@ -19,6 +19,7 @@ const TwoPanelLayout = styled(Panel)`
   }
   ${media.mediumUp`
     display: grid;
+    grid-template-columns: 1fr 2fr;
     grid-gap: 2rem;
     height: 100vh;
     overflow: hidden;
@@ -90,17 +91,17 @@ function Users() {
             <p>{user.plasticFreeSurveyCount} plastic free surveys</p>
             <p>{user.campaignsCount} campaign contributed</p>
           </div>
-          <div>
-            <h3>Badges</h3>
-            <ul>
-              {badges.map((b) => (
-                <li key={b.id}>
-                  <img src={b.image} />
-                  <span>{b.title}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+        </InnerPanel>
+        <InnerPanel>
+          <h2>Badges earned</h2>
+          <ul>
+            {badges.map((b) => (
+              <li key={b.id}>
+                <img src={b.image} />
+                <span>{b.title}</span>
+              </li>
+            ))}
+          </ul>
         </InnerPanel>
       </TwoPanelLayout>
     </App>
