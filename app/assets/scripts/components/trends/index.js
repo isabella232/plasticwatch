@@ -124,7 +124,11 @@ class Trends extends React.Component {
               {data.map((s, i) => (
                 <tr key={s.osmId}>
                   <td>{i + 1}</td>
-                  <td>{s.osmDisplayName}</td>
+                  <td>
+                    <StyledLink to={`/users/${s.osmDisplayName}`}>
+                      {s.osmDisplayName}
+                    </StyledLink>
+                  </td>
                   <td>{s.observations}</td>
                 </tr>
               ))}
