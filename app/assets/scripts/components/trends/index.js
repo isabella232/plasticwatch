@@ -104,8 +104,8 @@ class Trends extends React.Component {
                 <tr key={s.osmId}>
                   <td>{i + 1}</td>
                   <td>
-                    <StyledLink to={`/users/${s.osmDisplayName}`}>
-                      {s.osmDisplayName}
+                    <StyledLink to={`/users/${s.id}`}>
+                      {s.displayName}
                     </StyledLink>
                   </td>
                   <td>{s.observations}</td>

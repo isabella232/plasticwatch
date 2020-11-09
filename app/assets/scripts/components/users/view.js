@@ -1,12 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import { connect } from 'react-redux';
+import { PropTypes as T } from 'prop-types';
+
 import { environment } from '../../config';
+import { connect } from 'react-redux';
+import * as actions from '../../redux/actions/users';
+import { wrapApiResult, getFromState } from '../../redux/utils';
+import { getUTCDate } from '../../utils/date'; 
+
 import media from '../../styles/utils/media-queries';
 import { themeVal } from '../../styles/utils/general';
 import { ScrollWrap } from '../../styles/table';
 
 import App from '../common/app';
+import UhOh from '../uhoh';
 import { InnerPanel, Panel, PanelStats, PanelStat } from '../../styles/panel';
 
 const TwoPanelLayout = styled(Panel)`
@@ -103,55 +110,26 @@ const BadgeImg = styled.img`
   border: 0.125rem solid ${themeVal('color.primary')};
 `;
 
-function Users() {
-  const user = {
-    name: 'Juliana Castillo',
-    location: 'Washington DC',
-    lastSurvey: '10/10/20',
-    surveyCount: 18,
-    plasticFreeSurveyCount: 7,
-    campaignsCount: 1,
-    profilePic:
-      'https://via.placeholder.com/150/0000FF/FFFFFF?text=Profile%20Pic'
-  };
+function Users(props) {
+  // Fetch user on page load
+  useEffect(() => {
+    props.fetchUser(props.match.params.id);
+  }, []);
 
-  const badges = [
-    {
-      id: 'badge-1',
-      image: 'https://via.placeholder.com/150/FF0000/FFFFFF',
-      title: 'Badge 1',
-      description: 'This badge is earned by mapping plastic-free locations'
-    },
-    {
-      id: 'badge-2',
-      image: 'https://via.placeholder.com/150/FF0000/FFFFFF',
-      title: 'Badge 2',
-      description: 'This badge is earned by mapping plastic-free locations'
-    },
-    {
-      id: 'badge-3',
-      image: 'https://via.placeholder.com/150/FF0000/FFFFFF',
-      title: 'Badge 3',
-      description: 'This badge is earned by mapping plastic-free locations'
-    },
-    {
-      id: 'badge-4',
-      image: 'https://via.placeholder.com/150/FF0000/FFFFFF',
-      title: 'Badge 4',
-      description: 'This badge is earned by mapping plastic-free locations'
-    },
-    {
-      id: 'badge-5',
-      image: 'https://via.placeholder.com/150/FF0000/FFFFFF',
-      title: 'Badge 5',
-      description: 'This badge is earned by mapping plastic-free locations'
-    },
-    {
-      id: 'badge-6',
-      image: 'https://via.placeholder.com/150/FF0000/FFFFFF',
-      title: 'Badge 6',
-      description: 'This badge is earned by mapping plastic-free locations'
-    }
+  // Get user data, if available
+  if (!props.user.isReady()) return <></>;
+  if (props.user.hasError()) return <UhOh />;
+  const user = props.user.getData();
+  const { badges, observations } = user;
+
+  const lastSurveyDate = observations
+    .map((o) => o.createdAt)
+    .sort()
+    .pop();
+
+  const campaigns = [
+    { slug: 'washington-dc', id: 1, name: 'Washington DC' },
+    { slug: 'boston', id: 1, name: 'Boston' }
   ];
 
   return (
@@ -159,30 +137,27 @@ function Users() {
       <TwoPanelLayout>
         <InnerPanel>
           <UserInfo>
-            <UserName>{user.name}</UserName>
-            <Avatar src={user.profilePic} />
+            <UserName>{user.displayName}</UserName>
+            <Avatar
+              src={`https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?s=200`}
+            />
             <UserData>
               <PanelStat>
-                <span>City</span>
-                {user.location}
-              </PanelStat>
-              <PanelStat>
-                <span>Last Survey</span>
-                {user.lastSurvey}
+                {observations.length === 0 ? (
+                  <span>No surveys yet</span>
+                ) : (
+                  getUTCDate(lastSurveyDate)
+                )}
               </PanelStat>
             </UserData>
           </UserInfo>
           <PanelStats>
             <PanelStat>
-              {user.surveyCount}
+              {observations.length}
               <span>surveys</span>
             </PanelStat>
             <PanelStat>
-              {user.plasticFreeSurveyCount}
-              <span>plastic free surveys</span>
-            </PanelStat>
-            <PanelStat>
-              {user.campaignsCount}
+              {campaigns.length}
               <span>campaign contributed</span>
             </PanelStat>
           </PanelStats>
@@ -190,16 +165,19 @@ function Users() {
         <InnerPanel>
           <h2>Badges</h2>
           <ScrollWrap>
-            <h4>EARNED</h4>
-            <BadgeGrid>
-              {badges.map((b) => (
-                <BadgeItem key={b.id}>
-                  <BadgeImg src={b.image} />
-                  <BadgeName>{b.title}</BadgeName>
-                  <p>{b.description}</p>
-                </BadgeItem>
-              ))}
-            </BadgeGrid>
+            {badges.length === 0 ? (
+              <div>No badges were earned by this user yet.</div>
+            ) : (
+              <BadgeGrid>
+                {badges.map((b) => (
+                  <BadgeItem key={b.id}>
+                    <BadgeImg src={b.image} />
+                    <BadgeName>{b.title}</BadgeName>
+                    <p>{b.description}</p>
+                  </BadgeItem>
+                ))}
+              </BadgeGrid>
+            )}
           </ScrollWrap>
         </InnerPanel>
       </TwoPanelLayout>
@@ -208,15 +186,25 @@ function Users() {
 }
 
 if (environment !== 'production') {
-  Users.propTypes = {};
+  Users.propTypes = {
+    fetchUser: T.func,
+    match: T.object,
+    user: T.object
+  };
 }
 
-function mapStateToProps(state) {
-  return {};
+function mapStateToProps(state, props) {
+  const { id } = props.match.params;
+
+  return {
+    user: wrapApiResult(getFromState(state, `users.individual.${id}`))
+  };
 }
 
 function dispatcher(dispatch) {
-  return {};
+  return {
+    fetchUser: (...args) => dispatch(actions.fetchUser(...args))
+  };
 }
 
 export default connect(mapStateToProps, dispatcher)(Users);
