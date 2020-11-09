@@ -6,7 +6,7 @@ import { environment, osmUrl } from '../../config';
 import * as actions from '../../redux/actions/users';
 import { showGlobalLoading, hideGlobalLoading } from '../common/global-loading';
 import QsState from '../../utils/qs-state';
-import { getUTCDate } from '../../utils';
+import { getUTCDate } from '../../utils/date';
 
 import App from '../common/app';
 import toasts from '../common/toasts';
@@ -30,7 +30,7 @@ import {
 import DataTable from '../../styles/table';
 import Pagination from '../../styles/button/pagination';
 import Prose from '../../styles/type/prose';
-import { wrapApiResult } from '../../redux/utils';
+import { wrapApiResult, getFromState } from '../../redux/utils';
 import { StyledLink } from '../common/link';
 
 class Users extends React.Component {
@@ -294,7 +294,10 @@ class Users extends React.Component {
         <thead>
           <tr>
             <th scope='col'>
-              {this.renderColumnHead('USERNAME', 'username')}
+              {this.renderColumnHead('USERNAME', 'displayName')}
+            </th>
+            <th scope='col'>
+              {this.renderColumnHead('OSM USER', 'osmDisplayName')}
             </th>
             <th scope='col'>
               {this.renderColumnHead('Mapper Since', 'createdAt')}
@@ -322,6 +325,9 @@ class Users extends React.Component {
       return (
         <tr key={user.osmId}>
           <td>
+            <StyledLink to={`/users/${user.id}`}>{user.displayName}</StyledLink>
+          </td>
+          <td>
             <a
               target='_blank'
               rel='noopener noreferrer'
@@ -330,7 +336,7 @@ class Users extends React.Component {
               {user.osmDisplayName}
             </a>
           </td>
-          <td>{getUTCDate(user.osmCreatedAt)}</td>
+          <td>{getUTCDate(user.createdAt)}</td>
           <td style={{ textAlign: 'center' }}>
             {user.isAdmin && (
               <Button useIcon='tick' size='small' hideText>
@@ -396,7 +402,7 @@ if (environment !== 'production') {
 
 function mapStateToProps (state) {
   return {
-    users: wrapApiResult(state.users),
+    users: wrapApiResult(getFromState(state, `users.list`)),
     authenticatedUser: wrapApiResult(state.authenticatedUser),
     accessToken: get(state, 'authenticatedUser.data.accessToken')
   };

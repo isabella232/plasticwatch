@@ -6,7 +6,7 @@ import { environment } from '../../config';
 import { connect } from 'react-redux';
 import * as actions from '../../redux/actions/users';
 import { wrapApiResult, getFromState } from '../../redux/utils';
-import { getUTCDate } from '../../utils/date'; 
+import { getUTCDate } from '../../utils/date';
 
 import media from '../../styles/utils/media-queries';
 import { themeVal } from '../../styles/utils/general';
@@ -138,15 +138,16 @@ function Users(props) {
         <InnerPanel>
           <UserInfo>
             <UserName>{user.displayName}</UserName>
-            <Avatar
-              src={`https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?s=200`}
-            />
+            <Avatar src='https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?s=200' />
             <UserData>
               <PanelStat>
                 {observations.length === 0 ? (
                   <span>No surveys yet</span>
                 ) : (
-                  getUTCDate(lastSurveyDate)
+                  <>
+                    <span>Last Survey</span>
+                    {getUTCDate(lastSurveyDate)}
+                  </>
                 )}
               </PanelStat>
             </UserData>
