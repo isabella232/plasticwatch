@@ -320,17 +320,17 @@ class Users extends React.Component {
 
     return getData().map(user => {
       return (
-        <tr key={user.osmId}>
+        <tr key={user.id}>
           <td>
             <a
               target='_blank'
               rel='noopener noreferrer'
-              href={`${osmUrl}/user/${user.osmDisplayName}`}
+              href={`${osmUrl}/user/${user.displayName}`}
             >
-              {user.osmDisplayName}
+              {user.displayName}
             </a>
           </td>
-          <td>{getUTCDate(user.osmCreatedAt)}</td>
+          <td>{getUTCDate(user.createdAt)}</td>
           <td style={{ textAlign: 'center' }}>
             {user.isAdmin && (
               <Button useIcon='tick' size='small' hideText>
