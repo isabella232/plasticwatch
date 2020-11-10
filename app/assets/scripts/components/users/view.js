@@ -159,7 +159,11 @@ function Users(props) {
             </PanelStat>
             <PanelStat>
               {campaigns.length}
-              <span>campaign contributed</span>
+              <span>campaigns contributed</span>
+            </PanelStat>
+            <PanelStat>
+              {badges.length}
+              <span>Earned Badges</span>
             </PanelStat>
           </PanelStats>
         </InnerPanel>
