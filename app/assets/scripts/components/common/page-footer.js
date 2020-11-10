@@ -16,6 +16,7 @@ import collecticon from '../../styles/collecticons';
 import { filterComponentProps } from '../../utils';
 import { Modal, ModalHeader, ModalBody } from '../common/modal';
 import { StyledLink } from '../common/link';
+import Button from '../../styles/button/button';
 
 const PageFoot = styled.footer`
   position: sticky;
@@ -103,6 +104,18 @@ const FooterMenuLink = styled.a.attrs({
   }
 `;
 
+const CampaignList = styled.ul`
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: stretch;
+  justify-content: space-around;
+  ${Button} {
+    text-decoration: none;
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+`;
+
 const propsToFilter = ['variation', 'size', 'hideText', 'useIcon', 'active'];
 const NavLinkFilter = filterComponentProps(NavLink, propsToFilter);
 
@@ -147,21 +160,23 @@ function PageFooter(props) {
     }
 
     return (
-      <ul>
+      <CampaignList>
         {Object.keys(allCampaigns).map((cSlug) => {
           const c = allCampaigns[cSlug];
           return (
             <li key={cSlug}>
-              <StyledLink
+              <Button
+                as={StyledLink}
+                variation='primary-raised-light'
                 to={`/explore/${c.slug}`}
                 data-tip={`Go to ${c.name} campaign`}
               >
                 {c.name}
-              </StyledLink>
+              </Button>
             </li>
           );
         })}
-      </ul>
+      </CampaignList>
     );
   }
 
