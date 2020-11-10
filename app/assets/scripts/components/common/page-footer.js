@@ -171,7 +171,7 @@ function PageFooter(props) {
         id='introExpanded'
         revealed={showCampaignSelector}
         onCloseClick={() => setShowCampaignSelector(false)}
-        headerComponent={<ModalHeader>Select a campaign</ModalHeader>}
+        headerComponent={<ModalHeader>Select a city</ModalHeader>}
         bodyComponent={<ModalBody>{renderCampaigns()}</ModalBody>}
       />
       <PageFootInner>
