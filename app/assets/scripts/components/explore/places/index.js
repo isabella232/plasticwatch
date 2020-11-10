@@ -72,7 +72,7 @@ class PlacesIndex extends Component {
   renderPlacesCount (places) {
     const count = places.length;
     const { lat, lng, zoom } = this.props.mapViewport;
-    const link = `https://openstreetmap.org/edit?editor=id&lat=${lat}&lon=${lng}&zoom=${zoom}`
+    const link = `https://openstreetmap.org/edit?editor=id&lat=${lat}&lon=${lng}&zoom=${zoom}`;
     if (count === 0) {
       return <p>No results found. May be you would like to <a target='_blank' rel='noopener noreferrer' href={link}>add a place to OpenStreetMap.</a></p>;
     } else if (count.length === 1) return <div>1 place found in the area.</div>;
