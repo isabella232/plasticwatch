@@ -16,7 +16,7 @@ import App from '../common/app';
 import UhOh from '../uhoh';
 import { InnerPanel, Panel, PanelStats, PanelStat } from '../../styles/panel';
 
-const TwoPanelLayout = styled(Panel)`
+const FullPagePanel = styled(Panel)`
   ${InnerPanel} {
     h2 {
       margin-bottom: 1rem;
@@ -28,10 +28,11 @@ const TwoPanelLayout = styled(Panel)`
   }
   ${media.mediumUp`
     display: grid;
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: 1fr;
     grid-gap: 2rem;
     height: 100vh;
     overflow: hidden;
+    width: max-content;
     ${InnerPanel} {
       &:not(:last-of-type) {
         margin-bottom: 0;
@@ -134,7 +135,7 @@ function Users(props) {
 
   return (
     <App pageTitle='Users'>
-      <TwoPanelLayout>
+      <FullPagePanel>
         <InnerPanel>
           <UserInfo>
             <UserName>{user.displayName}</UserName>
@@ -148,10 +149,11 @@ function Users(props) {
                     <span>Last Survey</span>
                     {getUTCDate(lastSurveyDate)}
                   </PanelStat>
+                  {/* The below stat can be re-enabled once campaigns are passed down to the user profile route
                   <PanelStat>
                     <span>Last surveyed in</span>
                     {campaigns.name}
-                  </PanelStat>
+                  </PanelStat> */}
                 </>
               )}
             </UserData>
@@ -170,8 +172,6 @@ function Users(props) {
               <span>Earned Badges</span>
             </PanelStat>
           </PanelStats>
-        </InnerPanel>
-        <InnerPanel>
           <h2>Badges</h2>
           <ScrollWrap>
             {badges.length === 0 ? (
@@ -189,7 +189,7 @@ function Users(props) {
             )}
           </ScrollWrap>
         </InnerPanel>
-      </TwoPanelLayout>
+      </FullPagePanel>
     </App>
   );
 }
