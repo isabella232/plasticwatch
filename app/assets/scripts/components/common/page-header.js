@@ -15,7 +15,6 @@ import withMobileState from './with-mobile-state';
 
 // Styles
 import { rgba } from 'polished';
-import collecticon from '../../styles/collecticons';
 import styled, { css } from 'styled-components';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { themeVal, stylizeFunction } from '../../styles/utils/general';
@@ -203,7 +202,7 @@ const MobileMenu = styled.ul`
   }
 `;
 
-const GlobalMenuLink = styled.a.attrs({
+const GlobalMenuLink = styled(Button).attrs({
   'data-place': 'right'
 })`
   position: relative;
@@ -217,12 +216,6 @@ const GlobalMenuLink = styled.a.attrs({
   text-transform: uppercase;
   letter-spacing: 0.05rem;
   justify-content: flex-end;
-  &::before {
-    ${({ useIcon }) => collecticon(useIcon)}
-    margin-right: 0.5rem;
-    position: relative;
-    color: inherit;
-  }
   &,
   &:visited {
     color: inherit;
@@ -325,18 +318,17 @@ class PageHeader extends React.Component {
         alignment='center'
         direction='down'
         triggerElement={(props) => (
-          <Button
-            variation='base-raised-light'
+          <GlobalMenuLink
             useIcon={['chevron-down--small', 'after']}
             title='Open dropdown'
             {...props}
           >
-            {campaign.name}
-          </Button>
+            {campaign.name || 'Explore'}
+          </GlobalMenuLink>
         )}
       >
         <React.Fragment>
-          <DropTitle>Go to another campaign</DropTitle>
+          <DropTitle>Select City</DropTitle>
           <DropMenu>
             {Object.keys(allCampaigns).map((cSlug) => {
               const c = allCampaigns[cSlug];
@@ -349,7 +341,7 @@ class PageHeader extends React.Component {
                     data-tip={`Go to ${c.name} campaign`}
                     onClick={() => this.dropdownRef.current.close()}
                   >
-                    {c.name}
+                    {c.name || 'Select City'}
                   </DropMenuItem>
                 );
               }
@@ -367,6 +359,7 @@ class PageHeader extends React.Component {
         {isMobile ? (
           <li>
             <GlobalMenuLink
+              as='a'
               useIcon={
                 !this.state.isMobileMenuOpened ? 'hamburger-menu' : 'xmark'
               }
@@ -436,8 +429,6 @@ class PageHeader extends React.Component {
                 <li>
                   <GlobalMenuLink
                     useIcon='login'
-                    size='xlarge'
-                    variation='primary-raised-dark'
                     onClick={() => this.login()}
                   >
                     Login
@@ -494,8 +485,6 @@ class PageHeader extends React.Component {
           <li>
             <GlobalMenuLink
               useIcon='login'
-              size='xlarge'
-              variation='primary-raised-dark'
               onClick={() => this.login()}
             >
               Login
