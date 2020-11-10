@@ -40,8 +40,10 @@ const ZoomButton = styled(Button)`
 `;
 
 const MissingPlaceButton = styled(Button)`
+  background: white;
+  box-shadow: 1px 1px 10px grey;
   position: absolute;
-  bottom: 2%;
+  bottom: 3%;
   right: 5%;
   transform-origin: 50% 50%;
   z-index: 1000;
