@@ -1,5 +1,6 @@
 /* eslint-disable react/no-access-state-in-setstate */
 import React from 'react';
+import styled from 'styled-components';
 import { Route } from 'react-router-dom';
 import { PropTypes as T } from 'prop-types';
 import QsState from '../../utils/qs-state';
@@ -13,7 +14,6 @@ import { fetchCampaigns } from '../../redux/actions/campaigns';
 
 import App from '../common/app';
 import { SidebarWrapper } from '../common/view-wrappers';
-import { FilterToolbar } from '../../styles/form/filters';
 import Dropdown, {
   DropTitle,
   DropMenu,
@@ -50,6 +50,19 @@ export const qsState = new QsState({
     accessor: 'lat'
   }
 });
+
+const CampaignToolbar = styled.div`
+  display: flex;
+  align-items: baseline;
+  padding-top: 1rem;
+  padding-left: 1rem;
+  font-size: 0.875rem;
+
+  ${({ displayMap }) => displayMap &&
+    `position: absolute;
+    `
+}
+`;
 
 class Explore extends React.Component {
   constructor() {
@@ -113,7 +126,7 @@ class Explore extends React.Component {
     this.props.history.push({ search: qString });
   }
 
-  renderCampaignSelector() {
+  renderCampaignSelector(displayMap) {
     // Get campaign slug
     const {
       campaigns,
@@ -133,14 +146,15 @@ class Explore extends React.Component {
     if (!campaign) return <></>;
 
     return (
-      <FilterToolbar>
+      <CampaignToolbar displayMap={displayMap}>
+        <p>CITY:</p>
         <Dropdown
           ref={this.dropdownRef}
           alignment='center'
           direction='down'
           triggerElement={(props) => (
             <Button
-              variation='base-raised-light'
+              variation='primary-plain'
               useIcon={['chevron-down--small', 'after']}
               title='Open dropdown'
               {...props}
@@ -150,7 +164,7 @@ class Explore extends React.Component {
           )}
         >
           <React.Fragment>
-            <DropTitle>Go to another campaign</DropTitle>
+            <DropTitle>Select city</DropTitle>
             <DropMenu>
               {Object.keys(allCampaigns).map((cSlug) => {
                 const c = allCampaigns[cSlug];
@@ -171,7 +185,7 @@ class Explore extends React.Component {
             </DropMenu>
           </React.Fragment>
         </Dropdown>
-      </FilterToolbar>
+      </CampaignToolbar>
     );
   }
 
@@ -200,7 +214,7 @@ class Explore extends React.Component {
     return (
       <App pageTitle='About' hideFooter>
         <SidebarWrapper>
-          {isMobile && this.renderCampaignSelector()}
+          {isMobile && this.renderCampaignSelector(displayMap)}
           <Route exact path='/explore/:campaignSlug' component={PlacesIndex} />
           <Route
             exact
