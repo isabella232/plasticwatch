@@ -43,9 +43,11 @@ const FakeMap = styled.div`
     text-transform: uppercase;
     background: rgba(240,240,240, 0.85);
     padding: 0.75rem 1rem;
+    margin: 1rem;
     border-radius: 0.25rem;
     font-weight: normal;
     letter-spacing: 0.5px;
+    text-align: center;
   }
 `;
 
@@ -129,7 +131,7 @@ function Home(props) {
           headerComponent={<ModalHeader>Select a city</ModalHeader>}
           bodyComponent={<ModalBody>{renderCampaigns()}</ModalBody>}
         />
-        <FakeMap onClick={() => handleMapClick()}>
+        <FakeMap as={StyledLink} onClick={() => handleMapClick()}>
           <h4>Click the map to start exploring</h4>
         </FakeMap>
       </HomeWrapper>
