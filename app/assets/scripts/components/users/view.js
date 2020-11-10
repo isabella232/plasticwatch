@@ -81,7 +81,7 @@ const BadgeGrid = styled.ul`
   display: grid;
   margin: 1rem 0;
   gap: 2rem;
-  grid-template-columns: repeat(auto-fit, minmax(225px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   list-style: none;
 `;
 
@@ -89,6 +89,7 @@ const BadgeItem = styled.li`
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
   ${media.mediumUp`
     align-items: flex-start;
   `}
@@ -108,7 +109,17 @@ const BadgeName = styled.p`
 
 const BadgeImg = styled.img`
   border-radius: 50%;
-  border: 0.125rem solid ${themeVal('color.primary')};
+  border: 0.125rem solid ${themeVal('color.surface')};
+  position: relative;
+  &::after {
+    position: absolute;
+    content: '';
+    width: 120%;
+    height: 120%;
+    left: 0;
+    top: 0;
+    background: ${themeVal('color.secondary')};
+  }
 `;
 
 function Users(props) {
