@@ -243,6 +243,14 @@ const GlobalMenuLink = styled(Button).attrs({
 const propsToFilter = ['variation', 'size', 'hideText', 'useIcon', 'active'];
 const NavLinkFilter = filterComponentProps(NavLink, propsToFilter);
 
+const CampaignMenuItem = styled(DropMenuItem)`
+  font-weight: ${themeVal('type.base.weight')};
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+  text-decoration: none;
+`;
+
 class PageHeader extends React.Component {
   constructor(props) {
     super(props);
@@ -323,7 +331,7 @@ class PageHeader extends React.Component {
             title='Open dropdown'
             {...props}
           >
-            {campaign.name || 'Explore'}
+            {campaign ? campaign.name : 'Explore'}
           </GlobalMenuLink>
         )}
       >
@@ -334,15 +342,15 @@ class PageHeader extends React.Component {
               const c = allCampaigns[cSlug];
               if (cSlug !== campaignSlug) {
                 return (
-                  <DropMenuItem
+                  <CampaignMenuItem
                     key={cSlug}
                     as={StyledLink}
                     to={`/explore/${c.slug}`}
                     data-tip={`Go to ${c.name} campaign`}
                     onClick={() => this.dropdownRef.current.close()}
                   >
-                    {c.name || 'Select City'}
-                  </DropMenuItem>
+                    {c.name}
+                  </CampaignMenuItem>
                 );
               }
             })}
