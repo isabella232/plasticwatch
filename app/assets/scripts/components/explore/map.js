@@ -308,13 +308,12 @@ class Map extends Component {
           </ZoomButton>
         )}
         <MissingPlaceButton
-          variation='base-plain'
-          size='small'
+          variation='base-raised-light'
           tabIndex={-1}
           onClick={async () => {
             const res = await showConfirmationPrompt({
               'title': 'Add a missing place to the map',
-              'content': 'PlasticWatch relies on OpenStreetMap data for restaurant, cafe and bar locations. Don’t see the establishment you’re looking for? Click "Confrim" to add a location to OpenStreetMap. Adding a place to OpenStreetMap requires creating an account and following OSM policies. Continue to view OpenStreetMap at your currently selected location, and follow the OSM walkthrough to learn how to edit the global map. Please note, as changes to OSM must be verified by the external OSM community, new places added to OSM will not immediately be captured by PlasticWatch'
+              'content': 'PlasticWatch relies on OpenStreetMap data for restaurant, cafe and bar locations. Don’t see the establishment you’re looking for? Click "Confirm" to add a location to OpenStreetMap. Adding a place to OpenStreetMap requires creating an account and following OSM policies. Continue to view OpenStreetMap at your currently selected location, and follow the OSM walkthrough to learn how to edit the global map. Please note, as changes to OSM must be verified by the external OSM community, new places added to OSM will not immediately be captured by PlasticWatch'
             });
             if (res.result) {
               const center = this.map.getCenter();

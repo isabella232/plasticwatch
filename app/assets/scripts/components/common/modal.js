@@ -10,6 +10,7 @@ import { multiply } from '../../styles/utils/math';
 import collecticon from '../../styles/collecticons';
 
 import Button from '../../styles/button/button';
+import { headingAlt } from '../../styles/type/heading';
 
 const _rgba = stylizeFunction(rgba);
 
@@ -153,7 +154,8 @@ export const ModalToolbar = styled.div`
 `;
 
 export const ModalTitle = styled.h1`
-  font-size: 1.25rem;
+  ${headingAlt()};
+  font-size: 1rem;
   line-height: 2rem;
   margin: 0;
 `;
