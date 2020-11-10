@@ -9,6 +9,7 @@ import * as exploreActions from '../../../redux/actions/explore';
 
 import withMobileState from '../../common/with-mobile-state';
 import { StyledLink } from '../../common/link';
+import { showConfirmationPrompt } from '../../common/confirmation-prompt';
 
 import { themeVal } from '../../../styles/utils/general';
 import { listReset } from '../../../styles/helpers/index';
@@ -49,6 +50,10 @@ const ResultsItem = styled.li`
     margin-left: 0.5rem;
     font-size: 0.875rem;
   }
+  h4,
+  ${Button} {
+    margin-bottom: 1rem;
+  }
 `;
 
 class PlacesIndex extends Component {
@@ -74,7 +79,27 @@ class PlacesIndex extends Component {
     const { lat, lng, zoom } = this.props.mapViewport;
     const link = `https://openstreetmap.org/edit?editor=id&lat=${lat}&lon=${lng}&zoom=${zoom}`;
     if (count === 0) {
-      return <p>No results found. May be you would like to <a target='_blank' rel='noopener noreferrer' href={link}>add a place to OpenStreetMap.</a></p>;
+      return (
+        <>
+          <h4>No results found.</h4>
+          <Button
+            variation='base-raised-light'
+            tabIndex={-1}
+            useIcon='crosshair'
+            onClick={async () => {
+              const res = await showConfirmationPrompt({
+                'title': 'Add a missing place to the map',
+                'content': 'PlasticWatch relies on OpenStreetMap data for restaurant, cafe and bar locations. Don’t see the establishment you’re looking for? Click "Confirm" to add a location to OpenStreetMap. Adding a place to OpenStreetMap requires creating an account and following OSM policies. Continue to view OpenStreetMap at your currently selected location, and follow the OSM walkthrough to learn how to edit the global map. Please note, as changes to OSM must be verified by the external OSM community, new places added to OSM will not immediately be captured by PlasticWatch'
+              });
+              if (res.result) {
+                window.open(link);
+              }
+            }}
+          >
+          Add a missing place to OpenStreetMap
+          </Button>
+        </>
+      );
     } else if (count.length === 1) return <div>1 place found in the area.</div>;
     else return <div>{count} places found in the area.</div>;
   }
