@@ -10,6 +10,7 @@ import { multiply } from '../../styles/utils/math';
 import collecticon from '../../styles/collecticons';
 
 import Button from '../../styles/button/button';
+import { headingAlt } from '../../styles/type/heading';
 
 const _rgba = stylizeFunction(rgba);
 
@@ -96,6 +97,7 @@ const BodyUnscrollable = createGlobalStyle`
 `;
 
 export const ModalHeader = styled.header`
+  ${headingAlt()};
   display: flex;
   flex-flow: row nowrap;
   align-items: center;

@@ -1,5 +1,6 @@
 /* eslint-disable react/no-access-state-in-setstate */
 import React from 'react';
+import styled from 'styled-components';
 import { Route } from 'react-router-dom';
 import { PropTypes as T } from 'prop-types';
 import QsState from '../../utils/qs-state';
@@ -13,6 +14,13 @@ import { fetchCampaigns } from '../../redux/actions/campaigns';
 
 import App from '../common/app';
 import { SidebarWrapper } from '../common/view-wrappers';
+import Dropdown, {
+  DropTitle,
+  DropMenu,
+  DropMenuItem
+} from '../common/dropdown';
+import Button from '../../styles/button/button';
+import { StyledLink } from '../common/link';
 import UhOh from '../uhoh';
 
 import Map from './map';
@@ -43,7 +51,32 @@ export const qsState = new QsState({
   }
 });
 
+const CampaignToolbar = styled.div`
+  display: flex;
+  align-items: baseline;
+  padding-top: 1rem;
+  padding-left: 1rem;
+  font-size: 0.875rem;
+
+  ${({ displayMap }) => displayMap &&
+    `position: absolute;
+    `
+}
+`;
+
+const CampaignMenuItem = styled(DropMenuItem)`
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+  text-decoration: none;
+`;
+
 class Explore extends React.Component {
+  constructor() {
+    super();
+    this.dropdownRef = React.createRef();
+  }
+
   async componentDidMount() {
     await this.props.fetchCampaigns();
 
@@ -100,6 +133,70 @@ class Explore extends React.Component {
     this.props.history.push({ search: qString });
   }
 
+  renderCampaignSelector(displayMap) {
+    // Get campaign slug
+    const {
+      campaigns,
+      match: {
+        params: { campaignSlug }
+      }
+    } = this.props;
+
+    // Do not render until campaigns are available
+    if (!campaigns.isReady() || campaigns.hasError()) return <></>;
+
+    // Get data
+    const allCampaigns = campaigns.getData();
+    const campaign = allCampaigns[campaignSlug];
+
+    // Do not render if campaign is not available
+    if (!campaign) return <></>;
+
+    return (
+      <CampaignToolbar displayMap={displayMap}>
+        <p>CITY:</p>
+        <Dropdown
+          ref={this.dropdownRef}
+          alignment='left'
+          direction='down'
+          triggerElement={(props) => (
+            <Button
+              variation='primary-plain'
+              size='small'
+              useIcon={['chevron-down--small', 'after']}
+              title='Open dropdown'
+              {...props}
+            >
+              {campaign.name}
+            </Button>
+          )}
+        >
+          <React.Fragment>
+            <DropTitle>Select city</DropTitle>
+            <DropMenu>
+              {Object.keys(allCampaigns).map((cSlug) => {
+                const c = allCampaigns[cSlug];
+                if (cSlug !== campaignSlug) {
+                  return (
+                    <CampaignMenuItem
+                      key={cSlug}
+                      as={StyledLink}
+                      to={`/explore/${c.slug}`}
+                      data-tip={`Go to ${c.name} campaign`}
+                      onClick={() => this.dropdownRef.current.close()}
+                    >
+                      {c.name}
+                    </CampaignMenuItem>
+                  );
+                }
+              })}
+            </DropMenu>
+          </React.Fragment>
+        </Dropdown>
+      </CampaignToolbar>
+    );
+  }
+
   render() {
     const { isMobile, activeMobileTab, campaigns } = this.props;
 
@@ -125,6 +222,7 @@ class Explore extends React.Component {
     return (
       <App pageTitle='About' hideFooter>
         <SidebarWrapper>
+          {isMobile && this.renderCampaignSelector(displayMap)}
           <Route exact path='/explore/:campaignSlug' component={PlacesIndex} />
           <Route
             exact
