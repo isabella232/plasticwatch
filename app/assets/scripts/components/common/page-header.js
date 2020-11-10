@@ -26,7 +26,6 @@ import media from '../../styles/utils/media-queries';
 
 // Components
 import Button from '../../styles/button/button';
-import { StyledLink } from '../common/link';
 import { showAboutModal } from './about-modal';
 import { showGlobalLoading, hideGlobalLoading } from '../common/global-loading';
 import Dropdown, {
@@ -320,7 +319,7 @@ class PageHeader extends React.Component {
     const campaign = allCampaigns[campaignSlug];
 
     // Do not render if campaign is not available
-    if (!campaign) return <></>;
+    // if (!campaign) return <></>;
 
     return (
       <Dropdown
@@ -329,6 +328,8 @@ class PageHeader extends React.Component {
         direction='down'
         triggerElement={(props) => (
           <GlobalMenuLink
+            as={NavLinkFilter}
+            to='/explore'
             useIcon={['chevron-down--small', 'after']}
             title='Open dropdown'
             {...props}
@@ -346,7 +347,7 @@ class PageHeader extends React.Component {
                 return (
                   <CampaignMenuItem
                     key={cSlug}
-                    as={StyledLink}
+                    as={NavLinkFilter}
                     to={`/explore/${c.slug}`}
                     data-tip={`Go to ${c.name} campaign`}
                     onClick={() => this.dropdownRef.current.close()}
@@ -383,19 +384,6 @@ class PageHeader extends React.Component {
         ) : (
           <>
             {this.renderCampaignNav()}
-            <li>
-              <GlobalMenuLink
-                as={NavLinkFilter}
-                exact
-                to='/explore'
-                useIcon='map'
-                isActive={(match, { pathname, search }) =>
-                  pathname && pathname.indexOf('/explore') === 0}
-                title='Go to the explore view'
-              >
-                <span>Explore</span>
-              </GlobalMenuLink>
-            </li>
             <li>
               <GlobalMenuLink
                 as={NavLinkFilter}
