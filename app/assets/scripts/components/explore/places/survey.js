@@ -202,7 +202,7 @@ class SubmitSurvey extends Component {
     await this.props.fetchSurveyMeta();
 
     // Load survey answers, if any
-    const { surveyMeta, place, user } = this.props;
+    const { surveyMeta, place, user, campaign } = this.props;
     if (
       surveyMeta.isReady() &&
       !surveyMeta.hasError() &&
@@ -212,7 +212,8 @@ class SubmitSurvey extends Component {
       await this.props.fetchSurveyAnswers({
         userId: user.getData().osmId,
         osmObjectId: place.getData().id,
-        surveyId: surveyMeta.getData().id
+        surveyId: surveyMeta.getData().id,
+        campaignId: campaign.id
       });
     }
   }
