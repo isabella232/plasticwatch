@@ -17,6 +17,9 @@ import isEqual from 'lodash.isequal';
 
 import Button from '../../styles/button/button';
 import Spinner from '../../styles/spinner/index';
+// import MissingPlaceButton from '../../components/common/missing-place-button';
+import collecticon from '../../styles/collecticons';
+import { showConfirmationPrompt } from '../common/confirmation-prompt';
 
 const minZoomToLoadPlaces = 12;
 
@@ -33,6 +36,17 @@ const ZoomButton = styled(Button)`
   &.active,
   &:active {
       transform: translate(-50%,-50%);
+  }
+`;
+
+const MissingPlaceButton = styled(Button)`
+  position: absolute;
+  bottom: 2%;
+  right: 5%;
+  transform-origin: 50% 50%;
+  z-index: 1000;
+  ::before {
+    ${collecticon('crosshair')}
   }
 `;
 
@@ -291,6 +305,26 @@ class Map extends Component {
             Zoom in to load places
           </ZoomButton>
         )}
+        <MissingPlaceButton
+          variation='base-plain'
+          size='small'
+          tabIndex={-1}
+          onClick={async () => {
+            const res = await showConfirmationPrompt({
+              'title': 'Add a missing place to the map',
+              'content': 'PlasticWatch relies on OpenStreetMap data for restaurant, cafe and bar locations. Don’t see the establishment you’re looking for? Click "Confrim" to add a location to OpenStreetMap. Adding a place to OpenStreetMap requires creating an account and following OSM policies. Continue to view OpenStreetMap at your currently selected location, and follow the OSM walkthrough to learn how to edit the global map. Please note, as changes to OSM must be verified by the external OSM community, new places added to OSM will not immediately be captured by PlasticWatch'
+            });
+            if (res.result) {
+              const center = this.map.getCenter();
+              const lat = center.lat;
+              const lon = center.lng;
+              const zoom = this.map.getZoom();
+              window.open(`https://openstreetmap.org/edit?editor=id&lat=${lat}&lon=${lon}&zoom=${zoom}`);
+            }
+          }}
+        >
+        Add a missing place to OpenStreetMap
+        </MissingPlaceButton>
       </Wrapper>
     );
   }
