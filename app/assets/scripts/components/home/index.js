@@ -129,7 +129,7 @@ function Home(props) {
           headerComponent={<ModalHeader>Select a city</ModalHeader>}
           bodyComponent={<ModalBody>{renderCampaigns()}</ModalBody>}
         />
-        <FakeMap as={StyledLink} onClick={() => handleMapClick()}>
+        <FakeMap onClick={() => handleMapClick()}>
           <h4>Click the map to start exploring</h4>
         </FakeMap>
       </HomeWrapper>

@@ -342,8 +342,6 @@ class PageHeader extends React.Component {
         direction='down'
         triggerElement={(props) => (
           <GlobalMenuLink
-            as={NavLinkFilter}
-            to='/explore'
             useIcon={['chevron-down--small', 'after']}
             title='Open dropdown'
             {...props}
