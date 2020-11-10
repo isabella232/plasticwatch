@@ -71,9 +71,11 @@ class PlacesIndex extends Component {
 
   renderPlacesCount (places) {
     const count = places.length;
-
-    if (count === 0) return <div />;
-    else if (count.length === 1) return <div>1 place found in the area.</div>;
+    const { lat, lng, zoom } = this.props.mapViewport;
+    const link = `https://openstreetmap.org/edit?editor=id&lat=${lat}&lon=${lng}&zoom=${zoom}`
+    if (count === 0) {
+      return <p>No results found. May be you would like to <a target='_blank' href={link}>add a place to OpenStreetMap.</a></p>;
+    } else if (count.length === 1) return <div>1 place found in the area.</div>;
     else return <div>{count} places found in the area.</div>;
   }
 
@@ -205,7 +207,8 @@ if (environment !== 'production') {
     places: T.object,
     updateFilters: T.func,
     filters: T.object,
-    isMobile: T.bool
+    isMobile: T.bool,
+    mapViewport: T.object
   };
 }
 
@@ -213,7 +216,8 @@ function mapStateToProps (state) {
   return {
     filters: getFromState(state, `explore.filters`),
     places: wrapApiResult(getFromState(state, `places.list`)),
-    activeMobileTab: getFromState(state, `explore.activeMobileTab`)
+    activeMobileTab: getFromState(state, `explore.activeMobileTab`),
+    mapViewport: getFromState(state, `explore.mapViewport`)
   };
 }
 
