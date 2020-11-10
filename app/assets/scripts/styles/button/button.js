@@ -409,7 +409,7 @@ export function buttonVariation (color, style, brightness, props) {
  * @param {object} props The element props
  */
 function renderButtonVariation (props) {
-  const { primary, danger, success } = props.theme.color;
+  const { primary, secondary, danger, success } = props.theme.color;
   const baseType = props.theme.type.base.color;
 
   switch (props.variation) {
@@ -421,6 +421,15 @@ function renderButtonVariation (props) {
       return buttonVariation(primary, 'raised', 'dark', props);
     case 'primary-plain':
       return buttonVariation(primary, 'plain', 'light', props);
+
+    case 'secondary-raised-light':
+      return buttonVariation(secondary, 'raised', 'light', props);
+    case 'secondary-raised-semidark':
+      return buttonVariation(secondary, 'raised', 'semidark', props);
+    case 'secondary-raised-dark':
+      return buttonVariation(secondary, 'raised', 'dark', props);
+    case 'secondary-plain':
+      return buttonVariation(secondary, 'plain', 'light', props);
 
     case 'danger-raised-light':
       return buttonVariation(danger, 'raised', 'light', props);
