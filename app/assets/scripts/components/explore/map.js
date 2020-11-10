@@ -18,7 +18,6 @@ import isEqual from 'lodash.isequal';
 import Button from '../../styles/button/button';
 import Spinner from '../../styles/spinner/index';
 // import MissingPlaceButton from '../../components/common/missing-place-button';
-import collecticon from '../../styles/collecticons';
 import { showConfirmationPrompt } from '../common/confirmation-prompt';
 
 const minZoomToLoadPlaces = 12;
@@ -40,16 +39,12 @@ const ZoomButton = styled(Button)`
 `;
 
 const MissingPlaceButton = styled(Button)`
-  background: white;
-  box-shadow: 1px 1px 10px grey;
+  margin-top: 1rem;
   position: absolute;
   bottom: 3%;
-  right: 5%;
+  left: 3%;
   transform-origin: 50% 50%;
   z-index: 1000;
-  ::before {
-    ${collecticon('crosshair')}
-  }
 `;
 
 const markerQuestion = new Image(45, 60);
@@ -310,6 +305,7 @@ class Map extends Component {
         <MissingPlaceButton
           variation='base-raised-light'
           tabIndex={-1}
+          useIcon='crosshair'
           onClick={async () => {
             const res = await showConfirmationPrompt({
               'title': 'Add a missing place to the map',
