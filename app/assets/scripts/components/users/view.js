@@ -140,16 +140,20 @@ function Users(props) {
             <UserName>{user.displayName}</UserName>
             <Avatar src='https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?s=200' />
             <UserData>
-              <PanelStat>
-                {observations.length === 0 ? (
-                  <span>No surveys yet</span>
-                ) : (
-                  <>
+              {observations.length === 0 ? (
+                <PanelStat><span>No surveys yet</span></PanelStat>
+              ) : (
+                <>
+                  <PanelStat>
                     <span>Last Survey</span>
                     {getUTCDate(lastSurveyDate)}
-                  </>
-                )}
-              </PanelStat>
+                  </PanelStat>
+                  <PanelStat>
+                    <span>Last surveyed in</span>
+                    {campaigns.name}
+                  </PanelStat>
+                </>
+              )}
             </UserData>
           </UserInfo>
           <PanelStats>
