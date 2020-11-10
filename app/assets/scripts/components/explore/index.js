@@ -64,6 +64,13 @@ const CampaignToolbar = styled.div`
 }
 `;
 
+const CampaignMenuItem = styled(DropMenuItem)`
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+  text-decoration: none;
+`;
+
 class Explore extends React.Component {
   constructor() {
     super();
@@ -150,11 +157,12 @@ class Explore extends React.Component {
         <p>CITY:</p>
         <Dropdown
           ref={this.dropdownRef}
-          alignment='center'
+          alignment='left'
           direction='down'
           triggerElement={(props) => (
             <Button
               variation='primary-plain'
+              size='small'
               useIcon={['chevron-down--small', 'after']}
               title='Open dropdown'
               {...props}
@@ -170,7 +178,7 @@ class Explore extends React.Component {
                 const c = allCampaigns[cSlug];
                 if (cSlug !== campaignSlug) {
                   return (
-                    <DropMenuItem
+                    <CampaignMenuItem
                       key={cSlug}
                       as={StyledLink}
                       to={`/explore/${c.slug}`}
@@ -178,7 +186,7 @@ class Explore extends React.Component {
                       onClick={() => this.dropdownRef.current.close()}
                     >
                       {c.name}
-                    </DropMenuItem>
+                    </CampaignMenuItem>
                   );
                 }
               })}
