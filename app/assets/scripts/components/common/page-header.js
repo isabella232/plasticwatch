@@ -107,7 +107,9 @@ const PageTitle = styled.h1`
 
 const PageNav = styled.nav`
   display: flex;
-  margin: 0 ${multiply(themeVal('layout.space'), 2)} 0 auto;
+  ${media.mediumUp`
+    margin: 0 ${multiply(themeVal('layout.space'), 2)} 0 auto;
+  `}
 `;
 
 const GlobalMenu = styled.ul`
