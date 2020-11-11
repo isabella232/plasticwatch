@@ -5,7 +5,6 @@ import {
   getFromState
 } from '../utils';
 import { apiUrl, mapConfig } from '../../config';
-// import qs from 'qs';
 import { bboxToTiles, featuresInBounds } from '../../utils/geo';
 import _uniqBy from 'lodash.uniqby';
 

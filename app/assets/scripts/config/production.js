@@ -3,5 +3,6 @@
 module.exports = {
   environment: 'production',
   baseUrl: 'https://plasticwatch.surge.sh',
-  apiUrl: 'https://plasticwatch.ds.io'
+  apiUrl: 'https://plasticwatch.ds.io',
+  osmUrl: 'https://www.openstreetmap.org'
 };
