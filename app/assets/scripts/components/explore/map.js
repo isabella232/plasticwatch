@@ -100,6 +100,7 @@ class Map extends Component {
 
   componentWillUnmount() {
     if (this.map) {
+      this.props.updateMapViewport({});
       this.map.remove();
     }
   }
@@ -121,12 +122,12 @@ class Map extends Component {
       fitBoundsOptions: mapConfig.fitBoundsOptions
     };
 
-    if (
-      typeof lng === 'undefined' &&
-      typeof lat === 'undefined' &&
-      campaign &&
-      campaign.aoi
-    ) {
+    if (typeof lng !== 'undefined' && typeof lat !== 'undefined') {
+      mapOptions.center = {
+        lng,
+        lat
+      };
+    } else if (campaign && campaign.aoi) {
       const {
         geometry: { coordinates }
       } = centroid(JSON.parse(campaign.aoi));
@@ -352,7 +353,8 @@ Map.propTypes = {
   geojson: T.object,
   history: T.object,
   mapViewport: T.object,
-  places: T.object
+  places: T.object,
+  updateMapViewport: T.func
 };
 
 function mapStateToProps(state, props) {
