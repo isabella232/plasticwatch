@@ -41,7 +41,7 @@ const ZoomButton = styled(Button)`
 const MissingPlaceButton = styled(Button)`
   margin-top: 1rem;
   position: absolute;
-  bottom: 3%;
+  bottom: 5%;
   left: 3%;
   transform-origin: 50% 50%;
   z-index: 1000;
@@ -329,6 +329,7 @@ class Map extends Component {
         )}
         <MissingPlaceButton
           variation='base-raised-light'
+          size='small'
           tabIndex={-1}
           useIcon='crosshair'
           onClick={async () => {
@@ -348,7 +349,7 @@ class Map extends Component {
             }
           }}
         >
-          Add a missing place to OpenStreetMap
+          {this.props.isMobile ? 'Add a missing place' : 'Add a missing place to OpenStreetMap' }
         </MissingPlaceButton>
       </Wrapper>
     );
@@ -364,7 +365,8 @@ Map.propTypes = {
   history: T.object,
   mapViewport: T.object,
   places: T.object,
-  updateMapViewport: T.func
+  updateMapViewport: T.func,
+  isMobile: T.bool
 };
 
 function mapStateToProps(state, props) {
