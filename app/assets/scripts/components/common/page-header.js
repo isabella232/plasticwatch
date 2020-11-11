@@ -446,9 +446,10 @@ class PageHeader extends React.Component {
                 direction='down'
                 alignment='right'
               >
-                <DropTitle>Choose Login Provider</DropTitle>
+                <DropTitle>Log in with:</DropTitle>
                 <DropMenu>
                   <GlobalMenuLink
+                    as={DropMenuItem}
                     useIcon='google'
                     onClick={() => this.login('google')}
                     title='Log in with Google'
@@ -456,6 +457,7 @@ class PageHeader extends React.Component {
                     Google
                   </GlobalMenuLink>
                   <GlobalMenuLink
+                    as={DropMenuItem}
                     useIcon='openstreetmap'
                     onClick={() => this.login()}
                     title='Log in with OpenStreetMap'
