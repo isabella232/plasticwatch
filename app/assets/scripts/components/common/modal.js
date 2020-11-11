@@ -155,7 +155,8 @@ export const ModalToolbar = styled.div`
 `;
 
 export const ModalTitle = styled.h1`
-  font-size: 1.25rem;
+  ${headingAlt()};
+  font-size: 1rem;
   line-height: 2rem;
   margin: 0;
 `;
