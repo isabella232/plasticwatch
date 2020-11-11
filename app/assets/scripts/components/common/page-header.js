@@ -243,6 +243,11 @@ const GlobalMenuLink = styled.a.attrs({
       opacity: 1;
     }
   }
+  ${DropMenu} & {
+    text-align: left;
+    justify-content: flex-start; 
+    text-decoration: none;
+  }
 `;
 // Special components to prevent styled-components error when properties are
 // passed to the DOM element.
@@ -419,17 +424,38 @@ class PageHeader extends React.Component {
                     </GlobalMenuLink>
                   </li>
                 )}
-                <li>
-                  <GlobalMenuLink
-                    as={NavLinkFilter}
-                    exact
-                    useIcon='logout'
-                    to='/logout'
-                    title='Proceed to logout'
-                  >
-                    <span>Logout</span>
-                  </GlobalMenuLink>
-                </li>
+                <Dropdown
+                  ref={this.dropdownRef}
+                  direction='down'
+                  triggerElement={(props) => (
+                    <GlobalMenuLink
+                      useIcon='user'
+                      title='Open dropdown'
+                      {...props}
+                    />
+                  )}
+                >
+                  <DropMenu>
+                    <GlobalMenuLink
+                      as={NavLinkFilter}
+                      exact
+                      useIcon='user'
+                      to={`/users/${this.props.userId}`}
+                      title='View Profile'
+                    >
+                      <span>Profile</span>
+                    </GlobalMenuLink>
+                    <GlobalMenuLink
+                      as={NavLinkFilter}
+                      exact
+                      useIcon='logout'
+                      to='/logout'
+                      title='Proceed to logout'
+                    >
+                      <span>Logout</span>
+                    </GlobalMenuLink>
+                  </DropMenu>
+                </Dropdown>
               </>
             ) : (
               location.pathname !== '/' && (
@@ -478,6 +504,17 @@ class PageHeader extends React.Component {
                 </GlobalMenuLink>
               </li>
             )}
+            <li>
+              <GlobalMenuLink
+                as={NavLinkFilter}
+                exact
+                useIcon='user'
+                to={`/users/${this.props.userId}`}
+                title='View Profile'
+              >
+                <span>Profile</span>
+              </GlobalMenuLink>
+            </li>
             <li>
               <GlobalMenuLink
                 as={NavLinkFilter}
@@ -546,7 +583,8 @@ if (environment !== 'production') {
     match: T.object,
     isLoggedIn: T.bool,
     isAdmin: T.bool,
-    isMobile: T.bool
+    isMobile: T.bool,
+    userId: T.number
   };
 }
 
@@ -554,15 +592,18 @@ function mapStateToProps(state, props) {
   const { isReady, hasError, getData } = wrapApiResult(state.authenticatedUser);
   let isLoggedIn = false;
   let isAdmin = false;
+  let userId;
 
   if (isReady() && !hasError()) {
     isLoggedIn = true;
     isAdmin = getData().isAdmin;
+    userId = getData().id;
   }
 
   return {
     isLoggedIn,
     isAdmin,
+    userId,
     campaigns: wrapApiResult(state.campaigns)
   };
 }
