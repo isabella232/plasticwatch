@@ -9,6 +9,7 @@ import { mapConfig } from '../../config';
 import { wrapApiResult, getFromState } from '../../redux/utils';
 import { geojsonCentroid } from '../../utils/geo';
 import { getMarker } from '../../utils/utils';
+import centroid from '@turf/centroid';
 
 import { Wrapper, MapContainer } from '../common/view-wrappers';
 
@@ -17,7 +18,6 @@ import isEqual from 'lodash.isequal';
 
 import Button from '../../styles/button/button';
 import Spinner from '../../styles/spinner/index';
-// import MissingPlaceButton from '../../components/common/missing-place-button';
 import { showConfirmationPrompt } from '../common/confirmation-prompt';
 
 const minZoomToLoadPlaces = 12;
@@ -30,11 +30,11 @@ const ZoomButton = styled(Button)`
   top: 50%;
   left: 50%;
   transform-origin: 50% 50%;
-  transform: translate(-50%,-50%);
+  transform: translate(-50%, -50%);
   z-index: 1000;
   &.active,
   &:active {
-      transform: translate(-50%,-50%);
+    transform: translate(-50%, -50%);
   }
 `;
 
@@ -57,7 +57,7 @@ const markerX = new Image(45, 60);
 markerX.src = './assets/graphics/map/marker-xmark.png';
 
 class Map extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props);
     this.state = {
       mapLoaded: false,
@@ -65,7 +65,7 @@ class Map extends Component {
     };
   }
 
-  componentDidMount () {
+  componentDidMount() {
     const { mapLoaded } = this.state;
     // Bypass if map is already loaded
     if (mapLoaded) {
@@ -76,11 +76,16 @@ class Map extends Component {
     setTimeout(() => this.initMap(), 0);
   }
 
-  componentDidUpdate (prevProps, prevState) {
-    const { places, geojson } = this.props;
+  componentDidUpdate(prevProps, prevState) {
+    const { places, geojson, campaignSlug } = this.props;
 
     // Do not perform changes if map is not loaded
     if (!this.state.mapLoaded) return;
+
+    if (prevProps.campaignSlug !== campaignSlug) {
+      this.props.updateMapViewport({});
+      this.map.setCenter(this.getCampaignCentroid());
+    }
 
     // Add geojson to the map when map is loaded
     if (prevState.isSourceLoaded !== this.state.isSourceLoaded) {
@@ -92,39 +97,57 @@ class Map extends Component {
       this.map.getSource('placesSource').setData(geojson);
     }
 
-    if (
-      !isEqual(prevProps.featureCenter, this.props.featureCenter)
-    ) {
+    if (!isEqual(prevProps.featureCenter, this.props.featureCenter)) {
       this.map.setCenter(this.props.featureCenter);
       this.updateFilter();
     }
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     if (this.map) {
+      this.props.updateMapViewport({});
       this.map.remove();
     }
   }
 
-  updateFilter () {
+  updateFilter() {
     this.map.setFilter('selectedPlacesLayer', this.props.filters[1]);
     this.map.setFilter('placesLayer', this.props.filters[0]);
   }
 
-  initMap () {
+  getCampaignCentroid() {
+    const { campaign } = this.props;
+    const {
+      geometry: { coordinates }
+    } = centroid(JSON.parse(campaign.aoi));
+    return {
+      lng: coordinates[0],
+      lat: coordinates[1]
+    };
+  }
+
+  initMap() {
+    const { campaign } = this.props;
     const { zoom, lng, lat } = this.props.mapViewport;
 
-    this.map = new mapboxgl.Map({
+    const mapOptions = {
       container: this.mapContainer,
       style: mapConfig.style,
       zoom: zoom || mapConfig.zoom,
-      center: {
-        lng: lng || mapConfig.center.lng,
-        lat: lat || mapConfig.center.lat
-      },
       attributionControl: false,
       fitBoundsOptions: mapConfig.fitBoundsOptions
-    });
+    };
+
+    if (typeof lng !== 'undefined' && typeof lat !== 'undefined') {
+      mapOptions.center = {
+        lng,
+        lat
+      };
+    } else if (campaign && campaign.aoi) {
+      mapOptions.center = this.getCampaignCentroid();
+    }
+
+    this.map = new mapboxgl.Map(mapOptions);
 
     const self = this;
 
@@ -157,7 +180,7 @@ class Map extends Component {
       })
     );
 
-    function updateStateMapViewport () {
+    function updateStateMapViewport() {
       const center = self.map.getCenter();
       const zoom = self.map.getZoom();
 
@@ -268,7 +291,7 @@ class Map extends Component {
       return <></>;
     }
 
-    function ShowSpinner (props) {
+    function ShowSpinner(props) {
       if (props.fetching) {
         return <Spinner />;
       } else {
@@ -310,19 +333,22 @@ class Map extends Component {
           useIcon='crosshair'
           onClick={async () => {
             const res = await showConfirmationPrompt({
-              'title': 'Add a missing place to the map',
-              'content': 'PlasticWatch relies on OpenStreetMap data for restaurant, cafe and bar locations. Don’t see the establishment you’re looking for? Click "Confirm" to add a location to OpenStreetMap. Adding a place to OpenStreetMap requires creating an account and following OSM policies. Continue to view OpenStreetMap at your currently selected location, and follow the OSM walkthrough to learn how to edit the global map. Please note, as changes to OSM must be verified by the external OSM community, new places added to OSM will not immediately be captured by PlasticWatch'
+              title: 'Add a missing place to the map',
+              content:
+                'PlasticWatch relies on OpenStreetMap data for restaurant, cafe and bar locations. Don’t see the establishment you’re looking for? Click "Confirm" to add a location to OpenStreetMap. Adding a place to OpenStreetMap requires creating an account and following OSM policies. Continue to view OpenStreetMap at your currently selected location, and follow the OSM walkthrough to learn how to edit the global map. Please note, as changes to OSM must be verified by the external OSM community, new places added to OSM will not immediately be captured by PlasticWatch'
             });
             if (res.result) {
               const center = this.map.getCenter();
               const lat = center.lat;
               const lon = center.lng;
               const zoom = this.map.getZoom();
-              window.open(`https://openstreetmap.org/edit?editor=id&lat=${lat}&lon=${lon}&zoom=${zoom}`);
+              window.open(
+                `https://openstreetmap.org/edit?editor=id&lat=${lat}&lon=${lon}&zoom=${zoom}`
+              );
             }
           }}
         >
-        Add a missing place to OpenStreetMap
+          Add a missing place to OpenStreetMap
         </MissingPlaceButton>
       </Wrapper>
     );
@@ -331,12 +357,14 @@ class Map extends Component {
 
 Map.propTypes = {
   campaignSlug: T.string,
+  campaign: T.object,
   filters: T.array,
   featureCenter: T.array,
   geojson: T.object,
   history: T.object,
   mapViewport: T.object,
-  places: T.object
+  places: T.object,
+  updateMapViewport: T.func
 };
 
 function mapStateToProps(state, props) {
@@ -388,12 +416,16 @@ function mapStateToProps(state, props) {
     featureCenter = geojsonCentroid(feature).geometry.coordinates;
   }
 
+  const campaigns = wrapApiResult(state.campaigns);
+  const campaign = campaigns.getData()[campaignSlug];
+
   return {
     featureCenter,
     filters,
     geojson,
     mapViewport: getFromState(state, `explore.mapViewport`),
     campaignSlug,
+    campaign,
     place: place,
     placeId: placeId,
     places: wrapApiResult(getFromState(state, `places.list`)),
@@ -401,7 +433,7 @@ function mapStateToProps(state, props) {
   };
 }
 
-function dispatcher (dispatch) {
+function dispatcher(dispatch) {
   return {
     updateMapViewport: (...args) =>
       dispatch(exploreActions.updateMapViewport(...args))
