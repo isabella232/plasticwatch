@@ -16,6 +16,6 @@ module.exports = {
     fitBoundsOptions: {
       padding: 20
     },
-    zoom: 15.2
+    zoom: 13
   }
 };
