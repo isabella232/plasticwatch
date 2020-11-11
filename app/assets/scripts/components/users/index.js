@@ -297,6 +297,9 @@ class Users extends React.Component {
               {this.renderColumnHead('USERNAME', 'username')}
             </th>
             <th scope='col'>
+              {this.renderColumnHead('OSM Profile', 'username')}
+            </th>
+            <th scope='col'>
               {this.renderColumnHead('Mapper Since', 'createdAt')}
             </th>
             <th scope='col' style={{ textAlign: 'center' }}>
@@ -322,13 +325,17 @@ class Users extends React.Component {
       return (
         <tr key={user.id}>
           <td>
-            <a
-              target='_blank'
-              rel='noopener noreferrer'
-              href={`${osmUrl}/user/${user.displayName}`}
-            >
-              {user.displayName}
-            </a>
+            {user.displayName}
+          </td>
+          <td>
+            {user.osmId &&
+              <a
+                target='_blank'
+                rel='noopener noreferrer'
+                href={`${osmUrl}/user/${user.displayName}`}
+              >
+                {user.displayName}
+              </a>}
           </td>
           <td>{getUTCDate(user.createdAt)}</td>
           <td style={{ textAlign: 'center' }}>
