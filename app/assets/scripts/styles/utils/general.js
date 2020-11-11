@@ -1,4 +1,6 @@
 import get from 'lodash.get';
+import { css } from 'styled-components';
+import { multiply } from '../../styles/utils/math';
 
 /**
  * Return the a function that when executed appends the `unit` to the value.
@@ -76,4 +78,21 @@ export const stylizeFunction = (fn) => {
     const mappedArgs = fnArgs.map(arg => typeof arg === 'function' ? arg(...props) : arg);
     return fn(...mappedArgs);
   };
+};
+
+/**
+ * Returns the layout.space value form the theme multiplied by the
+ * given multiplier.
+ *
+ * @param {number} m multiplier
+ */
+export const glsp = (...args) => {
+  args = args.length ? args : [1];
+  const fns = args.map(m => multiply(themeVal('layout.space'), m));
+  // If the there's only one argument return in value format to be used by
+  // other methods that need this to resolve to a number.
+  if (fns.length === 1) return fns[0];
+
+  const spaces = Array(args.length - 1).fill(' ');
+  return css(['', ...spaces, ''], ...fns);
 };

@@ -108,6 +108,7 @@ class PlacesIndex extends Component {
     const { filtersOpened } = this.state;
     const { isMobile, filters, activeMobileTab } = this.props;
     const { isReady, getData, hasError } = this.props.places;
+    const { campaignSlug } = this.props.match.params;
 
     if (isMobile && activeMobileTab !== 'list') {
       return null;
@@ -182,7 +183,7 @@ class PlacesIndex extends Component {
           <Results>
             <ResultsItem>{this.renderPlacesCount(data)}</ResultsItem>
             {data.map(({ id, properties: { name, amenity, observations } }) => (
-              <ResultsItem key={id} as={StyledLink} to={`/explore/${id}`}>
+              <ResultsItem key={id} as={StyledLink} to={`/explore/${campaignSlug}/${id}`}>
                 <Place>
                   <PlaceHeader>
                     {name && <PlaceTitle>{name}</PlaceTitle>}
@@ -203,6 +204,7 @@ if (environment !== 'production') {
   PlacesIndex.propTypes = {
     activeMobileTab: T.string,
     places: T.object,
+    match: T.object,
     updateFilters: T.func,
     filters: T.object,
     isMobile: T.bool
