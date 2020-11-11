@@ -6,7 +6,7 @@ import { environment, osmUrl } from '../../config';
 import * as actions from '../../redux/actions/users';
 import { showGlobalLoading, hideGlobalLoading } from '../common/global-loading';
 import QsState from '../../utils/qs-state';
-import { getUTCDate } from '../../utils';
+import { getUTCDate } from '../../utils/date';
 
 import App from '../common/app';
 import toasts from '../common/toasts';
@@ -30,11 +30,11 @@ import {
 import DataTable from '../../styles/table';
 import Pagination from '../../styles/button/pagination';
 import Prose from '../../styles/type/prose';
-import { wrapApiResult } from '../../redux/utils';
+import { wrapApiResult, getFromState } from '../../redux/utils';
 import { StyledLink } from '../common/link';
 
 class Users extends React.Component {
-  constructor (props) {
+  constructor(props) {
     super(props);
 
     this.fetchData = this.fetchData.bind(this);
@@ -61,17 +61,17 @@ class Users extends React.Component {
     this.state = this.qsState.getState(this.props.location.search.substr(1));
   }
 
-  async componentDidMount () {
+  async componentDidMount() {
     await this.fetchData();
   }
 
-  async componentDidUpdate (prevProps) {
+  async componentDidUpdate(prevProps) {
     if (prevProps.location.search !== this.props.location.search) {
       await this.fetchData();
     }
   }
 
-  async fetchData () {
+  async fetchData() {
     showGlobalLoading();
 
     // Get query params from state
@@ -79,9 +79,7 @@ class Users extends React.Component {
       page,
       limit,
       sort,
-      filterValues: {
-        username
-      }
+      filterValues: { username }
     } = this.qsState.getState(this.props.location.search.substr(1));
 
     await this.props.fetchUsers({
@@ -94,14 +92,14 @@ class Users extends React.Component {
     hideGlobalLoading();
   }
 
-  handleFilterSubmit (e) {
+  handleFilterSubmit(e) {
     this.setState({ page: 1 }, () => {
       const qString = this.qsState.getQs(this.state);
       this.props.history.push({ search: qString });
     });
   }
 
-  handleFilterChange (e) {
+  handleFilterChange(e) {
     // Get id/value pair from event
     const { id, value } = e.target;
 
@@ -120,7 +118,7 @@ class Users extends React.Component {
     });
   }
 
-  async updateUser (e, user, values) {
+  async updateUser(e, user, values) {
     showGlobalLoading();
     try {
       // Make delete request
@@ -140,7 +138,7 @@ class Users extends React.Component {
     hideGlobalLoading();
   }
 
-  renderContent () {
+  renderContent() {
     const { isReady, hasError } = this.props.users;
 
     if (!isReady()) return null;
@@ -157,10 +155,10 @@ class Users extends React.Component {
     );
   }
 
-  renderFilters () {
+  renderFilters() {
     const { username } = this.state.filterValues;
 
-    const submitOnEnter = e => {
+    const submitOnEnter = (e) => {
       if (e.key === 'Enter') {
         this.handleFilterChange(e);
         this.handleFilterSubmit();
@@ -195,7 +193,7 @@ class Users extends React.Component {
     );
   }
 
-  renderResults () {
+  renderResults() {
     const { getMeta } = this.props.users;
     const meta = getMeta();
 
@@ -214,7 +212,7 @@ class Users extends React.Component {
     const nextPage = currentPage + 1 > lastPage ? lastPage : currentPage + 1;
 
     // Merge page into current query string
-    const getQs = page =>
+    const getQs = (page) =>
       this.qsState.getQs({
         ...this.qsState.getState(this.props.location.search.substr(1)),
         page
@@ -237,11 +235,11 @@ class Users extends React.Component {
     );
   }
 
-  renderColumnHead (label, property) {
+  renderColumnHead(label, property) {
     const state = this.qsState.getState(this.props.location.search.substr(1));
 
     // Update sort on querystring
-    const getQs = direction =>
+    const getQs = (direction) =>
       this.qsState.getQs({
         ...state,
         sort: {
@@ -287,14 +285,17 @@ class Users extends React.Component {
     );
   }
 
-  renderTable () {
+  renderTable() {
     const { isAdmin } = this.props.authenticatedUser.getData();
     return (
       <DataTable>
         <thead>
           <tr>
             <th scope='col'>
-              {this.renderColumnHead('USERNAME', 'username')}
+              {this.renderColumnHead('USERNAME', 'displayName')}
+            </th>
+            <th scope='col'>
+              {this.renderColumnHead('OSM USER', 'osmDisplayName')}
             </th>
             <th scope='col'>
               {this.renderColumnHead('Mapper Since', 'createdAt')}
@@ -314,13 +315,16 @@ class Users extends React.Component {
     );
   }
 
-  renderTableRows () {
+  renderTableRows() {
     const { getData } = this.props.users;
     const { isAdmin } = this.props.authenticatedUser.getData();
 
-    return getData().map(user => {
+    return getData().map((user) => {
       return (
         <tr key={user.id}>
+          <td>
+            <StyledLink to={`/users/${user.id}`}>{user.displayName}</StyledLink>
+          </td>
           <td>
             <a
               target='_blank'
@@ -344,7 +348,7 @@ class Users extends React.Component {
                 <Button
                   size='small'
                   variation='primary-raised-dark'
-                  onClick={e => this.updateUser(e, user, { isAdmin: true })}
+                  onClick={(e) => this.updateUser(e, user, { isAdmin: true })}
                 >
                   Promote
                 </Button>
@@ -352,7 +356,7 @@ class Users extends React.Component {
                 <Button
                   size='small'
                   variation='danger-raised-dark'
-                  onClick={e => this.updateUser(e, user, { isAdmin: false })}
+                  onClick={(e) => this.updateUser(e, user, { isAdmin: false })}
                 >
                   Demote
                 </Button>
@@ -364,7 +368,7 @@ class Users extends React.Component {
     });
   }
 
-  render () {
+  render() {
     return (
       <App pageTitle='Users'>
         <Inpage>
@@ -394,15 +398,15 @@ if (environment !== 'production') {
   };
 }
 
-function mapStateToProps (state) {
+function mapStateToProps(state) {
   return {
-    users: wrapApiResult(state.users),
+    users: wrapApiResult(getFromState(state, `users.list`)),
     authenticatedUser: wrapApiResult(state.authenticatedUser),
     accessToken: get(state, 'authenticatedUser.data.accessToken')
   };
 }
 
-function dispatcher (dispatch) {
+function dispatcher(dispatch) {
   return {
     fetchUsers: (...args) => dispatch(actions.fetchUsers(...args)),
     updateUser: (...args) => dispatch(actions.updateUser(...args))

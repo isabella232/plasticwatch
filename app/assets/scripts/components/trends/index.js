@@ -14,33 +14,12 @@ import { Group } from '@vx/group';
 import { LinearGradient } from '@vx/gradient';
 import { StyledLink } from '../common/link';
 import withMobileState from '../common/with-mobile-state';
-import { InnerPanel, Panel } from '../../styles/panel';
+import { InnerPanel, Panel, PanelStats, PanelStat } from '../../styles/panel';
 import Button from '../../styles/button/button';
 import { themeVal } from '../../styles/utils/general';
 import DataTable, { ScrollWrap } from '../../styles/table';
 import { round, formatThousands } from '../../utils/utils';
 import media from '../../styles/utils/media-queries';
-
-const PanelStats = styled.div`
-  display: flex;
-  flex-flow: row nowrap;
-  margin: 2rem auto;
-`;
-
-const PanelStat = styled.h2`
-  display: flex;
-  flex-flow: column wrap;
-  &:not(:last-child) {
-    border-right: 1px solid ${themeVal('color.shadow')};
-    margin-right: ${themeVal('layout.space')};
-    padding-right: ${themeVal('layout.space')};
-  }
-  span {
-    color: ${themeVal('color.baseLight')};
-    font-size: 0.75rem;
-    text-transform: uppercase;
-  }
-`;
 
 const PlaceTrends = styled.div`
   p {
@@ -124,7 +103,11 @@ class Trends extends React.Component {
               {data.map((s, i) => (
                 <tr key={s.osmId}>
                   <td>{i + 1}</td>
-                  <td>{s.displayName}</td>
+                  <td>
+                    <StyledLink to={`/users/${s.id}`}>
+                      {s.displayName}
+                    </StyledLink>
+                  </td>
                   <td>{s.observations}</td>
                 </tr>
               ))}

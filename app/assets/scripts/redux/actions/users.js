@@ -1,4 +1,4 @@
-import { fetchAuth, patchItem } from '../utils';
+import { fetchAuth, patchItem, fetchDispatchFactory } from '../utils';
 import { apiUrl } from '../../config';
 import qs from 'qs';
 
@@ -34,6 +34,41 @@ export function fetchUsers (params) {
     url: `${apiUrl}/users?${searchParams}`,
     requestFn: requestUsers,
     receiveFn: receiveUsers
+  });
+}
+
+/*
+ * Fetch individual place
+ */
+
+export const REQUEST_USER = 'REQUEST_USER';
+export const RECEIVE_USER = 'RECEIVE_USER';
+export const INVALIDATE_USER = 'INVALIDATE_USER';
+
+export function invalidateUser (id) {
+  return { type: INVALIDATE_USER, id };
+}
+
+export function requestUser (id) {
+  return { type: REQUEST_USER, id };
+}
+
+export function receiveUser (id, data, error = null) {
+  return {
+    type: RECEIVE_USER,
+    id,
+    data,
+    error,
+    receivedAt: Date.now()
+  };
+}
+
+export function fetchUser (id) {
+  return fetchDispatchFactory({
+    statePath: ['users', 'individual', `${id}`],
+    url: `${apiUrl}/users/${id}`,
+    requestFn: requestUser.bind(this, id),
+    receiveFn: receiveUser.bind(this, id)
   });
 }
 
