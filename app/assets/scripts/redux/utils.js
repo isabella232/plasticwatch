@@ -3,6 +3,30 @@ import merge from 'lodash.merge';
 import { delay } from '../utils';
 import { apiUrl } from '../config';
 
+const pWhilst = async (condition, action) => {
+  const loop = async (actionResult) => {
+    if (condition(actionResult)) {
+      return loop(await action());
+    }
+  };
+  return loop();
+};
+
+export async function fetchJSONPaginate (url, options) {
+  let nextPage = true;
+  let nextUrl = url;
+  let results = [];
+  await pWhilst(
+    () => nextPage === true,
+    async () => {
+      const response = await fetchJSON(nextUrl, options);
+      nextPage = !!(response.meta && response.meta.next);
+      nextUrl = response.meta && response.meta.next ? response.meta.next : null;
+      results = results.concat(response.results);
+    }
+  );
+  return results;
+}
 /**
  * Performs a request to the given url returning the response in json format
  * or throwing an error.
@@ -178,13 +202,18 @@ export function fetchDispatchCacheFactory (opts) {
  * }
  */
 export function fetchDispatchFactory (opts) {
-  let { url, requestFn, receiveFn, mutator, options, __devDelay } = opts;
+  let { url, requestFn, receiveFn, mutator, options, __devDelay, paginate } = opts;
   mutator = mutator || (v => v);
   return async function (dispatch, getState) {
     dispatch(requestFn());
 
     try {
-      const response = await fetchJSON(url, options);
+      let response;
+      if (paginate) {
+        response = await fetchJSONPaginate(url, options);
+      } else {
+        response = await fetchJSON(url, options);
+      }
       const content = mutator(response);
       if (__devDelay) await delay(__devDelay);
       return dispatch(receiveFn(content));

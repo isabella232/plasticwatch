@@ -1,9 +1,10 @@
 // Based on https://github.com/finnfiddle/react-window-size
 import React, { Component } from 'react';
 import { mediaRanges } from '../../styles/theme/theme';
+import PropTypes from 'prop-types';
 
-export default ComposedComponent => {
-  class withMobileState extends Component {
+export default (ComposedComponent) => {
+  class WithMobileState extends Component {
     constructor (props) {
       super(props);
 
@@ -37,18 +38,23 @@ export default ComposedComponent => {
       return (
         <ComposedComponent
           {...this.props}
-          ref={c => {
-            this.wrappedInstance = c;
-          }}
           isMobile={this.state.isMobile}
+          ref={this.props.forwardedRef}
         />
       );
     }
   }
 
+  WithMobileState.propTypes = {
+    forwardedRef: PropTypes.object
+  };
+
   const composedComponentName =
     ComposedComponent.displayName || ComposedComponent.name || 'Component';
 
-  withMobileState.displayName = `withMobileState(${composedComponentName})`;
-  return withMobileState;
+  WithMobileState.displayName = `withMobileState(${composedComponentName})`;
+
+  return React.forwardRef((props, ref) => {
+    return <WithMobileState {...props} forwardedRef={ref} />;
+  });
 };

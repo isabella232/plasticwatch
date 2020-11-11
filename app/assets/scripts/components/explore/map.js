@@ -16,8 +16,11 @@ import * as exploreActions from '../../redux/actions/explore';
 import isEqual from 'lodash.isequal';
 
 import Button from '../../styles/button/button';
+import Spinner from '../../styles/spinner/index';
+// import MissingPlaceButton from '../../components/common/missing-place-button';
+import { showConfirmationPrompt } from '../common/confirmation-prompt';
 
-const minZoomToLoadPlaces = 15;
+const minZoomToLoadPlaces = 12;
 
 // Mapbox access token
 mapboxgl.accessToken = mapConfig.mapboxAccessToken;
@@ -33,6 +36,15 @@ const ZoomButton = styled(Button)`
   &:active {
       transform: translate(-50%,-50%);
   }
+`;
+
+const MissingPlaceButton = styled(Button)`
+  margin-top: 1rem;
+  position: absolute;
+  bottom: 3%;
+  left: 3%;
+  transform-origin: 50% 50%;
+  z-index: 1000;
 `;
 
 const markerQuestion = new Image(45, 60);
@@ -240,13 +252,15 @@ class Map extends Component {
         )[0];
 
         if (feature && !this.state.selectedFeature) {
-          this.props.history.push(`/explore/${feature.properties.id}`);
+          this.props.history.push(
+            `/explore/${this.props.campaignSlug}/${feature.properties.id}`
+          );
         }
       });
     });
   }
 
-  render () {
+  render() {
     const { hasError } = this.props.places;
 
     if (hasError()) {
@@ -254,10 +268,19 @@ class Map extends Component {
       return <></>;
     }
 
+    function ShowSpinner (props) {
+      if (props.fetching) {
+        return <Spinner />;
+      } else {
+        return <></>;
+      }
+    }
+
     const { mapZoom } = this.state;
 
     return (
       <Wrapper>
+        <ShowSpinner fetching={this.props.places.fetching} />
         {mapboxgl.supported() ? (
           <MapContainer
             ref={(r) => {
@@ -281,12 +304,33 @@ class Map extends Component {
             Zoom in to load places
           </ZoomButton>
         )}
+        <MissingPlaceButton
+          variation='base-raised-light'
+          tabIndex={-1}
+          useIcon='crosshair'
+          onClick={async () => {
+            const res = await showConfirmationPrompt({
+              'title': 'Add a missing place to the map',
+              'content': 'PlasticWatch relies on OpenStreetMap data for restaurant, cafe and bar locations. Don’t see the establishment you’re looking for? Click "Confirm" to add a location to OpenStreetMap. Adding a place to OpenStreetMap requires creating an account and following OSM policies. Continue to view OpenStreetMap at your currently selected location, and follow the OSM walkthrough to learn how to edit the global map. Please note, as changes to OSM must be verified by the external OSM community, new places added to OSM will not immediately be captured by PlasticWatch'
+            });
+            if (res.result) {
+              const center = this.map.getCenter();
+              const lat = center.lat;
+              const lon = center.lng;
+              const zoom = this.map.getZoom();
+              window.open(`https://openstreetmap.org/edit?editor=id&lat=${lat}&lon=${lon}&zoom=${zoom}`);
+            }
+          }}
+        >
+        Add a missing place to OpenStreetMap
+        </MissingPlaceButton>
       </Wrapper>
     );
   }
 }
 
 Map.propTypes = {
+  campaignSlug: T.string,
   filters: T.array,
   featureCenter: T.array,
   geojson: T.object,
@@ -295,17 +339,22 @@ Map.propTypes = {
   places: T.object
 };
 
-function mapStateToProps (state, props) {
+function mapStateToProps(state, props) {
   const places = wrapApiResult(getFromState(state, `places.list`));
-  const match = matchPath(props.location.pathname, {
-    path: '/explore/:type/:id',
+  const {
+    params: { campaignSlug, type, id }
+  } = matchPath(props.location.pathname, {
+    path: [
+      '/explore/:campaignSlug',
+      '/explore/:campaignSlug/:type/:id',
+      '/explore/:campaignSlug/:type/:id/survey'
+    ],
     exact: true
   });
 
   let placeId = null;
   let place = null;
-  if (match) {
-    const { type, id } = match.params;
+  if (type && id) {
     placeId = `${type}/${id}`;
     place = wrapApiResult(getFromState(state, `places.individual.${placeId}`));
   }
@@ -331,7 +380,7 @@ function mapStateToProps (state, props) {
   ];
   let selectedFeature;
   let featureCenter;
-  if (match && place.isReady()) {
+  if (placeId && place.isReady()) {
     filters[0] = ['==', 'id', placeId];
     filters[1] = ['!=', 'id', placeId];
     const feature = place.getData();
@@ -344,7 +393,7 @@ function mapStateToProps (state, props) {
     filters,
     geojson,
     mapViewport: getFromState(state, `explore.mapViewport`),
-    match: match,
+    campaignSlug,
     place: place,
     placeId: placeId,
     places: wrapApiResult(getFromState(state, `places.list`)),
