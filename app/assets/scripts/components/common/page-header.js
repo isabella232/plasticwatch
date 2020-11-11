@@ -161,6 +161,18 @@ const MobileMenu = styled.ul`
   width: 75vw;
   box-shadow: -16px 0 48px -16px ${themeVal('color.shadow')};
   transition: all 0.24s ease;
+  display: flex;
+  flex-flow: column;
+  align-items: flex-end;
+
+  li {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+    > * {
+      flex: 1;
+    }
+  }
 
   a {
     text-align: right;
@@ -171,7 +183,11 @@ const MobileMenu = styled.ul`
   h5 {
     text-align: right;
     text-transform: uppercase;
-    margin: 0.75rem;
+    font-weight: 300;
+    color: rgba(20,43,88,0.64);
+    font-size: 0.875rem;
+    line-height: 1rem;
+    margin: 1rem;
   }
   &::before {
     content: '';
@@ -225,19 +241,12 @@ const GlobalMenuLink = styled(Button).attrs({
   &,
   &:visited {
     color: inherit;
-  }
+  } 
+  &.active,
   &:hover {
     color: ${themeVal('color.link')};
+    background: ${_rgba(themeVal('color.link'), 0.08)};
     opacity: 1;
-    ${media.mediumUp`
-      background: ${_rgba(themeVal('color.link'), 0.08)};
-    `}
-  }
-  &.active {
-    color: ${themeVal('color.link')};
-    ${media.mediumUp`
-      background: ${_rgba(themeVal('color.link'), 0.08)};
-    `}
     &::after {
       opacity: 1;
     }
