@@ -41,7 +41,7 @@ const ZoomButton = styled(Button)`
 const MissingPlaceButton = styled(Button)`
   margin-top: 1rem;
   position: absolute;
-  bottom: 5%;
+  bottom: 3%;
   left: 3%;
   transform-origin: 50% 50%;
   z-index: 1000;
