@@ -204,7 +204,6 @@ function UserView(props) {
                       <BadgeImg src={b.image} />
                     </BadgeHolder>
                     <BadgeName>{b.title}</BadgeName>
-                    <p>{b.description}</p>
                   </BadgeItem>
                 ))}
               </BadgeGrid>
