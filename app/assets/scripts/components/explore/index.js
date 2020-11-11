@@ -57,9 +57,12 @@ const CampaignToolbar = styled.div`
   padding-top: 1rem;
   padding-left: 1rem;
   font-size: 0.875rem;
-
+  background: #edf6fb;
   ${({ displayMap }) => displayMap &&
     `position: absolute;
+    padding: 0.75rem 0.5rem 0.5rem;
+    width: 75%
+    background: linear-gradient(90deg, white 30%, transparent);
     `
 }
 `;
