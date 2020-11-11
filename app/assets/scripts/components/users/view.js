@@ -201,7 +201,7 @@ function UserView(props) {
                 {badges.map((b) => (
                   <BadgeItem key={b.id}>
                     <BadgeHolder>
-                      <BadgeImg src={b.image} />
+                      <BadgeImg src={`data:image/svg+xml;base64,${b.image}`} />
                     </BadgeHolder>
                     <BadgeName>{b.title}</BadgeName>
                   </BadgeItem>
