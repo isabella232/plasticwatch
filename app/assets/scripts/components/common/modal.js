@@ -10,6 +10,7 @@ import { multiply } from '../../styles/utils/math';
 import collecticon from '../../styles/collecticons';
 
 import Button from '../../styles/button/button';
+import { headingAlt } from '../../styles/type/heading';
 
 const _rgba = stylizeFunction(rgba);
 
@@ -96,6 +97,7 @@ const BodyUnscrollable = createGlobalStyle`
 `;
 
 export const ModalHeader = styled.header`
+  ${headingAlt()};
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
@@ -153,7 +155,8 @@ export const ModalToolbar = styled.div`
 `;
 
 export const ModalTitle = styled.h1`
-  font-size: 1.25rem;
+  ${headingAlt()};
+  font-size: 1rem;
   line-height: 2rem;
   margin: 0;
 `;

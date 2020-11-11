@@ -13,6 +13,12 @@ import {
 import Button from '../../styles/button/button';
 const ConfirmationModalFooter = styled(ModalFooter)`
   justify-content: flex-end;
+  flex-flow: row nowrap;
+  & > *:last-child,
+  & > button {
+    margin-bottom: initial;
+    margin-left: 1rem;
+  }
 `;
 const noop = () => {};
 // Once the component is mounted we store it to be able to access it from

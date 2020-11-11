@@ -59,10 +59,11 @@ const InnerSurveyForm = (props) => {
     handleSubmit,
     handleChange,
     place,
-    survey
+    survey,
+    campaign
   } = props;
 
-  function renderQuestion (q) {
+  function renderQuestion(q) {
     const value = values[q.id];
     return (
       <FormGroup key={q.id}>
@@ -126,7 +127,7 @@ const InnerSurveyForm = (props) => {
         </Button>
         <Button
           as={StyledLink}
-          to={`/explore/${place.id}`}
+          to={`/explore/${campaign.slug}/${place.id}`}
           variation='danger-raised-light'
           size='large'
           data-tip='Cancel survey'
@@ -141,6 +142,7 @@ const InnerSurveyForm = (props) => {
 
 if (environment !== 'production') {
   InnerSurveyForm.propTypes = {
+    campaign: T.object,
     place: T.object,
     survey: T.object,
     values: T.object.isRequired,
@@ -172,24 +174,24 @@ const SurveyForm = withFormik({
 })(InnerSurveyForm);
 
 class SubmitSurvey extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props);
 
     this.postSurvey = this.postSurvey.bind(this);
   }
 
-  async componentDidMount () {
+  async componentDidMount() {
     await this.fetchData();
   }
 
-  async fetchData () {
-    const { type, id } = this.props.match.params;
+  async fetchData() {
+    const { type, id, campaignSlug } = this.props.match.params;
     const placeId = `${type}/${id}`;
 
     // Disallow unlogged users
     if (!this.props.isLoggedIn) {
       toasts.info(`You must be logged in to submit surveys.`);
-      this.props.history.push(`/explore/${placeId}`);
+      this.props.history.push(`/explore/${campaignSlug}/${placeId}`);
       return;
     }
 
@@ -200,7 +202,7 @@ class SubmitSurvey extends Component {
     await this.props.fetchSurveyMeta();
 
     // Load survey answers, if any
-    const { surveyMeta, place, user } = this.props;
+    const { surveyMeta, place, user, campaign } = this.props;
     if (
       surveyMeta.isReady() &&
       !surveyMeta.hasError() &&
@@ -210,27 +212,39 @@ class SubmitSurvey extends Component {
       await this.props.fetchSurveyAnswers({
         userId: user.getData().id,
         osmObjectId: place.getData().id,
-        surveyId: surveyMeta.getData().id
+        surveyId: surveyMeta.getData().id,
+        campaignId: campaign.id
       });
     }
   }
 
-  async postSurvey (data) {
+  async postSurvey(data) {
+    const {
+      match: {
+        params: { campaignSlug }
+      }
+    } = this.props;
+
     showGlobalLoading();
     try {
       await this.props.postSurvey(data);
       toasts.info('Survey sent successfully');
-      this.props.history.push(`/explore/${data.osmObject.id}`);
+      this.props.history.push(`/explore/${campaignSlug}/${data.osmObject.id}`);
     } catch (error) {
       toasts.error('There was an error sending the survey.');
     }
     hideGlobalLoading();
   }
 
-  render () {
-    const { place, surveyMeta, surveyAnswers } = this.props;
+  render() {
+    const {
+      place,
+      surveyMeta,
+      surveyAnswers,
+      campaign
+    } = this.props;
 
-    // Get place data
+    // Delay rendering until all needed data is loaded
     if (!place.isReady() || !surveyAnswers.isReady() || !surveyMeta.isReady()) {
       return <div />;
     }
@@ -263,10 +277,12 @@ class SubmitSurvey extends Component {
           <SurveyForm
             survey={data.survey}
             place={data.place}
+            campaign={campaign}
             handleSubmit={(values) =>
               this.postSurvey({
                 surveyId: data.survey.id,
                 osmObject: data.place,
+                campaignId: campaign.id,
                 createdAt: new Date().toISOString(),
                 answers: data.survey.questions.map((q) => {
                   return {
@@ -295,26 +311,33 @@ if (environment !== 'production') {
     isLoggedIn: T.bool,
     match: T.object,
     place: T.object,
+    campaign: T.object,
     user: T.object,
     surveyMeta: T.object,
     surveyAnswers: T.object
   };
 }
 
-function mapStateToProps (state, props) {
-  const { type, id } = props.match.params;
+function mapStateToProps(state, props) {
+  const { type, id, campaignSlug } = props.match.params;
   const placeId = `${type}/${id}`;
+
+  // Load campaign right away as it should be already loaded by
+  // Explorer view
+  const campaigns = wrapApiResult(getFromState(state, `campaigns`));
+  const campaign = campaigns.getData()[campaignSlug];
 
   return {
     user: wrapApiResult(state.authenticatedUser),
     place: wrapApiResult(getFromState(state, `places.individual.${placeId}`)),
+    campaign,
     surveyMeta: wrapApiResult(getFromState(state, `activeSurvey.meta`)),
     surveyAnswers: wrapApiResult(getFromState(state, `activeSurvey.answers`)),
     isLoggedIn: isLoggedIn(state)
   };
 }
 
-function dispatcher (dispatch) {
+function dispatcher(dispatch) {
   return {
     fetchPlace: (...args) => dispatch(fetchPlace(...args)),
     fetchSurveyMeta: (...args) => dispatch(fetchSurveyMeta(...args)),

@@ -57,3 +57,24 @@ export const InnerPanel = styled.article`
     text-decoration: none;
   }
 `;
+
+export const PanelStats = styled.div`
+  display: flex;
+  flex-flow: row nowrap;
+  margin: 2rem auto;
+`;
+
+export const PanelStat = styled.h2`
+  display: flex;
+  flex-flow: column wrap;
+  &:not(:last-child) {
+    border-right: 1px solid ${themeVal('color.shadow')};
+    margin-right: ${themeVal('layout.space')};
+    padding-right: ${themeVal('layout.space')};
+  }
+  span {
+    color: ${themeVal('color.baseLight')};
+    font-size: 0.75rem;
+    text-transform: uppercase;
+  }
+`;

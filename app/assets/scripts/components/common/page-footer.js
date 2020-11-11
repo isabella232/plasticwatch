@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled, { css } from 'styled-components';
 import { NavLink, withRouter } from 'react-router-dom';
 import { environment } from '../../config';
@@ -6,13 +6,17 @@ import { PropTypes as T } from 'prop-types';
 import { connect } from 'react-redux';
 
 import * as exploreActions from '../../redux/actions/explore';
+import { getFromState, wrapApiResult } from '../../redux/utils';
 
+import UhOh from '../uhoh';
 import { visuallyHidden } from '../../styles/helpers';
+import { fetchCampaigns } from '../../redux/actions/campaigns';
 import { themeVal } from '../../styles/utils/general';
 import collecticon from '../../styles/collecticons';
 import { filterComponentProps } from '../../utils';
-import { getFromState } from '../../redux/utils';
-import { qsState } from '../explore';
+import { Modal, ModalHeader, ModalBody } from '../common/modal';
+import { StyledLink } from '../common/link';
+import Button from '../../styles/button/button';
 
 const PageFoot = styled.footer`
   position: sticky;
@@ -100,86 +104,152 @@ const FooterMenuLink = styled.a.attrs({
   }
 `;
 
+const CampaignList = styled.ul`
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: stretch;
+  justify-content: space-around;
+  ${Button} {
+    text-decoration: none;
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+`;
+
 const propsToFilter = ['variation', 'size', 'hideText', 'useIcon', 'active'];
 const NavLinkFilter = filterComponentProps(NavLink, propsToFilter);
 
-class PageFooter extends React.Component {
-  render () {
-    const { activeMobileTab, exploreQs } = this.props;
+function PageFooter(props) {
+  const { activeMobileTab, campaigns } = props;
+  const {
+    params: { campaignSlug }
+  } = props.match;
+
+  const [showCampaignSelector, setShowCampaignSelector] = useState(false);
+
+  // Load campaigns on mount
+  useEffect(() => {
+    props.fetchCampaigns();
+  }, []);
+
+  // Helper function to handle clicks on nav tabs
+  function handleTabClick(tab) {
+    // Show Campaign Selector
+    if (!campaignSlug) {
+      setShowCampaignSelector(true);
+    }
+
+    // Update active tab
+    props.updateActiveMobileTab(tab);
+  }
+
+  // Helper function to list campaigns in Modal
+  function renderCampaigns() {
+    if (!campaigns.isReady()) {
+      return <div>Loading campaigns...</div>;
+    }
+
+    if (campaigns.hasError()) {
+      return <UhOh />;
+    }
+
+    const allCampaigns = campaigns.getData();
+
+    if (allCampaigns.length === 0) {
+      return <div>No campaigns are available.</div>;
+    }
 
     return (
-      <PageFoot>
-        <PageFootInner>
-          <PageNav>
-            <FooterMenu>
-              <li>
-                <FooterMenuLink
-                  as={NavLinkFilter}
-                  exact
-                  to='/trends'
-                  useIcon='chart-pie'
-                  title='View trends page'
-                >
-                  <span>Trends</span>
-                </FooterMenuLink>
-              </li>
-              <li>
-                <FooterMenuLink
-                  as={NavLinkFilter}
-                  exact
-                  to={`/explore?${exploreQs}`}
-                  onClick={() => this.props.updateActiveMobileTab('list')}
-                  useIcon='list'
-                  isActive={() => activeMobileTab === 'list'}
-                  title='Go to the list'
-                >
-                  <span>List</span>
-                </FooterMenuLink>
-              </li>
-              <li>
-                <FooterMenuLink
-                  as={NavLinkFilter}
-                  exact
-                  to={`/explore?${exploreQs}`}
-                  useIcon='map'
-                  isActive={() => activeMobileTab === 'map'}
-                  onClick={() => this.props.updateActiveMobileTab('map')}
-                  title='Go to the map'
-                >
-                  <span>Map</span>
-                </FooterMenuLink>
-              </li>
-            </FooterMenu>
-          </PageNav>
-        </PageFootInner>
-      </PageFoot>
+      <CampaignList>
+        {Object.keys(allCampaigns).map((cSlug) => {
+          const c = allCampaigns[cSlug];
+          return (
+            <li key={cSlug}>
+              <Button
+                as={StyledLink}
+                variation='primary-raised-light'
+                to={`/explore/${c.slug}`}
+                data-tip={`Go to ${c.name} campaign`}
+              >
+                {c.name}
+              </Button>
+            </li>
+          );
+        })}
+      </CampaignList>
     );
   }
+
+  return (
+    <PageFoot>
+      <Modal
+        id='introExpanded'
+        revealed={showCampaignSelector}
+        onCloseClick={() => setShowCampaignSelector(false)}
+        headerComponent={<ModalHeader>Select a city</ModalHeader>}
+        bodyComponent={<ModalBody>{renderCampaigns()}</ModalBody>}
+      />
+      <PageFootInner>
+        <PageNav>
+          <FooterMenu>
+            <li>
+              <FooterMenuLink
+                as={NavLinkFilter}
+                exact
+                to='/trends'
+                useIcon='chart-pie'
+                title='View trends page'
+              >
+                <span>Trends</span>
+              </FooterMenuLink>
+            </li>
+            <li>
+              <FooterMenuLink
+                onClick={() => handleTabClick('list')}
+                useIcon='list'
+                isActive={activeMobileTab === 'list'}
+                title='Go to the list'
+              >
+                <span>List</span>
+              </FooterMenuLink>
+            </li>
+            <li>
+              <FooterMenuLink
+                useIcon='map'
+                isActive={activeMobileTab === 'map'}
+                onClick={() => handleTabClick('map')}
+                title='Go to the map'
+              >
+                <span>Map</span>
+              </FooterMenuLink>
+            </li>
+          </FooterMenu>
+        </PageNav>
+      </PageFootInner>
+    </PageFoot>
+  );
 }
 
 if (environment !== 'production') {
   PageFooter.propTypes = {
     activeMobileTab: T.string,
-    exploreQs: T.string,
-    updateActiveMobileTab: T.func
+    campaigns: T.object,
+    fetchCampaigns: T.func,
+    updateActiveMobileTab: T.func,
+    match: T.object
   };
 }
 
-function mapStateToProps (state) {
-  const filters = getFromState(state, `explore.filters`);
-  const mapViewport = getFromState(state, `explore.mapViewport`);
-
+function mapStateToProps(state) {
   return {
     activeMobileTab: getFromState(state, `explore.activeMobileTab`),
-    exploreQs: qsState.getQs({
-      ...mapViewport,
-      ...filters
-    })
+    campaigns: wrapApiResult(state.campaigns)
   };
 }
 
-function dispatcher (dispatch) {
+function dispatcher(dispatch) {
   return {
+    fetchCampaigns: (...args) => dispatch(fetchCampaigns(...args)),
     updateActiveMobileTab: (...args) =>
       dispatch(exploreActions.updateActiveMobileTab(...args))
   };
