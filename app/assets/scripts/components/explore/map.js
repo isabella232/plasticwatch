@@ -346,6 +346,7 @@ class Map extends Component {
 
 Map.propTypes = {
   campaignSlug: T.string,
+  campaign: T.object,
   filters: T.array,
   featureCenter: T.array,
   geojson: T.object,
@@ -403,12 +404,16 @@ function mapStateToProps(state, props) {
     featureCenter = geojsonCentroid(feature).geometry.coordinates;
   }
 
+  const campaigns = wrapApiResult(state.campaigns);
+  const campaign = campaigns.getData()[campaignSlug];
+
   return {
     featureCenter,
     filters,
     geojson,
     mapViewport: getFromState(state, `explore.mapViewport`),
     campaignSlug,
+    campaign,
     place: place,
     placeId: placeId,
     places: wrapApiResult(getFromState(state, `places.list`)),
