@@ -334,7 +334,7 @@ class Users extends React.Component {
                 rel='noopener noreferrer'
                 href={`${osmUrl}/user/${user.displayName}`}
               >
-                {user.displayName}
+                {user.osmDisplayName}
               </a>}
           </td>
           <td>{getUTCDate(user.createdAt)}</td>
