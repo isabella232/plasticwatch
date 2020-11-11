@@ -126,7 +126,7 @@ const BadgeImg = styled.img`
   left: 6%;
 `;
 
-function Users(props) {
+function UserView(props) {
   // Fetch user on page load
   useEffect(() => {
     props.fetchUser(props.match.params.id);
@@ -136,7 +136,7 @@ function Users(props) {
   if (!props.user.isReady()) return <></>;
   if (props.user.hasError()) return <UhOh />;
   const user = props.user.getData();
-  const { badges, observations } = user;
+  const { badges, observations, gravatar } = user;
 
   const lastSurveyDate = observations
     .map((o) => o.createdAt)
@@ -148,16 +148,22 @@ function Users(props) {
     { slug: 'boston', id: 1, name: 'Boston' }
   ];
 
+  const profileImageSrc = gravatar
+    ? `https://www.gravatar.com/avatar/77ac2d599553a2b1a968b473d4bf670b?s=200`
+    : `https://via.placeholder.com/150/EDEDED/3D4B74?text=${user.displayName}`;
+
   return (
-    <App pageTitle='Users'>
+    <App pageTitle='User Profile'>
       <FullPagePanel>
         <InnerPanel>
           <UserInfo>
             <UserName>{user.displayName}</UserName>
-            <Avatar src='https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?s=200' />
+            <Avatar src={profileImageSrc} />
             <UserData>
               {observations.length === 0 ? (
-                <PanelStat><span>No surveys yet</span></PanelStat>
+                <PanelStat>
+                  <span>No surveys yet</span>
+                </PanelStat>
               ) : (
                 <>
                   <PanelStat>
@@ -212,7 +218,7 @@ function Users(props) {
 }
 
 if (environment !== 'production') {
-  Users.propTypes = {
+  UserView.propTypes = {
     fetchUser: T.func,
     match: T.object,
     user: T.object
@@ -233,4 +239,4 @@ function dispatcher(dispatch) {
   };
 }
 
-export default connect(mapStateToProps, dispatcher)(Users);
+export default connect(mapStateToProps, dispatcher)(UserView);
