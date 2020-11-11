@@ -15,7 +15,6 @@ import withMobileState from './with-mobile-state';
 
 // Styles
 import { rgba } from 'polished';
-import collecticon from '../../styles/collecticons';
 import styled, { css } from 'styled-components';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { themeVal, stylizeFunction } from '../../styles/utils/general';
@@ -27,7 +26,6 @@ import media from '../../styles/utils/media-queries';
 
 // Components
 import Button from '../../styles/button/button';
-import { StyledLink } from '../common/link';
 import { showAboutModal } from './about-modal';
 import { showGlobalLoading, hideGlobalLoading } from '../common/global-loading';
 import Dropdown, {
@@ -108,7 +106,9 @@ const PageTitle = styled.h1`
 
 const PageNav = styled.nav`
   display: flex;
-  margin: 0 ${multiply(themeVal('layout.space'), 2)} 0 auto;
+  ${media.mediumUp`
+    margin: 0 ${multiply(themeVal('layout.space'), 2)} 0 auto;
+  `}
 `;
 
 const GlobalMenu = styled.ul`
@@ -161,12 +161,33 @@ const MobileMenu = styled.ul`
   width: 75vw;
   box-shadow: -16px 0 48px -16px ${themeVal('color.shadow')};
   transition: all 0.24s ease;
+  display: flex;
+  flex-flow: column;
+  align-items: flex-end;
+
+  li {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+    > * {
+      flex: 1;
+    }
+  }
 
   a {
     text-align: right;
     &.active {
       color: ${themeVal('color.primary')};
     }
+  }
+  h5 {
+    text-align: right;
+    text-transform: uppercase;
+    font-weight: 300;
+    color: rgba(20,43,88,0.64);
+    font-size: 0.875rem;
+    line-height: 1rem;
+    margin: 1rem;
   }
   &::before {
     content: '';
@@ -180,7 +201,7 @@ const MobileMenu = styled.ul`
     z-index: -1;
     transition: all 0.24s ease 0s;
   }
-  & > li:last-of-type {
+  & > li:nth-of-type(2) {
     margin-top: 1rem;
     padding-top: 1rem;
     border-top: 1px solid ${themeVal('color.smoke')};
@@ -203,7 +224,7 @@ const MobileMenu = styled.ul`
   }
 `;
 
-const GlobalMenuLink = styled.a.attrs({
+const GlobalMenuLink = styled(Button).attrs({
   'data-place': 'right'
 })`
   position: relative;
@@ -217,28 +238,15 @@ const GlobalMenuLink = styled.a.attrs({
   text-transform: uppercase;
   letter-spacing: 0.05rem;
   justify-content: flex-end;
-  &::before {
-    ${({ useIcon }) => collecticon(useIcon)}
-    margin-right: 0.5rem;
-    position: relative;
-    color: inherit;
-  }
   &,
   &:visited {
     color: inherit;
-  }
+  } 
+  &.active,
   &:hover {
     color: ${themeVal('color.link')};
+    background: ${_rgba(themeVal('color.link'), 0.08)};
     opacity: 1;
-    ${media.mediumUp`
-      background: ${_rgba(themeVal('color.link'), 0.08)};
-    `}
-  }
-  &.active {
-    color: ${themeVal('color.link')};
-    ${media.mediumUp`
-      background: ${_rgba(themeVal('color.link'), 0.08)};
-    `}
     &::after {
       opacity: 1;
     }
@@ -254,6 +262,14 @@ const GlobalMenuLink = styled.a.attrs({
 // https://github.com/styled-components/styled-components/issues/2131
 const propsToFilter = ['variation', 'size', 'hideText', 'useIcon', 'active'];
 const NavLinkFilter = filterComponentProps(NavLink, propsToFilter);
+
+const CampaignMenuItem = styled(DropMenuItem)`
+  font-weight: ${themeVal('type.base.weight')};
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+  text-decoration: none;
+`;
 
 class PageHeader extends React.Component {
   constructor(props) {
@@ -282,7 +298,7 @@ class PageHeader extends React.Component {
     delete window.authenticate;
   }
 
-  async login() {
+  async login(idp) {
     // Setting for popup window, parsed into DOMString
     const w = 600;
     const h = 550;
@@ -297,9 +313,14 @@ class PageHeader extends React.Component {
       })
       .join(',');
 
+    let loginStr = '/login?';
+    if (idp) {
+      loginStr = `/login/${idp}?`;
+    }
+
     // Open API login route in popup window to start OAuth
     window.open(
-      `${apiUrl}/login?redirect=${window.location.origin}${appPathname}/login/redirect`,
+      `${apiUrl}${loginStr}redirect=${window.location.origin}${appPathname}/login/redirect`,
       'oauth_window',
       settings
     );
@@ -322,7 +343,7 @@ class PageHeader extends React.Component {
     const campaign = allCampaigns[campaignSlug];
 
     // Do not render if campaign is not available
-    if (!campaign) return <></>;
+    // if (!campaign) return <></>;
 
     return (
       <Dropdown
@@ -330,32 +351,33 @@ class PageHeader extends React.Component {
         alignment='center'
         direction='down'
         triggerElement={(props) => (
-          <Button
-            variation='base-raised-light'
+          <GlobalMenuLink
+            as={NavLinkFilter}
+            to='/explore'
             useIcon={['chevron-down--small', 'after']}
             title='Open dropdown'
             {...props}
           >
-            {campaign.name}
-          </Button>
+            {campaign ? campaign.name : 'Explore'}
+          </GlobalMenuLink>
         )}
       >
         <React.Fragment>
-          <DropTitle>Go to another campaign</DropTitle>
+          <DropTitle>Select City</DropTitle>
           <DropMenu>
             {Object.keys(allCampaigns).map((cSlug) => {
               const c = allCampaigns[cSlug];
               if (cSlug !== campaignSlug) {
                 return (
-                  <DropMenuItem
+                  <CampaignMenuItem
                     key={cSlug}
-                    as={StyledLink}
+                    as={NavLinkFilter}
                     to={`/explore/${c.slug}`}
                     data-tip={`Go to ${c.name} campaign`}
                     onClick={() => this.dropdownRef.current.close()}
                   >
                     {c.name}
-                  </DropMenuItem>
+                  </CampaignMenuItem>
                 );
               }
             })}
@@ -366,12 +388,13 @@ class PageHeader extends React.Component {
   }
 
   renderNav() {
-    const { isMobile, location } = this.props;
+    const { isMobile } = this.props;
     return (
       <GlobalMenu>
         {isMobile ? (
           <li>
             <GlobalMenuLink
+              as='a'
               useIcon={
                 !this.state.isMobileMenuOpened ? 'hamburger-menu' : 'xmark'
               }
@@ -385,19 +408,6 @@ class PageHeader extends React.Component {
         ) : (
           <>
             {this.renderCampaignNav()}
-            <li>
-              <GlobalMenuLink
-                as={NavLinkFilter}
-                exact
-                to='/explore'
-                useIcon='map'
-                isActive={(match, { pathname, search }) =>
-                  pathname && pathname.indexOf('/explore') === 0}
-                title='Go to the explore view'
-              >
-                <span>Explore</span>
-              </GlobalMenuLink>
-            </li>
             <li>
               <GlobalMenuLink
                 as={NavLinkFilter}
@@ -458,18 +468,35 @@ class PageHeader extends React.Component {
                 </Dropdown>
               </>
             ) : (
-              location.pathname !== '/' && (
-                <li>
-                  <GlobalMenuLink
-                    useIcon='login'
-                    size='xlarge'
-                    variation='primary-raised-dark'
-                    onClick={() => this.login()}
-                  >
-                    Login
+              <Dropdown
+                triggerElement={(props) => (
+                  <GlobalMenuLink useIcon='login' {...props}>
+                    Log In
                   </GlobalMenuLink>
-                </li>
-              )
+                )}
+                direction='down'
+                alignment='right'
+              >
+                <DropTitle>Log in with:</DropTitle>
+                <DropMenu>
+                  <GlobalMenuLink
+                    as={DropMenuItem}
+                    useIcon='google'
+                    onClick={() => this.login('google')}
+                    title='Log in with Google'
+                  >
+                    Google
+                  </GlobalMenuLink>
+                  <GlobalMenuLink
+                    as={DropMenuItem}
+                    useIcon='openstreetmap'
+                    onClick={() => this.login()}
+                    title='Log in with OpenStreetMap'
+                  >
+                    Openstreetmap
+                  </GlobalMenuLink>
+                </DropMenu>
+              </Dropdown>
             )}
           </>
         )}
@@ -528,16 +555,29 @@ class PageHeader extends React.Component {
             </li>
           </>
         ) : (
-          <li>
-            <GlobalMenuLink
-              useIcon='login'
-              size='xlarge'
-              variation='primary-raised-dark'
-              onClick={() => this.login()}
-            >
-              Login
-            </GlobalMenuLink>
-          </li>
+          <>
+            <li>
+              <h5>Log in with:</h5>
+            </li>
+            <li>
+              <GlobalMenuLink
+                useIcon='openstreetmap'
+                onClick={() => this.login()}
+                title='Log in with OpenStreetMap'
+              >
+                openstreetmap
+              </GlobalMenuLink>
+            </li>
+            <li>
+              <GlobalMenuLink
+                useIcon='google'
+                onClick={() => this.login('google')}
+                title='Log in with Google'
+              >
+                Google
+              </GlobalMenuLink>
+            </li>
+          </>
         )}
       </MobileMenu>
     );

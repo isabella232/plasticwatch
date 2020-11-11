@@ -210,7 +210,7 @@ class SubmitSurvey extends Component {
       !place.hasError()
     ) {
       await this.props.fetchSurveyAnswers({
-        userId: user.getData().osmId,
+        userId: user.getData().id,
         osmObjectId: place.getData().id,
         surveyId: surveyMeta.getData().id,
         campaignId: campaign.id
