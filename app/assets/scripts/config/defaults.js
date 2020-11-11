@@ -13,17 +13,9 @@ module.exports = {
   mapConfig: {
     mapboxAccessToken: 'pk.eyJ1IjoiZGV2c2VlZCIsImEiOiJjazdhZjA3aXQwMmZ5M3FtcjZlb3RoeTY5In0.1e90Coahqa6RSlMqfR_Xow',
     style: 'mapbox://styles/devseed/ck4d052l20gfj1cljht7rvhsw',
-    defaultInitialBounds: [
-      [-77.0444, 38.8923],
-      [-77.0293, 38.9072]
-    ],
     fitBoundsOptions: {
       padding: 20
     },
-    zoom: 15.2,
-    center: {
-      'lng': -77.03685000000002,
-      'lat': 38.89975039081824
-    }
+    zoom: 13
   }
 };
