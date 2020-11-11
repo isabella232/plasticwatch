@@ -77,10 +77,15 @@ class Map extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { places, geojson } = this.props;
+    const { places, geojson, campaignSlug } = this.props;
 
     // Do not perform changes if map is not loaded
     if (!this.state.mapLoaded) return;
+
+    if (prevProps.campaignSlug !== campaignSlug) {
+      this.props.updateMapViewport({});
+      this.map.setCenter(this.getCampaignCentroid());
+    }
 
     // Add geojson to the map when map is loaded
     if (prevState.isSourceLoaded !== this.state.isSourceLoaded) {
@@ -110,6 +115,17 @@ class Map extends Component {
     this.map.setFilter('placesLayer', this.props.filters[0]);
   }
 
+  getCampaignCentroid() {
+    const { campaign } = this.props;
+    const {
+      geometry: { coordinates }
+    } = centroid(JSON.parse(campaign.aoi));
+    return {
+      lng: coordinates[0],
+      lat: coordinates[1]
+    };
+  }
+
   initMap() {
     const { campaign } = this.props;
     const { zoom, lng, lat } = this.props.mapViewport;
@@ -128,13 +144,7 @@ class Map extends Component {
         lat
       };
     } else if (campaign && campaign.aoi) {
-      const {
-        geometry: { coordinates }
-      } = centroid(JSON.parse(campaign.aoi));
-      mapOptions.center = {
-        lng: coordinates[0],
-        lat: coordinates[1]
-      };
+      mapOptions.center = this.getCampaignCentroid();
     }
 
     this.map = new mapboxgl.Map(mapOptions);
