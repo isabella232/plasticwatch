@@ -18,6 +18,7 @@ import { InnerPanel, Panel, PanelStats, PanelStat } from '../../styles/panel';
 
 const FullPagePanel = styled(Panel)`
   ${InnerPanel} {
+    max-height: none;
     h2 {
       margin-bottom: 1rem;
     }
@@ -34,6 +35,7 @@ const FullPagePanel = styled(Panel)`
     overflow: hidden;
     width: max-content;
     ${InnerPanel} {
+      max-height: calc(100vh - 6rem);
       &:not(:last-of-type) {
         margin-bottom: 0;
       }
@@ -107,19 +109,21 @@ const BadgeName = styled.p`
   margin: 0.5rem 0;
 `;
 
+const BadgeHolder = styled.span`
+  background: linear-gradient(135deg, ${themeVal('color.primary')}, ${themeVal('color.base')} 75%);
+  border-radius: 50%;
+  position: relative;
+  width: 160px;
+  height: 160px;
+`;
+
 const BadgeImg = styled.img`
   border-radius: 50%;
   border: 0.125rem solid ${themeVal('color.surface')};
-  position: relative;
-  &::after {
-    position: absolute;
-    content: '';
-    width: 120%;
-    height: 120%;
-    left: 0;
-    top: 0;
-    background: ${themeVal('color.secondary')};
-  }
+  position: absolute;
+  width: 88%;
+  top: 6%;
+  left: 6%;
 `;
 
 function Users(props) {
@@ -186,12 +190,14 @@ function Users(props) {
           <h2>Badges</h2>
           <ScrollWrap>
             {badges.length === 0 ? (
-              <div>No badges were earned by this user yet.</div>
+              <div>This user has not yet earned any badges.</div>
             ) : (
               <BadgeGrid>
                 {badges.map((b) => (
                   <BadgeItem key={b.id}>
-                    <BadgeImg src={b.image} />
+                    <BadgeHolder>
+                      <BadgeImg src={b.image} />
+                    </BadgeHolder>
                     <BadgeName>{b.title}</BadgeName>
                     <p>{b.description}</p>
                   </BadgeItem>
