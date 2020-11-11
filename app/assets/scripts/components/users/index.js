@@ -295,7 +295,7 @@ class Users extends React.Component {
               {this.renderColumnHead('USERNAME', 'displayName')}
             </th>
             <th scope='col'>
-              {this.renderColumnHead('OSM USER', 'osmDisplayName')}
+              {this.renderColumnHead('OSM Profile', 'osmDisplayName')}
             </th>
             <th scope='col'>
               {this.renderColumnHead('Mapper Since', 'createdAt')}
@@ -326,13 +326,15 @@ class Users extends React.Component {
             <StyledLink to={`/users/${user.id}`}>{user.displayName}</StyledLink>
           </td>
           <td>
-            <a
-              target='_blank'
-              rel='noopener noreferrer'
-              href={`${osmUrl}/user/${user.displayName}`}
-            >
-              {user.displayName}
-            </a>
+            {user.osmId && (
+              <a
+                target='_blank'
+                rel='noopener noreferrer'
+                href={`${osmUrl}/user/${user.osmDisplayName}`}
+              >
+                {user.osmDisplayName}
+              </a>
+            )}
           </td>
           <td>{getUTCDate(user.createdAt)}</td>
           <td style={{ textAlign: 'center' }}>
