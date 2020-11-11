@@ -9,6 +9,7 @@ import { mapConfig } from '../../config';
 import { wrapApiResult, getFromState } from '../../redux/utils';
 import { geojsonCentroid } from '../../utils/geo';
 import { getMarker } from '../../utils/utils';
+import centroid from '@turf/centroid';
 
 import { Wrapper, MapContainer } from '../common/view-wrappers';
 
@@ -112,19 +113,33 @@ class Map extends Component {
   }
 
   initMap () {
+    const { campaign } = this.props;
     const { zoom, lng, lat } = this.props.mapViewport;
 
-    this.map = new mapboxgl.Map({
+    const mapOptions = {
       container: this.mapContainer,
       style: mapConfig.style,
       zoom: zoom || mapConfig.zoom,
-      center: {
-        lng: lng || mapConfig.center.lng,
-        lat: lat || mapConfig.center.lat
-      },
       attributionControl: false,
       fitBoundsOptions: mapConfig.fitBoundsOptions
-    });
+    };
+
+    if (
+      typeof lng === 'undefined' &&
+      typeof lat === 'undefined' &&
+      campaign &&
+      campaign.aoi
+    ) {
+      const {
+        geometry: { coordinates }
+      } = centroid(JSON.parse(campaign.aoi));
+      mapOptions.center = {
+        lng: coordinates[0],
+        lat: coordinates[1]
+      };
+    }
+
+    this.map = new mapboxgl.Map(mapOptions);
 
     const self = this;
 
