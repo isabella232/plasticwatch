@@ -143,10 +143,9 @@ function UserView(props) {
     .sort()
     .pop();
 
-  const campaigns = [
-    { slug: 'washington-dc', id: 1, name: 'Washington DC' },
-    { slug: 'boston', id: 1, name: 'Boston' }
-  ];
+  const campaignsCount = Array.from(
+    new Set(observations.map((o) => o.campaignId))
+  ).length;
 
   const profileImageSrc = gravatar
     ? `https://www.gravatar.com/avatar/77ac2d599553a2b1a968b473d4bf670b?s=200`
@@ -185,7 +184,7 @@ function UserView(props) {
               <span>surveys</span>
             </PanelStat>
             <PanelStat>
-              {campaigns.length}
+              {campaignsCount}
               <span>campaigns contributed</span>
             </PanelStat>
             <PanelStat>
