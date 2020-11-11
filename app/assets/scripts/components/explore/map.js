@@ -18,7 +18,6 @@ import isEqual from 'lodash.isequal';
 
 import Button from '../../styles/button/button';
 import Spinner from '../../styles/spinner/index';
-// import MissingPlaceButton from '../../components/common/missing-place-button';
 import { showConfirmationPrompt } from '../common/confirmation-prompt';
 
 const minZoomToLoadPlaces = 12;
@@ -31,11 +30,11 @@ const ZoomButton = styled(Button)`
   top: 50%;
   left: 50%;
   transform-origin: 50% 50%;
-  transform: translate(-50%,-50%);
+  transform: translate(-50%, -50%);
   z-index: 1000;
   &.active,
   &:active {
-      transform: translate(-50%,-50%);
+    transform: translate(-50%, -50%);
   }
 `;
 
@@ -58,7 +57,7 @@ const markerX = new Image(45, 60);
 markerX.src = './assets/graphics/map/marker-xmark.png';
 
 class Map extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props);
     this.state = {
       mapLoaded: false,
@@ -66,7 +65,7 @@ class Map extends Component {
     };
   }
 
-  componentDidMount () {
+  componentDidMount() {
     const { mapLoaded } = this.state;
     // Bypass if map is already loaded
     if (mapLoaded) {
@@ -77,7 +76,7 @@ class Map extends Component {
     setTimeout(() => this.initMap(), 0);
   }
 
-  componentDidUpdate (prevProps, prevState) {
+  componentDidUpdate(prevProps, prevState) {
     const { places, geojson } = this.props;
 
     // Do not perform changes if map is not loaded
@@ -93,26 +92,24 @@ class Map extends Component {
       this.map.getSource('placesSource').setData(geojson);
     }
 
-    if (
-      !isEqual(prevProps.featureCenter, this.props.featureCenter)
-    ) {
+    if (!isEqual(prevProps.featureCenter, this.props.featureCenter)) {
       this.map.setCenter(this.props.featureCenter);
       this.updateFilter();
     }
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     if (this.map) {
       this.map.remove();
     }
   }
 
-  updateFilter () {
+  updateFilter() {
     this.map.setFilter('selectedPlacesLayer', this.props.filters[1]);
     this.map.setFilter('placesLayer', this.props.filters[0]);
   }
 
-  initMap () {
+  initMap() {
     const { campaign } = this.props;
     const { zoom, lng, lat } = this.props.mapViewport;
 
@@ -172,7 +169,7 @@ class Map extends Component {
       })
     );
 
-    function updateStateMapViewport () {
+    function updateStateMapViewport() {
       const center = self.map.getCenter();
       const zoom = self.map.getZoom();
 
@@ -283,7 +280,7 @@ class Map extends Component {
       return <></>;
     }
 
-    function ShowSpinner (props) {
+    function ShowSpinner(props) {
       if (props.fetching) {
         return <Spinner />;
       } else {
@@ -325,19 +322,22 @@ class Map extends Component {
           useIcon='crosshair'
           onClick={async () => {
             const res = await showConfirmationPrompt({
-              'title': 'Add a missing place to the map',
-              'content': 'PlasticWatch relies on OpenStreetMap data for restaurant, cafe and bar locations. Don’t see the establishment you’re looking for? Click "Confirm" to add a location to OpenStreetMap. Adding a place to OpenStreetMap requires creating an account and following OSM policies. Continue to view OpenStreetMap at your currently selected location, and follow the OSM walkthrough to learn how to edit the global map. Please note, as changes to OSM must be verified by the external OSM community, new places added to OSM will not immediately be captured by PlasticWatch'
+              title: 'Add a missing place to the map',
+              content:
+                'PlasticWatch relies on OpenStreetMap data for restaurant, cafe and bar locations. Don’t see the establishment you’re looking for? Click "Confirm" to add a location to OpenStreetMap. Adding a place to OpenStreetMap requires creating an account and following OSM policies. Continue to view OpenStreetMap at your currently selected location, and follow the OSM walkthrough to learn how to edit the global map. Please note, as changes to OSM must be verified by the external OSM community, new places added to OSM will not immediately be captured by PlasticWatch'
             });
             if (res.result) {
               const center = this.map.getCenter();
               const lat = center.lat;
               const lon = center.lng;
               const zoom = this.map.getZoom();
-              window.open(`https://openstreetmap.org/edit?editor=id&lat=${lat}&lon=${lon}&zoom=${zoom}`);
+              window.open(
+                `https://openstreetmap.org/edit?editor=id&lat=${lat}&lon=${lon}&zoom=${zoom}`
+              );
             }
           }}
         >
-        Add a missing place to OpenStreetMap
+          Add a missing place to OpenStreetMap
         </MissingPlaceButton>
       </Wrapper>
     );
@@ -421,7 +421,7 @@ function mapStateToProps(state, props) {
   };
 }
 
-function dispatcher (dispatch) {
+function dispatcher(dispatch) {
   return {
     updateMapViewport: (...args) =>
       dispatch(exploreActions.updateMapViewport(...args))
