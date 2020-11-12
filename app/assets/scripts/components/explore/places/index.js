@@ -187,7 +187,7 @@ class PlacesIndex extends Component {
             </InputWrapper>
             { this.state.searchString && (
               <Button
-                htmlFor='placeSearch'
+                size='small'
                 useIcon='xmark--small'
                 onClick={() =>
                   this.handleSearchReset()}
@@ -196,7 +196,7 @@ class PlacesIndex extends Component {
               </Button>
             )}
             {isMobile && (
-              <Button useIcon='sliders-vertical' onClick={this.toggleFilters}>
+              <Button size='small' useIcon='sliders-vertical' onClick={this.toggleFilters}>
                 { filtersOpened ? 'Hide Filters' : 'Show Filters'}
               </Button>
             )}

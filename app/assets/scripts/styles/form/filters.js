@@ -40,6 +40,12 @@ export const InputWrapper = styled.div`
   justify-content: flex-end;
   flex: 1 0 40%;
   max-width: 75%;
+
+  + ${Button},
+  + * + ${Button} {
+    position: relative;
+    bottom: 0.25rem;
+  }
 `;
 
 export const InputWithIcon = styled(FormInput)`
