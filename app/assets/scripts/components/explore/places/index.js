@@ -222,6 +222,15 @@ class PlacesIndex extends Component {
                 >
                   Unsurveyed
                 </FilterButton>
+                {filters.placeType && (
+                  <Button
+                    size='small'
+                    useIcon='xmark--small'
+                    onClick={() => this.handlePlaceTypeChange(null)}
+                  >
+                    Clear Filters
+                  </Button>
+                )}
               </FilterButtons>
             )}
           </FilterToolbar>
