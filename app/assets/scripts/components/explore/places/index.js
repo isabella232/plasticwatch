@@ -206,33 +206,29 @@ class PlacesIndex extends Component {
               <FilterButtons>
                 <FilterLabel>Filters:</FilterLabel>
                 <FilterButton
+                  size='small'
                   onClick={() => this.handlePlaceTypeChange('plasticFree')}
                   active={filters && filters.placeType === 'plasticFree'}
+                  useIcon={filters && filters.placeType === 'plasticFree' ? ['xmark--small', 'after'] : null}
                 >
                   Plastic Free
                 </FilterButton>
                 <FilterButton
+                  size='small'
                   onClick={() => this.handlePlaceTypeChange('plastic')}
                   active={filters && filters.placeType === 'plastic'}
+                  useIcon={filters && filters.placeType === 'plastic' ? ['xmark--small', 'after'] : null}
                 >
                   Plastic
                 </FilterButton>
                 <FilterButton
+                  size='small'
                   onClick={() => this.handlePlaceTypeChange('unsurveyed')}
                   active={filters && filters.placeType === 'unsurveyed'}
+                  useIcon={filters && filters.placeType === 'unsurveyed' ? ['xmark--small', 'after'] : null}
                 >
                   Unsurveyed
                 </FilterButton>
-                {filters.placeType && (
-                  <Button
-                    size='small'
-                    variation='danger-plain'
-                    useIcon='xmark--small'
-                    onClick={() => this.handlePlaceTypeChange(null)}
-                  >
-                    Clear Filters
-                  </Button>
-                )}
               </FilterButtons>
             )}
           </FilterToolbar>
