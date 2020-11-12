@@ -131,6 +131,16 @@ class PlacesIndex extends Component {
     });
   }
 
+  handleSearchReset () {
+    let searchString = '';
+    this.setState({
+      searchString: searchString
+    });
+    this.props.updateFilters({
+      searchString
+    });
+  }
+
   render () {
     const { filtersOpened } = this.state;
     const { isMobile, filters, activeMobileTab } = this.props;
@@ -159,6 +169,7 @@ class PlacesIndex extends Component {
                 id='placeSearch'
                 placeholder='Enter place name'
                 defaultValue={this.props.filters.searchString}
+                value={this.state.searchString}
                 onChange={this.handleNameSearchChange}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
@@ -174,6 +185,16 @@ class PlacesIndex extends Component {
                   this.handleSearchStringChange(this.state.searchString)}
               />
             </InputWrapper>
+            { this.state.searchString && (
+              <Button
+                htmlFor='placeSearch'
+                useIcon='xmark--small'
+                onClick={() =>
+                  this.handleSearchReset()}
+              >
+                Reset
+              </Button>
+            )}
             {isMobile && (
               <Button useIcon='sliders-vertical' onClick={this.toggleFilters}>
                 Show Filters
