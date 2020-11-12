@@ -197,7 +197,7 @@ class PlacesIndex extends Component {
             )}
             {isMobile && (
               <Button useIcon='sliders-vertical' onClick={this.toggleFilters}>
-                Show Filters
+                { filtersOpened ? 'Hide Filters' : 'Show Filters'}
               </Button>
             )}
 
