@@ -188,6 +188,7 @@ class PlacesIndex extends Component {
             { this.state.searchString && (
               <Button
                 size='small'
+                variation='danger-plain'
                 useIcon='xmark--small'
                 onClick={() =>
                   this.handleSearchReset()}
@@ -196,8 +197,8 @@ class PlacesIndex extends Component {
               </Button>
             )}
             {isMobile && (
-              <Button size='small' useIcon='sliders-vertical' onClick={this.toggleFilters}>
-                { filtersOpened ? 'Hide Filters' : 'Show Filters'}
+              <Button variation='primary-plain' size='small' useIcon='sliders-vertical' onClick={this.toggleFilters}>
+                Filters
               </Button>
             )}
 
@@ -225,6 +226,7 @@ class PlacesIndex extends Component {
                 {filters.placeType && (
                   <Button
                     size='small'
+                    variation='danger-plain'
                     useIcon='xmark--small'
                     onClick={() => this.handlePlaceTypeChange(null)}
                   >

@@ -21,7 +21,7 @@ export const Filters = styled(Form)`
 `;
 export const FilterToolbar = styled(FormToolbar)`
   align-items: flex-end;
-  justify-content: space-between;
+  justify-content: flex-start;
   margin: 1rem -2rem 0;
   padding: 0 3rem 1rem;
   border-bottom: 1px solid ${themeVal('color.smoke')};
@@ -38,8 +38,8 @@ export const InputWrapper = styled.div`
   display: flex;
   flex-flow: column nowrap;
   justify-content: flex-end;
-  flex: 1 0 40%;
-  max-width: 75%;
+  flex: 1 0 50%;
+  max-width: 68%;
 
   + ${Button},
   + * + ${Button} {
