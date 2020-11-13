@@ -162,7 +162,7 @@ class Trends extends React.Component {
         <TwoPanelLayout>
           <InnerPanel ref={this.cityTrends}>
             <PlaceTrends>
-              <h2>Washington DC</h2>
+              <h2>All cities</h2>
               <p>
                 <strong>{formatThousands(surveyedPlacesCount)}</strong>&nbsp;
                 restaurants surveyed
@@ -187,7 +187,7 @@ class Trends extends React.Component {
               </svg>
               <p>
                 {percentSurveyed}% of &nbsp;
-                {formatThousands(placesCount)} Washington DC restaurants on
+                {formatThousands(placesCount)} restaurants imported from
                 OpenStreetMap
               </p>
             </PlaceTrends>
@@ -225,7 +225,7 @@ class Trends extends React.Component {
             <p>
               {formatThousands(nonPlasticPlacesCount)} of&nbsp;
               {formatThousands(surveyedPlacesCount)}
-              &nbsp; surveyed Washington DC restaurants offer plastic-free
+              &nbsp; surveyed restaurants offer plastic-free
               options.
             </p>
             <PanelStats>
