@@ -237,7 +237,7 @@ class Explore extends React.Component {
             path='/explore/:campaignSlug/:type/:id/survey'
             component={PlaceSurvey}
           />
-          {displayMap && <Map />}
+          {displayMap && <Map isMobile={isMobile} />}
         </SidebarWrapper>
       </App>
     );
