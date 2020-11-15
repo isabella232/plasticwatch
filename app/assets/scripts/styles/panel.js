@@ -58,6 +58,18 @@ export const InnerPanel = styled.article`
   }
 `;
 
+export const PanelFooter = styled.footer`
+  margin-top: auto;
+  align-self: flex-end;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-between;
+
+  & > *:not(:first-child) {
+    margin-top: 1rem
+  }
+`;
+
 export const PanelStats = styled.div`
   display: flex;
   flex-flow: row nowrap;
