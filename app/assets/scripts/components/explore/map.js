@@ -85,6 +85,7 @@ class Map extends Component {
     if (prevProps.campaignSlug !== campaignSlug) {
       this.props.updateMapViewport({});
       this.map.setCenter(this.getCampaignCentroid());
+      this.map.getSource('campaignBbox').setData(this.getCampaignBbox());
     }
 
     // Add geojson to the map when map is loaded
