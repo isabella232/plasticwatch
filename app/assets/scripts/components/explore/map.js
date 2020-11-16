@@ -126,6 +126,12 @@ class Map extends Component {
     };
   }
 
+  getCampaignBbox() {
+    const { campaign } = this.props;
+    const bbox = JSON.parse(campaign.aoi);
+    return bbox;
+  }
+
   initMap() {
     const { campaign } = this.props;
     const { zoom, lng, lat } = this.props.mapViewport;
@@ -135,7 +141,8 @@ class Map extends Component {
       style: mapConfig.style,
       zoom: zoom || mapConfig.zoom,
       attributionControl: false,
-      fitBoundsOptions: mapConfig.fitBoundsOptions
+      fitBoundsOptions: mapConfig.fitBoundsOptions,
+      campaignBbox: this.getCampaignBbox()
     };
 
     if (typeof lng !== 'undefined' && typeof lat !== 'undefined') {
@@ -222,6 +229,27 @@ class Map extends Component {
 
       this.setState({
         mapZoom: self.map.getZoom()
+      });
+
+      // add campaign bbox fill overlay
+
+      this.map.addSource('campaignBbox', {
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          geometry: mapOptions.campaignBbox
+        }
+      });
+
+      this.map.addLayer({
+        id: 'campaignBbox',
+        type: 'fill',
+        source: 'campaignBbox',
+        layout: {},
+        paint: {
+          'fill-color': '#0686E5',
+          'fill-opacity': 0.125
+        }
       });
 
       // add the geojson from state as a source to the map
