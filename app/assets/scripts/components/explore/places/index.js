@@ -61,7 +61,7 @@ class PlacesIndex extends Component {
     super(props);
     this.state = {
       filtersOpened: false,
-      searchString: ''
+      searchString: props.filters.searchString || ''
     };
     this.toggleFilters = this.toggleFilters.bind(this);
     this.handleNameSearchChange = this.handleNameSearchChange.bind(this);
@@ -134,7 +134,7 @@ class PlacesIndex extends Component {
   handleSearchReset () {
     let searchString = '';
     this.setState({
-      searchString: searchString
+      searchString
     });
     this.props.updateFilters({
       searchString
@@ -168,7 +168,6 @@ class PlacesIndex extends Component {
                 type='text'
                 id='placeSearch'
                 placeholder='Enter place name'
-                defaultValue={this.props.filters.searchString}
                 value={this.state.searchString}
                 onChange={this.handleNameSearchChange}
                 onKeyDown={(e) => {
