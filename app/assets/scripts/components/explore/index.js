@@ -114,8 +114,6 @@ class Explore extends React.Component {
 
     // Start a new data fetch if viewport or filters have changed
     if (
-      mapViewport &&
-      mapViewport.bounds &&
       !places.fetching &&
       (!isEqual(prevProps.mapViewport, mapViewport) ||
         !isEqual(prevProps.filters, filters))

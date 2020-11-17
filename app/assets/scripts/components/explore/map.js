@@ -105,7 +105,6 @@ class Map extends Component {
 
   componentWillUnmount() {
     if (this.map) {
-      this.props.updateMapViewport({});
       this.map.remove();
     }
   }
