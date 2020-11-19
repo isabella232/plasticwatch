@@ -6,7 +6,8 @@ import { environment } from '../../config';
 import { connect } from 'react-redux';
 import { wrapApiResult, getFromState } from '../../redux/utils';
 import * as actions from '../../redux/actions/trends';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
+import { filterComponentProps } from '../../utils';
 
 import App from '../common/app';
 
@@ -92,6 +93,9 @@ const TrendsButtonLabel = styled.small`
   color: ${themeVal('colors.baseColorMed')};
   line-height: 0.875rem;
 `;
+
+const propsToFilter = ['variation', 'size', 'hideText', 'useIcon', 'active'];
+const NavLinkFilter = filterComponentProps(NavLink, propsToFilter);
 
 class Trends extends React.Component {
   constructor () {
@@ -195,7 +199,7 @@ class Trends extends React.Component {
                 if (cSlug !== campaignSlug) {
                   return (
                     <DropMenuItem
-                      as={Link}
+                      as={NavLinkFilter}
                       key={cSlug}
                       to={`/trends/${c.slug}`}
                       data-tip={`View ${c.name} trends`}
