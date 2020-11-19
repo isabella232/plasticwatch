@@ -6,6 +6,7 @@ import { environment } from '../../config';
 import { connect } from 'react-redux';
 import { wrapApiResult, getFromState } from '../../redux/utils';
 import * as actions from '../../redux/actions/trends';
+import { Link } from 'react-router-dom';
 
 import App from '../common/app';
 
@@ -13,13 +14,22 @@ import { Pie } from '@vx/shape';
 import { Group } from '@vx/group';
 import { LinearGradient } from '@vx/gradient';
 import { StyledLink } from '../common/link';
+import Dropdown, {
+  DropMenu,
+  DropMenuItem
+} from '../common/dropdown';
 import withMobileState from '../common/with-mobile-state';
+import { headingAlt } from '../../styles/type/heading';
 import { InnerPanel, Panel, PanelStats, PanelStat } from '../../styles/panel';
 import Button from '../../styles/button/button';
+import ButtonCaret from '../../styles/button/button-caret';
 import { themeVal } from '../../styles/utils/general';
+import { multiply } from '../../styles/utils/math';
 import DataTable, { ScrollWrap } from '../../styles/table';
 import { round, formatThousands } from '../../utils/utils';
 import media from '../../styles/utils/media-queries';
+
+const glSp = themeVal('layout.space');
 
 const PlaceTrends = styled.div`
   p {
@@ -61,11 +71,35 @@ const TwoPanelLayout = styled(Panel)`
   `};
 `;
 
+const TrendsTitle = styled.h1`
+  margin: 0 -${glSp} ${multiply(glSp, 2)} -${glSp};
+`;
+
+const TrendsButton = styled(ButtonCaret)`
+  max-width: 100%;
+  align-self: baseline;
+  font-family: ${themeVal('typography.displayFontFamily')};
+  font-size: 1.5rem;
+  line-height: 2.5rem;
+  text-align: left;
+  text-transform: none;
+  letter-spacing: none;
+`;
+
+const TrendsButtonLabel = styled.small`
+  ${headingAlt()}
+  align-self: baseline;
+  color: ${themeVal('colors.baseColorMed')};
+  line-height: 0.875rem;
+`;
+
 class Trends extends React.Component {
   constructor () {
     super();
     this.topSurveyors = React.createRef();
     this.cityTrends = React.createRef();
+    this.renderCampaignSelect = this.renderCampaignSelect.bind(this);
+    this.dropdownRef = React.createRef();
   }
 
   componentDidMount () {
@@ -118,6 +152,67 @@ class Trends extends React.Component {
     );
   }
 
+  renderCampaignSelect() {
+    // Get campaign slug
+    const {
+      campaigns,
+      match: {
+        params: { campaignSlug }
+      }
+    } = this.props;
+
+    // Do not render until campaigns are available
+    // if (!campaigns.isReady() || campaigns.hasError()) return <></>;
+
+    // Get data
+    const allCampaigns = campaigns.getData();
+    const campaign = allCampaigns[campaignSlug];
+
+    // Do not render if campaign is not available
+    // if (!campaign) return <></>;
+
+    return (
+      <React.Fragment>
+        <TrendsButtonLabel>Select City</TrendsButtonLabel>
+        <TrendsTitle>
+          <Dropdown
+            ref={this.dropdownRef}
+            alignment='right'
+            direction='down'
+            triggerElement={(props) => (
+              <TrendsButton
+                element='a'
+                title='Open dropdown'
+                {...props}
+              >
+                {campaign ? campaign.name : 'All PlasticWatch Cities'}
+              </TrendsButton>
+            )}
+          >
+            <DropMenu>
+              {Object.keys(allCampaigns).map((cSlug) => {
+                const c = allCampaigns[cSlug];
+                if (cSlug !== campaignSlug) {
+                  return (
+                    <DropMenuItem
+                      as={Link}
+                      key={cSlug}
+                      to={`/trends/${c.slug}`}
+                      data-tip={`View ${c.name} trends`}
+                      onClick={() => this.dropdownRef.current.close()}
+                    >
+                      {c.name}
+                    </DropMenuItem>
+                  );
+                }
+              })}
+            </DropMenu>
+          </Dropdown>
+        </TrendsTitle>
+      </React.Fragment>
+    );
+  }
+
   render () {
     const { stats, isMobile } = this.props;
 
@@ -162,7 +257,7 @@ class Trends extends React.Component {
         <TwoPanelLayout>
           <InnerPanel ref={this.cityTrends}>
             <PlaceTrends>
-              <h2>All cities</h2>
+              {this.renderCampaignSelect()}
               <p>
                 <strong>{formatThousands(surveyedPlacesCount)}</strong>&nbsp;
                 restaurants surveyed
@@ -296,14 +391,17 @@ if (environment !== 'production') {
     topSurveyors: T.object,
     fetchStats: T.func,
     fetchTopSurveyors: T.func,
-    isMobile: T.bool
+    isMobile: T.bool,
+    campaigns: T.object,
+    match: T.object
   };
 }
 
 function mapStateToProps (state) {
   return {
     stats: wrapApiResult(getFromState(state, `trends.stats`)),
-    topSurveyors: wrapApiResult(getFromState(state, `trends.topSurveyors`))
+    topSurveyors: wrapApiResult(getFromState(state, `trends.topSurveyors`)),
+    campaigns: wrapApiResult(state.campaigns)
   };
 }
 
