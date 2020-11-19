@@ -97,16 +97,22 @@ const BadgeItem = styled.li`
   `}
 `;
 
-const BadgeName = styled.p`
-  font-size: 0.875rem;
-  font-weight: ${themeVal('type.base.regular')};
+const BadgeName = styled.h3`
+  font-size: 1rem;
   color: ${themeVal('color.secondary')};
   letter-spacing: 0.25px;
   text-transform: uppercase;
   vertical-align: middle;
   position: relative;
-  text-align: left;
+  text-align: center;
   margin: 0.5rem 0;
+
+  span {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: ${themeVal('type.base.regular')};
+    color: ${themeVal('color.baseMed')};
+  }
 `;
 
 const BadgeHolder = styled.span`
@@ -203,7 +209,11 @@ function UserView(props) {
                     <BadgeHolder>
                       <BadgeImg src={`data:image/svg+xml;base64,${b.image}`} />
                     </BadgeHolder>
-                    <BadgeName>{b.name}</BadgeName>
+                    <BadgeName>
+                      {b.name}
+                      <span>Level {b.description.level}</span>
+                    </BadgeName>
+                    <p>{b.description.text}</p>
                   </BadgeItem>
                 ))}
               </BadgeGrid>
