@@ -25,9 +25,7 @@ export const FilterToolbar = styled(FormToolbar)`
   margin: 1rem -2rem 0;
   padding: 0 3rem 1rem;
   border-bottom: 1px solid ${themeVal('color.smoke')};
-  & input {
-    max-width: 24rem;
-  }
+  
   ${media.mediumUp`
     padding: 0 2rem 1rem;
   `};
@@ -58,7 +56,7 @@ export const InputIcon = styled(filterComponentProps(FormLabel, ['useIcon']))`
     ${({ useIcon }) => collecticon(useIcon)}
     position: absolute;
     right: 0.5rem;
-    top: 50%;
+    bottom: 0.25rem;
     opacity: 0.64;
   }
 `;

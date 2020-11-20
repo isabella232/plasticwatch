@@ -57,10 +57,16 @@ const ResultsItem = styled.li`
   }
 `;
 
-const SearchCheckable = styled(FormCheckable)`
+const FilterLabelWrapper = styled.div`
   width: 100%;
-  margin-top: 0.25rem;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+`;
+
+const SearchCheckable = styled(FormCheckable)`
   font-size: 0.875rem;
+  margin-left: 2.5rem;
 `;
 
 class PlacesIndex extends Component {
@@ -153,6 +159,7 @@ class PlacesIndex extends Component {
     const { isMobile, filters, activeMobileTab } = this.props;
     const { isReady, getData, hasError } = this.props.places;
     const { campaignSlug } = this.props.match.params;
+    const isSearchCityChecked = false;
 
     if (isMobile && activeMobileTab !== 'list') {
       return null;
@@ -167,10 +174,21 @@ class PlacesIndex extends Component {
       <Panel>
         <Filters>
           <FilterToolbar>
-            <InputWrapper>
+            <FilterLabelWrapper>
               <FilterLabel htmlFor='placeSearch'>
-                {isMobile ? 'Search in the list' : 'Search current view'}
+                {isMobile ? 'Search in the list' : (isSearchCityChecked ? 'Search City' : 'Search current view')}
               </FilterLabel>
+              <SearchCheckable
+                textPlacement='right'
+                type='checkbox'
+                name='search-city-checkbox'
+                id='city-yes'
+                size='small'
+              >
+                Expand search to city
+              </SearchCheckable>
+            </FilterLabelWrapper>
+            <InputWrapper>
               <InputWithIcon
                 type='text'
                 id='placeSearch'
@@ -207,15 +225,7 @@ class PlacesIndex extends Component {
                 Filters
               </Button>
             )}
-            <SearchCheckable
-              textPlacement='right'
-              type='checkbox'
-              name='search-city-checkbox'
-              id='city-yes'
-              size='small'
-            >
-              Search city
-            </SearchCheckable>
+
             {(!isMobile || (isMobile && filtersOpened)) && (
               <FilterButtons>
                 <FilterLabel>Filters:</FilterLabel>
