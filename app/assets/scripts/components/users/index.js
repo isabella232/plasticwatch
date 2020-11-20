@@ -121,8 +121,8 @@ class Users extends React.Component {
   async updateUser(e, user, values) {
     showGlobalLoading();
     try {
-      // Make delete request
-      await this.props.updateUser(user.osmId, values);
+      // Make update request
+      await this.props.updateUser(user.id, values);
 
       // Refresh table if successful
       this.fetchData();
