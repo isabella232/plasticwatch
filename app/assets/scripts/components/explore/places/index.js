@@ -34,7 +34,10 @@ import { hideScrollbars } from '../../../styles/skins';
 import Rating from './rating';
 import { Panel } from '../../../styles/panel';
 import { FormCheckable } from '../../../styles/form/checkable';
-import { withRouter } from 'react-router-dom';
+import { withRouter, matchPath } from 'react-router-dom';
+import { geojsonBbox } from '../../../utils/geo';
+import { feature } from '@turf/helpers';
+import turfCentroid from '@turf/centroid';
 
 const Results = styled.ul`
   ${listReset()};
@@ -74,8 +77,10 @@ class PlacesIndex extends Component {
     super(props);
     this.state = {
       filtersOpened: false,
-      searchString: props.filters.searchString || ''
+      searchString: props.filters.searchString || '',
+      isSearchCityChecked: false
     };
+
     this.toggleFilters = this.toggleFilters.bind(this);
     this.handleNameSearchChange = this.handleNameSearchChange.bind(this);
   }
@@ -139,9 +144,24 @@ class PlacesIndex extends Component {
   }
 
   handleSearchStringChange (searchString) {
-    this.props.updateFilters({
-      searchString
-    });
+    // read the state of checkbox
+    if (this.state.isSearchCityChecked) {
+      const center = turfCentroid(JSON.parse(this.props.campaign.aoi));
+      this.props.updateFiltersAndMapViewport({
+        filters: {
+          searchString
+        },
+        mapViewport: {
+          zoom: 13,
+          lng: center.geometry.coordinates[0],
+          lat: center.geometry.coordinates[1]
+        }
+      });
+    } else {
+      this.props.updateFilters({
+        searchString
+      });
+    }
   }
 
   handleSearchReset () {
@@ -154,14 +174,18 @@ class PlacesIndex extends Component {
     });
   }
 
+  toggleCitySearch () {
+    const currentValue = this.state.isSearchCityChecked;
+    this.setState({
+      isSearchCityChecked: !currentValue
+    });
+  }
+
   render () {
-    const { filtersOpened } = this.state;
+    const { filtersOpened, isSearchCityChecked } = this.state;
     const { isMobile, filters, activeMobileTab } = this.props;
     const { isReady, getData, hasError } = this.props.places;
     const { campaignSlug } = this.props.match.params;
-
-    // Remove this stubbed variable when #112 resolved
-    let isSearchCityChecked = false;
 
     if (isMobile && activeMobileTab !== 'list') {
       return null;
@@ -186,6 +210,8 @@ class PlacesIndex extends Component {
                 name='search-city-checkbox'
                 id='city-yes'
                 size='small'
+                checked={isSearchCityChecked}
+                onChange={() => { this.toggleCitySearch(); }}
               >
                 Expand search to city
               </SearchCheckable>
@@ -287,24 +313,42 @@ if (environment !== 'production') {
     places: T.object,
     match: T.object,
     updateFilters: T.func,
+    updateFiltersAndMapViewport: T.func,
     filters: T.object,
     isMobile: T.bool,
-    mapViewport: T.object
+    mapViewport: T.object,
+    campaign: T.object
   };
 }
 
-function mapStateToProps (state) {
+function mapStateToProps (state, props) {
+  const {
+    params: { campaignSlug }
+  } = matchPath(props.location.pathname, {
+    path: [
+      '/explore/:campaignSlug',
+      '/explore/:campaignSlug/:type/:id',
+      '/explore/:campaignSlug/:type/:id/survey'
+    ],
+    exact: true
+  });
+
+  const campaigns = wrapApiResult(state.campaigns);
+  const campaign = campaigns.getData()[campaignSlug];
+
   return {
     filters: getFromState(state, `explore.filters`),
     places: wrapApiResult(getFromState(state, `places.list`)),
     activeMobileTab: getFromState(state, `explore.activeMobileTab`),
-    mapViewport: getFromState(state, `explore.mapViewport`)
+    mapViewport: getFromState(state, `explore.mapViewport`),
+    campaign
   };
 }
 
 function dispatcher (dispatch) {
   return {
-    updateFilters: (...args) => dispatch(exploreActions.updateFilters(...args))
+    updateFilters: (...args) => dispatch(exploreActions.updateFilters(...args)),
+    updateFiltersAndMapViewport: (...args) => dispatch(exploreActions.updateFiltersAndMapViewport(...args))
   };
 }
 
