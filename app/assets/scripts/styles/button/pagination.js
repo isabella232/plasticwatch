@@ -13,7 +13,7 @@ const Pager = styled.ul`
   font-size: 0.875rem;
   list-style: none;
   list-style-type: none !important;
-  & :not(:first-child) {
+  & > *:not(:first-child) {
     margin-left: 1rem;
   }
 `;
