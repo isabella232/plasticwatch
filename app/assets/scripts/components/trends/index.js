@@ -94,6 +94,10 @@ const TrendsButtonLabel = styled.small`
   line-height: 0.875rem;
 `;
 
+const TrendMenuItem = styled(DropMenuItem)`
+  text-decoration: none;
+`;
+
 const propsToFilter = ['variation', 'size', 'hideText', 'useIcon', 'active'];
 const NavLinkFilter = filterComponentProps(NavLink, propsToFilter);
 
@@ -198,7 +202,7 @@ class Trends extends React.Component {
                 const c = allCampaigns[cSlug];
                 if (cSlug !== campaignSlug) {
                   return (
-                    <DropMenuItem
+                    <TrendMenuItem
                       as={NavLinkFilter}
                       key={cSlug}
                       to={`/trends/${c.slug}`}
@@ -206,7 +210,7 @@ class Trends extends React.Component {
                       onClick={() => this.dropdownRef.current.close()}
                     >
                       {c.name}
-                    </DropMenuItem>
+                    </TrendMenuItem>
                   );
                 }
               })}
