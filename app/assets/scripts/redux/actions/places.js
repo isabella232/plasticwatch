@@ -116,8 +116,7 @@ export function updatePlacesList () {
 
     // Fetch visible tiles
     const state = getState();
-    const bounds =
-      state.explore.mapViewport.bounds || mapConfig.defaultInitialBounds;
+    const bounds = state.explore.mapViewport.bounds;
     const zoom = state.explore.mapViewport.zoom || mapConfig.zoom;
     const filters = state.explore.filters;
     const visibleTiles = bboxToTiles(bounds, zoom);
