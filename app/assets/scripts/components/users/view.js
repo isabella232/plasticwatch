@@ -148,7 +148,7 @@ function UserView(props) {
   ).length;
 
   const profileImageSrc = gravatar
-    ? `https://www.gravatar.com/avatar/77ac2d599553a2b1a968b473d4bf670b?s=200`
+    ? `https://www.gravatar.com/avatar/${gravatar}?s=200`
     : `https://via.placeholder.com/150/EDEDED/3D4B74?text=${user.displayName}`;
 
   return (

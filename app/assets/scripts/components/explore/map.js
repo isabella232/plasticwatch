@@ -41,7 +41,7 @@ const ZoomButton = styled(Button)`
 const MissingPlaceButton = styled(Button)`
   margin-top: 1rem;
   position: absolute;
-  bottom: 3%;
+  bottom: 1.875rem;
   left: 3%;
   transform-origin: 50% 50%;
   z-index: 1000;
@@ -85,6 +85,7 @@ class Map extends Component {
     if (prevProps.campaignSlug !== campaignSlug) {
       this.props.updateMapViewport({});
       this.map.setCenter(this.getCampaignCentroid());
+      this.map.getSource('campaignBbox').setData(this.getCampaignBbox());
     }
 
     // Add geojson to the map when map is loaded
@@ -105,7 +106,6 @@ class Map extends Component {
 
   componentWillUnmount() {
     if (this.map) {
-      this.props.updateMapViewport({});
       this.map.remove();
     }
   }
@@ -126,6 +126,12 @@ class Map extends Component {
     };
   }
 
+  getCampaignBbox() {
+    const { campaign } = this.props;
+    const bbox = JSON.parse(campaign.aoi);
+    return bbox;
+  }
+
   initMap() {
     const { campaign } = this.props;
     const { zoom, lng, lat } = this.props.mapViewport;
@@ -135,7 +141,8 @@ class Map extends Component {
       style: mapConfig.style,
       zoom: zoom || mapConfig.zoom,
       attributionControl: false,
-      fitBoundsOptions: mapConfig.fitBoundsOptions
+      fitBoundsOptions: mapConfig.fitBoundsOptions,
+      campaignBbox: this.getCampaignBbox()
     };
 
     if (typeof lng !== 'undefined' && typeof lat !== 'undefined') {
@@ -222,6 +229,27 @@ class Map extends Component {
 
       this.setState({
         mapZoom: self.map.getZoom()
+      });
+
+      // add campaign bbox fill overlay
+
+      this.map.addSource('campaignBbox', {
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          geometry: mapOptions.campaignBbox
+        }
+      });
+
+      this.map.addLayer({
+        id: 'campaignBbox',
+        type: 'fill',
+        source: 'campaignBbox',
+        layout: {},
+        paint: {
+          'fill-color': '#0686E5',
+          'fill-opacity': 0.125
+        }
       });
 
       // add the geojson from state as a source to the map
@@ -329,6 +357,7 @@ class Map extends Component {
         )}
         <MissingPlaceButton
           variation='base-raised-light'
+          size='small'
           tabIndex={-1}
           useIcon='crosshair'
           onClick={async () => {
@@ -348,7 +377,7 @@ class Map extends Component {
             }
           }}
         >
-          Add a missing place to OpenStreetMap
+          {this.props.isMobile ? 'Add a missing place' : 'Add a missing place to OpenStreetMap' }
         </MissingPlaceButton>
       </Wrapper>
     );
@@ -364,7 +393,8 @@ Map.propTypes = {
   history: T.object,
   mapViewport: T.object,
   places: T.object,
-  updateMapViewport: T.func
+  updateMapViewport: T.func,
+  isMobile: T.bool
 };
 
 function mapStateToProps(state, props) {

@@ -14,7 +14,7 @@ import {
   PlaceType,
   PlaceComment
 } from '../../../styles/place';
-import { InnerPanel, Panel } from '../../../styles/panel';
+import { InnerPanel, Panel, PanelFooter } from '../../../styles/panel';
 import Button from '../../../styles/button/button';
 import { StyledLink } from '../../common/link';
 
@@ -22,19 +22,20 @@ import { InpageBackLink } from '../../common/inpage';
 import withMobileState from '../../common/with-mobile-state';
 import Rating from './rating';
 import { fromNow } from '../../../utils/utils';
+import { showConfirmationPrompt } from '../../common/confirmation-prompt';
 
 class PlacesView extends Component {
-  async componentDidMount () {
+  async componentDidMount() {
     await this.fetchData();
   }
 
-  async fetchData () {
+  async fetchData() {
     const { type, id } = this.props.match.params;
     const placeId = `${type}/${id}`;
     await this.props.fetchPlace(placeId);
   }
 
-  render () {
+  render() {
     const { isReady, hasError, getData } = this.props.place;
     const { campaignSlug } = this.props.match.params;
 
@@ -89,6 +90,27 @@ class PlacesView extends Component {
               </>
             )}
           </PlaceDetails>
+          <PanelFooter>
+            <h4>Request Changes</h4>
+            <p>Notice incorrect or missing information? Update this place on OpenStreetMap to correct this listing.</p>
+            <Button
+              variation='secondary-raised-light'
+              onClick={async () => {
+                const res = await showConfirmationPrompt({
+                  title: 'Suggest edits to this location',
+                  content:
+                    'PlasticWatch relies on OpenStreetMap data for restaurant, cafe and bar location data. Click "Confirm" to edit a location to OpenStreetMap. Editing a location to OpenStreetMap requires creating an account and following OSM policies. Continue to view this location on OpenStreetMap, then click "Edit" and follow the OSM walkthrough to learn how to edit the global map. Please note, as changes to OSM must be verified by the external OSM community, changes to places added to OSM will not immediately be captured by PlasticWatch'
+                });
+                if (res.result) {
+                  window.open(
+                    `https://openstreetmap.org/${properties.id}`
+                  );
+                }
+              }}
+            >
+              Edit this place
+            </Button>
+          </PanelFooter>
         </InnerPanel>
       </Panel>
     );

@@ -41,7 +41,7 @@ export const InnerPanel = styled.article`
   flex-flow: column nowrap;
   align-items: stretch;
   justify-content: space-between;
-  margin: 2rem 0 0;
+  margin: 0;
   border-radius: ${themeVal('shape.rounded')};
   background: ${themeVal('color.surface')};
   box-shadow: 0 0 6px 1px ${themeVal('color.shadow')};
@@ -51,10 +51,23 @@ export const InnerPanel = styled.article`
     padding: 1.5rem;
     flex: 1;
     justify-content: flex-start;
+    margin: 2rem 0 0;
   `}
 
   a {
     text-decoration: none;
+  }
+`;
+
+export const PanelFooter = styled.footer`
+  margin-top: auto;
+  align-self: flex-end;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-between;
+
+  & > *:not(:first-child) {
+    margin-top: 1rem
   }
 `;
 

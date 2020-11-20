@@ -61,7 +61,7 @@ class PlacesIndex extends Component {
     super(props);
     this.state = {
       filtersOpened: false,
-      searchString: ''
+      searchString: props.filters.searchString || ''
     };
     this.toggleFilters = this.toggleFilters.bind(this);
     this.handleNameSearchChange = this.handleNameSearchChange.bind(this);
@@ -131,6 +131,16 @@ class PlacesIndex extends Component {
     });
   }
 
+  handleSearchReset () {
+    let searchString = '';
+    this.setState({
+      searchString
+    });
+    this.props.updateFilters({
+      searchString
+    });
+  }
+
   render () {
     const { filtersOpened } = this.state;
     const { isMobile, filters, activeMobileTab } = this.props;
@@ -158,7 +168,7 @@ class PlacesIndex extends Component {
                 type='text'
                 id='placeSearch'
                 placeholder='Enter place name'
-                defaultValue={this.props.filters.searchString}
+                value={this.state.searchString}
                 onChange={this.handleNameSearchChange}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
@@ -174,9 +184,20 @@ class PlacesIndex extends Component {
                   this.handleSearchStringChange(this.state.searchString)}
               />
             </InputWrapper>
+            { this.state.searchString && (
+              <Button
+                size='small'
+                variation='danger-plain'
+                useIcon='xmark--small'
+                onClick={() =>
+                  this.handleSearchReset()}
+              >
+                Reset
+              </Button>
+            )}
             {isMobile && (
-              <Button useIcon='sliders-vertical' onClick={this.toggleFilters}>
-                Show Filters
+              <Button variation='primary-plain' size='small' useIcon='sliders-vertical' onClick={this.toggleFilters}>
+                Filters
               </Button>
             )}
 
@@ -184,20 +205,26 @@ class PlacesIndex extends Component {
               <FilterButtons>
                 <FilterLabel>Filters:</FilterLabel>
                 <FilterButton
+                  size='small'
                   onClick={() => this.handlePlaceTypeChange('plasticFree')}
                   active={filters && filters.placeType === 'plasticFree'}
+                  useIcon={filters && filters.placeType === 'plasticFree' ? ['xmark--small', 'after'] : null}
                 >
                   Plastic Free
                 </FilterButton>
                 <FilterButton
+                  size='small'
                   onClick={() => this.handlePlaceTypeChange('plastic')}
                   active={filters && filters.placeType === 'plastic'}
+                  useIcon={filters && filters.placeType === 'plastic' ? ['xmark--small', 'after'] : null}
                 >
                   Plastic
                 </FilterButton>
                 <FilterButton
+                  size='small'
                   onClick={() => this.handlePlaceTypeChange('unsurveyed')}
                   active={filters && filters.placeType === 'unsurveyed'}
+                  useIcon={filters && filters.placeType === 'unsurveyed' ? ['xmark--small', 'after'] : null}
                 >
                   Unsurveyed
                 </FilterButton>

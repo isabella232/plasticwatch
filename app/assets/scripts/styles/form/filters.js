@@ -21,7 +21,7 @@ export const Filters = styled(Form)`
 `;
 export const FilterToolbar = styled(FormToolbar)`
   align-items: flex-end;
-  justify-content: space-between;
+  justify-content: flex-start;
   margin: 1rem -2rem 0;
   padding: 0 3rem 1rem;
   border-bottom: 1px solid ${themeVal('color.smoke')};
@@ -38,7 +38,14 @@ export const InputWrapper = styled.div`
   display: flex;
   flex-flow: column nowrap;
   justify-content: flex-end;
-  flex: 0 0 50%;
+  flex: 1 0 50%;
+  max-width: 68%;
+
+  + ${Button},
+  + * + ${Button} {
+    position: relative;
+    bottom: 0.25rem;
+  }
 `;
 
 export const InputWithIcon = styled(FormInput)`
@@ -66,16 +73,16 @@ export const FilterLabel = styled(FormLabel)`
 `;
 
 export const FilterButtons = styled.div`
+  display: flex;
   margin-top: 0.5rem;
 `;
 
 export const FilterButton = styled(Button)`
   text-transform: none;
   box-shadow: none;
-  font-size: 0.875rem;
   font-weight: ${themeVal('type.base.regular')};
   border: 1px solid ${themeVal('color.smoke')};
-  margin-right: 0.5rem;
+  margin-right: 0.25rem;
   padding: 0.25rem 0.5rem;
   ${media.largeUp`
     margin-right: ${themeVal('layout.space')};
