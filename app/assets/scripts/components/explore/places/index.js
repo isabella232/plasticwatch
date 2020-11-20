@@ -159,7 +159,9 @@ class PlacesIndex extends Component {
     const { isMobile, filters, activeMobileTab } = this.props;
     const { isReady, getData, hasError } = this.props.places;
     const { campaignSlug } = this.props.match.params;
-    const isSearchCityChecked = false;
+
+    // Remove this stubbed variable when #112 resolved
+    let isSearchCityChecked = false;
 
     if (isMobile && activeMobileTab !== 'list') {
       return null;
