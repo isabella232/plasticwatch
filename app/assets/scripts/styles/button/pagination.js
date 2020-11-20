@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import Button from './button';
 import { PropTypes as T } from 'prop-types';
-import Link from '../../components/common/link';
+import { StyledLink } from '../../components/common/link';
 import { environment } from '../../config';
 
 const Pager = styled.ul`
@@ -24,7 +24,7 @@ const Pagination = ({ pathname, meta }) => {
     <Pager>
       <li>
         <Button
-          as={Link}
+          as={StyledLink}
           useIcon='chevron-left-trail--small'
           variation='base-raised-semidark'
           to={`${pathname}?${first}`}
@@ -36,7 +36,7 @@ const Pagination = ({ pathname, meta }) => {
       </li>
       <li>
         <Button
-          as={Link}
+          as={StyledLink}
           useIcon='chevron-left--small'
           variation='base-raised-semidark'
           to={`${pathname}?${previous}`}
@@ -51,7 +51,7 @@ const Pagination = ({ pathname, meta }) => {
       </li>
       <li>
         <Button
-          as={Link}
+          as={StyledLink}
           useIcon='chevron-right--small'
           variation='base-raised-semidark'
           to={`${pathname}?${next}`}
@@ -63,7 +63,7 @@ const Pagination = ({ pathname, meta }) => {
       </li>
       <li>
         <Button
-          as={Link}
+          as={StyledLink}
           useIcon='chevron-right-trail--small'
           variation='base-raised-semidark'
           to={`${pathname}?${last}`}
