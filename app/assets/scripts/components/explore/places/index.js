@@ -169,7 +169,7 @@ class PlacesIndex extends Component {
           <FilterToolbar>
             <InputWrapper>
               <FilterLabel htmlFor='placeSearch'>
-                Search in the list
+                {isMobile ? 'Search in the list' : 'Search current view'}
               </FilterLabel>
               <InputWithIcon
                 type='text'
