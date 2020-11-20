@@ -33,6 +33,7 @@ import {
 import { hideScrollbars } from '../../../styles/skins';
 import Rating from './rating';
 import { Panel } from '../../../styles/panel';
+import { FormCheckable } from '../../../styles/form/checkable';
 import { withRouter } from 'react-router-dom';
 
 const Results = styled.ul`
@@ -54,6 +55,12 @@ const ResultsItem = styled.li`
   ${Button} {
     margin-bottom: 1rem;
   }
+`;
+
+const SearchCheckable = styled(FormCheckable)`
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
 `;
 
 class PlacesIndex extends Component {
@@ -200,7 +207,15 @@ class PlacesIndex extends Component {
                 Filters
               </Button>
             )}
-
+            <SearchCheckable
+              textPlacement='right'
+              type='checkbox'
+              name='search-city-checkbox'
+              id='city-yes'
+              size='small'
+            >
+              Search city
+            </SearchCheckable>
             {(!isMobile || (isMobile && filtersOpened)) && (
               <FilterButtons>
                 <FilterLabel>Filters:</FilterLabel>
