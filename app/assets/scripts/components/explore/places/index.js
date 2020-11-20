@@ -35,8 +35,6 @@ import Rating from './rating';
 import { Panel } from '../../../styles/panel';
 import { FormCheckable } from '../../../styles/form/checkable';
 import { withRouter, matchPath } from 'react-router-dom';
-import { geojsonBbox } from '../../../utils/geo';
-import { feature } from '@turf/helpers';
 import turfCentroid from '@turf/centroid';
 
 const Results = styled.ul`
