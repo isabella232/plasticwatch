@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { PropTypes as T } from 'prop-types';
+import get from 'lodash.get';
 
 import { environment } from '../../config';
 import { connect } from 'react-redux';
@@ -15,6 +16,7 @@ import { ScrollWrap } from '../../styles/table';
 import App from '../common/app';
 import UhOh from '../uhoh';
 import { InnerPanel, Panel, PanelStats, PanelStat } from '../../styles/panel';
+import Button from '../../styles/button/button';
 
 const FullPagePanel = styled(Panel)`
   ${InnerPanel} {
@@ -137,6 +139,7 @@ function UserView(props) {
   if (props.user.hasError()) return <UhOh />;
   const user = props.user.getData();
   const { badges, observations, gravatar } = user;
+  const { id: authId } = props.authenticatedUser.getData();
 
   // Fetch osm display image if gravatar doesn't exists
   let osmImg;
@@ -191,6 +194,20 @@ function UserView(props) {
                   </PanelStat> */}
                 </>
               )}
+              {
+                // Only render Edit button on a user's own profile
+                authId === user.id &&
+                <Button
+                  as='a'
+                  size='small'
+                  variation='primary-raised-light'
+                  href={user.osmDisplayName
+                    ? `https://www.openstreetmap.org/user/${user.osmDisplayName}/account`
+                    : 'https://www.gravatar.com'}
+                >
+                  Edit profile
+                </Button>
+              }
             </UserData>
           </UserInfo>
           <PanelStats>
@@ -234,7 +251,8 @@ if (environment !== 'production') {
   UserView.propTypes = {
     fetchUser: T.func,
     match: T.object,
-    user: T.object
+    user: T.object,
+    authenticatedUser: T.object
   };
 }
 
@@ -242,7 +260,9 @@ function mapStateToProps(state, props) {
   const { id } = props.match.params;
 
   return {
-    user: wrapApiResult(getFromState(state, `users.individual.${id}`))
+    user: wrapApiResult(getFromState(state, `users.individual.${id}`)),
+    authenticatedUser: wrapApiResult(state.authenticatedUser),
+    accessToken: get(state, 'authenticatedUser.data.accessToken')
   };
 }
 
