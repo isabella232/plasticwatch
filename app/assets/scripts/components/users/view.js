@@ -138,6 +138,20 @@ function UserView(props) {
   const user = props.user.getData();
   const { badges, observations, gravatar } = user;
 
+  // Fetch osm display image if gravatar doesn't exists
+  let osmImg;
+  if (user.osmId && gravatar === null) {
+    fetch(`https://www.openstreetmap.org/api/0.6/user/${user.osmId}`)
+      .then(response => response.text())
+      .then(str => (new window.DOMParser()).parseFromString(str, 'text/xml'))
+      .then(data => {
+        osmImg = data.getElementsByTagName('img')[0].getAttribute('href');
+        return osmImg;
+      })
+      // eslint-disable-next-line no-console
+      .catch(err => console.log(err));
+  }
+
   const lastSurveyDate = observations
     .map((o) => o.createdAt)
     .sort()
@@ -147,9 +161,10 @@ function UserView(props) {
     new Set(observations.map((o) => o.campaignId))
   ).length;
 
+  // Use gravatar > use OSM profile photo > use placeholder
   const profileImageSrc = gravatar
     ? `https://www.gravatar.com/avatar/${gravatar}?s=200`
-    : `https://via.placeholder.com/150/EDEDED/3D4B74?text=${user.displayName}`;
+    : (osmImg || `https://via.placeholder.com/150/EDEDED/3D4B74?text=${user.displayName}`);
 
   return (
     <App pageTitle='User Profile'>
