@@ -6,6 +6,7 @@ import { environment } from '../../config';
 import { connect } from 'react-redux';
 import { wrapApiResult, getFromState } from '../../redux/utils';
 import * as actions from '../../redux/actions/trends';
+import { fetchCampaigns } from '../../redux/actions/campaigns';
 import { NavLink } from 'react-router-dom';
 import { filterComponentProps } from '../../utils';
 
@@ -110,9 +111,29 @@ class Trends extends React.Component {
     this.dropdownRef = React.createRef();
   }
 
-  componentDidMount () {
-    this.props.fetchStats();
-    this.props.fetchTopSurveyors();
+  async componentDidMount () {
+    await this.props.fetchCampaigns();
+
+    const { hasError } = this.props.campaigns;
+    if (hasError()) return;
+
+    // Get data
+    const {
+      campaigns,
+      match: {
+        params: { campaignSlug }
+      }
+    } = this.props;
+
+    if (campaignSlug) {
+      const allCampaigns = campaigns.getData();
+      const campaign = allCampaigns[campaignSlug];
+      this.props.fetchStats(campaign.id);
+      this.props.fetchTopSurveyors(campaign.id);
+    } else {
+      this.props.fetchStats();
+      this.props.fetchTopSurveyors();
+    }
   }
 
   scroll (ref) {
@@ -170,7 +191,7 @@ class Trends extends React.Component {
     } = this.props;
 
     // Do not render until campaigns are available
-    // if (!campaigns.isReady() || campaigns.hasError()) return <></>;
+    if (!campaigns.isReady() || campaigns.hasError()) return <></>;
 
     // Get data
     const allCampaigns = campaigns.getData();
@@ -397,6 +418,7 @@ if (environment !== 'production') {
   Trends.propTypes = {
     stats: T.object,
     topSurveyors: T.object,
+    fetchCampaigns: T.func,
     fetchStats: T.func,
     fetchTopSurveyors: T.func,
     isMobile: T.bool,
@@ -409,12 +431,13 @@ function mapStateToProps (state) {
   return {
     stats: wrapApiResult(getFromState(state, `trends.stats`)),
     topSurveyors: wrapApiResult(getFromState(state, `trends.topSurveyors`)),
-    campaigns: wrapApiResult(state.campaigns)
+    campaigns: wrapApiResult(getFromState(state, 'campaigns'))
   };
 }
 
 function dispatcher (dispatch) {
   return {
+    fetchCampaigns: (...args) => dispatch(fetchCampaigns(...args)),
     fetchStats: (...args) => dispatch(actions.fetchStats(...args)),
     fetchTopSurveyors: (...args) =>
       dispatch(actions.fetchTopSurveyors(...args))

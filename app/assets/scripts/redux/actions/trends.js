@@ -26,10 +26,15 @@ export function receivePlacesStats (data, error = null) {
   };
 }
 
-export function fetchStats () {
+export function fetchStats (campaignId) {
+  let query = '/';
+  if (campaignId) {
+    query = `?campaignId=${campaignId}`;
+  }
+
   return fetchDispatchFactory({
     statePath: ['trends', 'stats'],
-    url: `${apiUrl}/osmobjects/stats`,
+    url: `${apiUrl}/osmobjects/stats${query}`,
     requestFn: requestPlacesStats.bind(this),
     receiveFn: receivePlacesStats.bind(this)
   });
@@ -60,10 +65,15 @@ export function receiveTopSurveyors (data, error = null) {
   };
 }
 
-export function fetchTopSurveyors () {
+export function fetchTopSurveyors (campaignId) {
+  let query = '';
+
+  if (campaignId) {
+    query = `&campaignId=${campaignId}`;
+  }
   return fetchDispatchFactory({
     statePath: ['trends', 'topSurveyors'],
-    url: `${apiUrl}/top-surveyors?limit=10`,
+    url: `${apiUrl}/top-surveyors?limit=10${query}`,
     requestFn: requestTopSurveyors.bind(this),
     receiveFn: receiveTopSurveyors.bind(this)
   });

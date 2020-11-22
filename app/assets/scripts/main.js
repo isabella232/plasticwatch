@@ -37,6 +37,7 @@ const Root = () => (
           <Switch>
             <Route exact path='/' component={Home} />
             <Route exact path='/trends' component={Trends} />
+            <Route path='/trends/:campaignSlug' component={Trends} />
             <Route
               path={['/explore/:campaignSlug', '/explore/:campaignSlug/*]']}
               component={Explore}
