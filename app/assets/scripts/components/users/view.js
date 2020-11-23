@@ -35,7 +35,7 @@ const FullPagePanel = styled(Panel)`
     grid-gap: 2rem;
     height: 100vh;
     overflow: hidden;
-    width: max-content;
+    width: 36rem;
     ${InnerPanel} {
       max-height: calc(100vh - 6rem);
       &:not(:last-of-type) {
@@ -66,18 +66,20 @@ const Avatar = styled.img`
   margin-right: 1rem;
   border-radius: 50%;
   max-width: 150px;
-  border: 0.5rem solid ${themeVal('color.shadow')};
+  border: 2px solid ${themeVal('color.primary')};
+  box-shadow: 0 0 0 0.5rem ${themeVal('color.base')};
+  margin-bottom: 1rem;
 `;
 
 const UserData = styled.div`
   display: flex;
-  flex-flow: row nowrap;
+  flex-flow: column nowrap;
   flex: 1;
-  ${media.mediumUp`
-    flex-flow: column nowrap;
-  `}
   ${PanelStat} {
     border-right: none;
+  }
+  small {
+    margin-top: 1rem;
   }
 `;
 
