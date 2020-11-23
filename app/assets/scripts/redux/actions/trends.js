@@ -27,7 +27,7 @@ export function receivePlacesStats (data, error = null) {
 }
 
 export function fetchStats (campaignId) {
-  let query = '/';
+  let query = '';
   if (campaignId) {
     query = `?campaignId=${campaignId}`;
   }
