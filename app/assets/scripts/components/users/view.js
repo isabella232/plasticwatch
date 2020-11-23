@@ -197,16 +197,24 @@ function UserView(props) {
               {
                 // Only render Edit button on a user's own profile
                 authId === user.id &&
-                <Button
-                  as='a'
-                  size='small'
-                  variation='primary-raised-light'
-                  href={user.osmDisplayName
-                    ? `https://www.openstreetmap.org/user/${user.osmDisplayName}/account`
-                    : 'https://www.gravatar.com'}
-                >
-                  Edit profile
-                </Button>
+                <>
+                  <Button
+                    as='a'
+                    size='small'
+                    variation='primary-raised-light'
+                    href={user.osmDisplayName
+                      ? `https://www.openstreetmap.org/user/${user.osmDisplayName}/account`
+                      : 'https://www.gravatar.com'}
+                  >
+                    Edit profile
+                  </Button>
+                  {
+                    !user.osmDisplayName &&
+                    <small>
+                      Plasticwatch uses Gravatar for your user profile photo. Click the link above to sign in to Gravatar and edit your profile.
+                    </small>
+                  }
+                </>
               }
             </UserData>
           </UserInfo>
