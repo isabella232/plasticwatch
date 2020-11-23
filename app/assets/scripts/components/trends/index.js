@@ -80,7 +80,7 @@ const TrendsTitle = styled.h1`
 const TrendsButton = styled(ButtonCaret)`
   max-width: 100%;
   align-self: baseline;
-  font-family: ${themeVal('typography.displayFontFamily')};
+  font-family: ${themeVal('type.base.family')};
   font-size: 1.5rem;
   line-height: 2.5rem;
   text-align: left;
@@ -91,7 +91,7 @@ const TrendsButton = styled(ButtonCaret)`
 const TrendsButtonLabel = styled.small`
   ${headingAlt()}
   align-self: baseline;
-  color: ${themeVal('colors.baseColorMed')};
+  color: ${themeVal('color.baseMed')};
   line-height: 0.875rem;
 `;
 
