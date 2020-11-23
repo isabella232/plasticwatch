@@ -114,6 +114,12 @@ class Trends extends React.Component {
 
   componentDidMount() {
     this.props.fetchCampaigns();
+
+    // In case campaigns were already loaded ib another page,
+    // update stats
+    if (this.props.campaigns.isReady()) {
+      this.updateStats();
+    }
   }
 
   componentDidUpdate(prevProps) {
