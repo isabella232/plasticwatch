@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { PropTypes as T } from 'prop-types';
 import { environment } from '../../config';
+import get from 'lodash.get';
 
 import { connect } from 'react-redux';
 import { wrapApiResult, getFromState } from '../../redux/utils';
@@ -111,12 +112,25 @@ class Trends extends React.Component {
     this.dropdownRef = React.createRef();
   }
 
-  async componentDidMount () {
-    await this.props.fetchCampaigns();
+  componentDidMount() {
+    this.props.fetchCampaigns();
+  }
 
-    const { hasError } = this.props.campaigns;
-    if (hasError()) return;
+  componentDidUpdate(prevProps) {
+    const campaignSlug = get(this.props, 'match.params.campaignSlug');
+    const prevCampaignSlug = get(prevProps, 'match.params.campaignSlug');
+    const { campaigns } = this.props;
 
+    // When campaigns are loaded or campaign slug has changed, update stats
+    if (
+      (!prevProps.campaigns.isReady() && campaigns.isReady()) ||
+      (campaigns.isReady() && prevCampaignSlug !== campaignSlug)
+    ) {
+      this.updateStats();
+    }
+  }
+
+  updateStats() {
     // Get data
     const {
       campaigns,
