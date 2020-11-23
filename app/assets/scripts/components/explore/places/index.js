@@ -36,6 +36,8 @@ import { Panel } from '../../../styles/panel';
 import { FormCheckable } from '../../../styles/form/checkable';
 import { withRouter, matchPath } from 'react-router-dom';
 import turfCentroid from '@turf/centroid';
+import { geojsonBbox } from '../../../utils/geo';
+import { feature } from '@turf/helpers';
 
 const Results = styled.ul`
   ${listReset()};
@@ -144,13 +146,16 @@ class PlacesIndex extends Component {
   handleSearchStringChange (searchString) {
     // read the state of checkbox
     if (this.state.isSearchCityChecked) {
-      const center = turfCentroid(JSON.parse(this.props.campaign.aoi));
+      const aoi = JSON.parse(this.props.campaign.aoi);
+      const bbox = geojsonBbox(feature(aoi));
+      const center = turfCentroid(aoi);
       this.props.updateFiltersAndMapViewport({
         filters: {
           searchString
         },
         mapViewport: {
-          zoom: 13,
+          zoom: 12,
+          bounds: [[bbox[0], bbox[1]], [bbox[2], bbox[3]]],
           lng: center.geometry.coordinates[0],
           lat: center.geometry.coordinates[1]
         }
