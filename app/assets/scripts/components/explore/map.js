@@ -77,7 +77,7 @@ class Map extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { places, geojson, campaignSlug } = this.props;
+    const { places, geojson, campaignSlug, mapViewport } = this.props;
 
     // Do not perform changes if map is not loaded
     if (!this.state.mapLoaded) return;
@@ -96,6 +96,17 @@ class Map extends Component {
     // If new places were received, update map
     if (places.isReady() && prevProps.places.receivedAt !== places.receivedAt) {
       this.map.getSource('placesSource').setData(geojson);
+
+      // Check if viewport changed after places request was started
+      // and apply it
+      const currentBounds = this.map.getBounds().toArray();
+      if (
+        mapViewport &&
+        mapViewport.bounds &&
+        !isEqual(currentBounds, mapViewport.bounds)
+      ) {
+        this.map.fitBounds(mapViewport.bounds);
+      }
     }
 
     if (!isEqual(prevProps.featureCenter, this.props.featureCenter)) {
