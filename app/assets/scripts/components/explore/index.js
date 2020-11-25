@@ -118,7 +118,11 @@ class Explore extends React.Component {
       (!isEqual(prevProps.mapViewport, mapViewport) ||
         !isEqual(prevProps.filters, filters))
     ) {
-      await this.props.updatePlacesList();
+      // Do not query tiles if mapViewport bounds isn't available.
+      if (mapViewport.bounds) {
+        await this.props.updatePlacesList();
+      }
+
       this.updateQuerystring();
     }
   }
