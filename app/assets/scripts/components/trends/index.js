@@ -10,6 +10,7 @@ import * as actions from '../../redux/actions/trends';
 import { fetchCampaigns } from '../../redux/actions/campaigns';
 import { NavLink } from 'react-router-dom';
 import { filterComponentProps } from '../../utils';
+import { Modal, ModalHeader, ModalBody } from '../common/modal';
 
 import App from '../common/app';
 
@@ -100,6 +101,18 @@ const TrendMenuItem = styled(DropMenuItem)`
   text-decoration: none;
 `;
 
+const CampaignList = styled.ul`
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: stretch;
+  justify-content: space-around;
+  ${Button} {
+    text-decoration: none;
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+`;
+
 const propsToFilter = ['variation', 'size', 'hideText', 'useIcon', 'active'];
 const NavLinkFilter = filterComponentProps(NavLink, propsToFilter);
 
@@ -109,7 +122,12 @@ class Trends extends React.Component {
     this.topSurveyors = React.createRef();
     this.cityTrends = React.createRef();
     this.renderCampaignSelect = this.renderCampaignSelect.bind(this);
+    this.handleMapBtnClick = this.handleMapBtnClick.bind(this);
+    this.renderCampaignButtons = this.renderCampaignButtons.bind(this);
     this.dropdownRef = React.createRef();
+    this.state = {
+      showCampaignSelector: false
+    };
   }
 
   componentDidMount() {
@@ -133,6 +151,14 @@ class Trends extends React.Component {
       (campaigns.isReady() && prevCampaignSlug !== campaignSlug)
     ) {
       this.updateStats();
+    }
+  }
+
+  handleMapBtnClick() {
+    const campaignSlug = get(this.props, 'match.params.campaignSlug');
+    // Show Campaign Selector
+    if (!campaignSlug) {
+      this.setState(prevState => ({ showCampaignSelector: !prevState.showCampaignSelector }));
     }
   }
 
@@ -259,6 +285,40 @@ class Trends extends React.Component {
           </Dropdown>
         </TrendsTitle>
       </React.Fragment>
+    );
+  }
+  renderCampaignButtons() {
+    // Get campaign slug
+    const { campaigns } = this.props;
+    // Do not render until campaigns are available
+    if (!campaigns.isReady() || campaigns.hasError()) return <></>;
+    // Get data
+    const allCampaigns = campaigns.getData();
+
+    if (allCampaigns.length === 0) {
+      return <div>No campaigns are available.</div>;
+    }
+    return (
+      <CampaignList>
+        {Object.keys(allCampaigns).map((cSlug) => {
+          const c = allCampaigns[cSlug];
+          return (
+            <li key={cSlug}>
+              <Button
+                as={StyledLink}
+                variation='primary-raised-light'
+                onClick={() => {
+                  this.scroll(this.topSurveyors);
+                }}
+                to={`/explore/${c.slug}`}
+                data-tip={`Go to ${c.name} campaign`}
+              >
+                {c.name}
+              </Button>
+            </li>
+          );
+        })}
+      </CampaignList>
     );
   }
 
@@ -398,10 +458,17 @@ class Trends extends React.Component {
               useIcon='map'
               variation='base-raised-dark'
               as={StyledLink}
-              to='/explore'
+              onClick={() => this.handleMapBtnClick()}
             >
               Show me the map
             </Button>
+            <Modal
+              id='introExpanded'
+              revealed={this.state.showCampaignSelector}
+              onCloseClick={() => this.handleMapBtnClick()}
+              headerComponent={<ModalHeader>Select a city</ModalHeader>}
+              bodyComponent={<ModalBody>{this.renderCampaignButtons()}</ModalBody>}
+            />
             {isMobile && (
               <Button
                 useIcon={['chevron-down--small', 'after']}
