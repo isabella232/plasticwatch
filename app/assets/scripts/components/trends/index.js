@@ -1,28 +1,39 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { PropTypes as T } from 'prop-types';
 import { environment } from '../../config';
+import get from 'lodash.get';
 
 import { connect } from 'react-redux';
 import { wrapApiResult, getFromState } from '../../redux/utils';
 import * as actions from '../../redux/actions/trends';
 import { fetchCampaigns } from '../../redux/actions/campaigns';
+import { NavLink } from 'react-router-dom';
+import { filterComponentProps } from '../../utils';
+import { Modal, ModalHeader, ModalBody } from '../common/modal';
 
 import App from '../common/app';
 
-import UhOh from '../uhoh';
 import { Pie } from '@vx/shape';
 import { Group } from '@vx/group';
 import { LinearGradient } from '@vx/gradient';
 import { StyledLink } from '../common/link';
+import Dropdown, {
+  DropMenu,
+  DropMenuItem
+} from '../common/dropdown';
 import withMobileState from '../common/with-mobile-state';
+import { headingAlt } from '../../styles/type/heading';
 import { InnerPanel, Panel, PanelStats, PanelStat } from '../../styles/panel';
 import Button from '../../styles/button/button';
+import ButtonCaret from '../../styles/button/button-caret';
 import { themeVal } from '../../styles/utils/general';
+import { multiply } from '../../styles/utils/math';
 import DataTable, { ScrollWrap } from '../../styles/table';
 import { round, formatThousands } from '../../utils/utils';
 import media from '../../styles/utils/media-queries';
-import { Modal, ModalHeader, ModalBody } from '../common/modal';
+
+const glSp = themeVal('layout.space');
 
 const PlaceTrends = styled.div`
   p {
@@ -64,6 +75,32 @@ const TwoPanelLayout = styled(Panel)`
   `};
 `;
 
+const TrendsTitle = styled.h1`
+  margin: 0 -${glSp} ${multiply(glSp, 2)} -${glSp};
+`;
+
+const TrendsButton = styled(ButtonCaret)`
+  max-width: 100%;
+  align-self: baseline;
+  font-family: ${themeVal('type.base.family')};
+  font-size: 1.5rem;
+  line-height: 2.5rem;
+  text-align: left;
+  text-transform: none;
+  letter-spacing: none;
+`;
+
+const TrendsButtonLabel = styled.small`
+  ${headingAlt()}
+  align-self: baseline;
+  color: ${themeVal('color.baseMed')};
+  line-height: 0.875rem;
+`;
+
+const TrendMenuItem = styled(DropMenuItem)`
+  text-decoration: none;
+`;
+
 const CampaignList = styled.ul`
   display: flex;
   flex-flow: column nowrap;
@@ -76,26 +113,82 @@ const CampaignList = styled.ul`
   }
 `;
 
-function Trends(props) {
-  const { campaigns, topSurveyors, stats, isMobile } = props;
-  const {
-    params: { campaignSlug }
-  } = props.match;
+const propsToFilter = ['variation', 'size', 'hideText', 'useIcon', 'active'];
+const NavLinkFilter = filterComponentProps(NavLink, propsToFilter);
 
-  const [showCampaignSelector, setShowCampaignSelector] = useState(false);
-  const topSurveyorsRef = React.createRef();
-  const cityTrendsRef = React.createRef();
-  useEffect(() => {
-    props.fetchStats();
-    props.fetchTopSurveyors();
-    props.fetchCampaigns();
-  }, []);
+class Trends extends React.Component {
+  constructor () {
+    super();
+    this.topSurveyors = React.createRef();
+    this.cityTrends = React.createRef();
+    this.renderCampaignSelect = this.renderCampaignSelect.bind(this);
+    this.handleMapBtnClick = this.handleMapBtnClick.bind(this);
+    this.renderCampaignButtons = this.renderCampaignButtons.bind(this);
+    this.dropdownRef = React.createRef();
+    this.state = {
+      showCampaignSelector: false
+    };
+  }
 
-  function scroll(ref) {
+  componentDidMount() {
+    this.props.fetchCampaigns();
+
+    // In case campaigns were already loaded ib another page,
+    // update stats
+    if (this.props.campaigns.isReady()) {
+      this.updateStats();
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    const campaignSlug = get(this.props, 'match.params.campaignSlug');
+    const prevCampaignSlug = get(prevProps, 'match.params.campaignSlug');
+    const { campaigns } = this.props;
+
+    // When campaigns are loaded or campaign slug has changed, update stats
+    if (
+      (!prevProps.campaigns.isReady() && campaigns.isReady()) ||
+      (campaigns.isReady() && prevCampaignSlug !== campaignSlug)
+    ) {
+      this.updateStats();
+    }
+  }
+
+  handleMapBtnClick() {
+    const campaignSlug = get(this.props, 'match.params.campaignSlug');
+    // Show Campaign Selector
+    if (!campaignSlug) {
+      this.setState(prevState => ({ showCampaignSelector: !prevState.showCampaignSelector }));
+    }
+  }
+
+  updateStats() {
+    // Get data
+    const {
+      campaigns,
+      match: {
+        params: { campaignSlug }
+      }
+    } = this.props;
+
+    if (campaignSlug) {
+      const allCampaigns = campaigns.getData();
+      const campaign = allCampaigns[campaignSlug];
+      this.props.fetchStats(campaign.id);
+      this.props.fetchTopSurveyors(campaign.id);
+    } else {
+      this.props.fetchStats();
+      this.props.fetchTopSurveyors();
+    }
+  }
+
+  scroll (ref) {
     ref.current.scrollIntoView({ behavior: 'smooth' });
   }
 
-  function renderTopSurveyors () {
+  renderTopSurveyors () {
+    const { topSurveyors } = this.props;
+
     if (!topSurveyors.isReady()) return null;
     if (topSurveyors.hasError()) {
       return <div>There was an error loading top surveyors.</div>;
@@ -134,29 +227,77 @@ function Trends(props) {
     );
   }
 
-  function handleMapClick() {
-    // Show Campaign Selector
-    if (!campaignSlug) {
-      setShowCampaignSelector(true);
-    }
+  renderCampaignSelect() {
+    // Get campaign slug
+    const {
+      campaigns,
+      match: {
+        params: { campaignSlug }
+      }
+    } = this.props;
+
+    // Do not render until campaigns are available
+    if (!campaigns.isReady() || campaigns.hasError()) return <></>;
+
+    // Get data
+    const allCampaigns = campaigns.getData();
+    const campaign = allCampaigns[campaignSlug];
+
+    // Do not render if campaign is not available
+    // if (!campaign) return <></>;
+
+    return (
+      <React.Fragment>
+        <TrendsButtonLabel>Select City</TrendsButtonLabel>
+        <TrendsTitle>
+          <Dropdown
+            ref={this.dropdownRef}
+            alignment='right'
+            direction='down'
+            triggerElement={(props) => (
+              <TrendsButton
+                element='a'
+                title='Open dropdown'
+                {...props}
+              >
+                {campaign ? campaign.name : 'All PlasticWatch Cities'}
+              </TrendsButton>
+            )}
+          >
+            <DropMenu>
+              {Object.keys(allCampaigns).map((cSlug) => {
+                const c = allCampaigns[cSlug];
+                if (cSlug !== campaignSlug) {
+                  return (
+                    <TrendMenuItem
+                      as={NavLinkFilter}
+                      key={cSlug}
+                      to={`/trends/${c.slug}`}
+                      data-tip={`View ${c.name} trends`}
+                      onClick={() => this.dropdownRef.current.close()}
+                    >
+                      {c.name}
+                    </TrendMenuItem>
+                  );
+                }
+              })}
+            </DropMenu>
+          </Dropdown>
+        </TrendsTitle>
+      </React.Fragment>
+    );
   }
-
-  // Helper function to list campaigns in Modal
-  function renderCampaigns() {
-    if (!campaigns.isReady()) {
-      return <div>Loading campaigns...</div>;
-    }
-
-    if (campaigns.hasError()) {
-      return <UhOh />;
-    }
-
+  renderCampaignButtons() {
+    // Get campaign slug
+    const { campaigns } = this.props;
+    // Do not render until campaigns are available
+    if (!campaigns.isReady() || campaigns.hasError()) return <></>;
+    // Get data
     const allCampaigns = campaigns.getData();
 
     if (allCampaigns.length === 0) {
       return <div>No campaigns are available.</div>;
     }
-
     return (
       <CampaignList>
         {Object.keys(allCampaigns).map((cSlug) => {
@@ -166,6 +307,9 @@ function Trends(props) {
               <Button
                 as={StyledLink}
                 variation='primary-raised-light'
+                onClick={() => {
+                  this.scroll(this.topSurveyors);
+                }}
                 to={`/explore/${c.slug}`}
                 data-tip={`Go to ${c.name} campaign`}
               >
@@ -178,190 +322,195 @@ function Trends(props) {
     );
   }
 
-  if (!stats.isReady()) return <div />;
+  render () {
+    const { stats, isMobile } = this.props;
+    const campaignSlug = get(this.props, 'match.params.campaignSlug');
+    if (!stats.isReady()) return <div />;
 
-  const {
-    placesCount,
-    nonPlasticPlacesCount,
-    surveyedPlacesCount,
-    surveyorsCount
-  } = stats.getData();
+    const {
+      placesCount,
+      nonPlasticPlacesCount,
+      surveyedPlacesCount,
+      surveyorsCount
+    } = stats.getData();
 
-  const percentSurveyed =
-    surveyedPlacesCount > 0
-      ? round((surveyedPlacesCount / placesCount) * 100, 1)
-      : 0;
-  const percentNonPlastic =
-    surveyedPlacesCount > 0
-      ? round((nonPlasticPlacesCount / surveyedPlacesCount) * 100, 1)
-      : 0;
+    const percentSurveyed =
+      surveyedPlacesCount > 0
+        ? round((surveyedPlacesCount / placesCount) * 100, 1)
+        : 0;
+    const percentNonPlastic =
+      surveyedPlacesCount > 0
+        ? round((nonPlasticPlacesCount / surveyedPlacesCount) * 100, 1)
+        : 0;
 
-  const barHeight = 20;
-  const pieSize = 200;
-  const piePadding = 10;
-  const pieData = [
-    {
-      label: 'plastic',
-      color: '#EDEDED',
-      value: 100 - percentNonPlastic
-    },
-    {
-      label: 'non-plastic',
-      color: "url('#gradient')",
-      value: percentNonPlastic
-    }
-  ];
-  const radius = (pieSize - 2 * piePadding) / 2;
-  const thickness = 25;
+    const barHeight = 20;
+    const pieSize = 200;
+    const piePadding = 10;
+    const pieData = [
+      {
+        label: 'plastic',
+        color: '#EDEDED',
+        value: 100 - percentNonPlastic
+      },
+      {
+        label: 'non-plastic',
+        color: "url('#gradient')",
+        value: percentNonPlastic
+      }
+    ];
+    const radius = (pieSize - 2 * piePadding) / 2;
+    const thickness = 25;
 
-  return (
-    <App pageTitle='Trends'>
-      <TwoPanelLayout>
-        <InnerPanel ref={cityTrendsRef}>
-          <PlaceTrends>
-            <h2>All cities</h2>
-            <p>
-              <strong>{formatThousands(surveyedPlacesCount)}</strong>&nbsp;
-              restaurants surveyed
-            </p>
-            <svg width='100%' height={barHeight}>
-              <rect
-                x={0}
-                y={0}
-                width='100%'
-                height={barHeight}
-                fill='#D8D8D8'
-                rx={2}
-              />
-              <rect
-                x={0}
-                y={0}
-                width={`${percentSurveyed}%`}
-                height={barHeight}
-                fill='#00A3DA'
-                rx={2}
-              />
+    return (
+      <App pageTitle='Trends'>
+        <TwoPanelLayout>
+          <InnerPanel ref={this.cityTrends}>
+            <PlaceTrends>
+              {this.renderCampaignSelect()}
+              <p>
+                <strong>{formatThousands(surveyedPlacesCount)}</strong>&nbsp;
+                restaurants surveyed
+              </p>
+              <svg width='100%' height={barHeight}>
+                <rect
+                  x={0}
+                  y={0}
+                  width='100%'
+                  height={barHeight}
+                  fill='#D8D8D8'
+                  rx={2}
+                />
+                <rect
+                  x={0}
+                  y={0}
+                  width={`${percentSurveyed}%`}
+                  height={barHeight}
+                  fill='#00A3DA'
+                  rx={2}
+                />
+              </svg>
+              <p>
+                {percentSurveyed}% of &nbsp;
+                {formatThousands(placesCount)} restaurants imported from
+                OpenStreetMap
+              </p>
+            </PlaceTrends>
+            <svg width={pieSize} height={pieSize}>
+              <LinearGradient id='gradient' from='#01A1D7' to='#104271' />;
+              <Group top={pieSize / 2} left={pieSize / 2}>
+                <text textAnchor='middle' y='0.5em'>
+                  {round(percentNonPlastic)}%
+                </text>
+                <Pie
+                  data={pieData}
+                  pieValue={(d) => d.value}
+                  cornerRadius={3}
+                  padAngle={0}
+                  fillOpacity={0.8}
+                  outerRadius={radius}
+                  innerRadius={radius - thickness}
+                >
+                  {(pie) => {
+                    return pie.arcs.map((arc, i) => {
+                      return (
+                        <g key={`letters-${arc.data.label}`}>
+                          <path
+                            className='slice'
+                            d={pie.path(arc)}
+                            fill={arc.data.color}
+                          />
+                        </g>
+                      );
+                    });
+                  }}
+                </Pie>
+              </Group>
             </svg>
             <p>
-              {percentSurveyed}% of &nbsp;
-              {formatThousands(placesCount)} restaurants imported from
-              OpenStreetMap
-            </p>
-          </PlaceTrends>
-          <svg width={pieSize} height={pieSize}>
-            <LinearGradient id='gradient' from='#01A1D7' to='#104271' />;
-            <Group top={pieSize / 2} left={pieSize / 2}>
-              <text textAnchor='middle' y='0.5em'>
-                {round(percentNonPlastic)}%
-              </text>
-              <Pie
-                data={pieData}
-                pieValue={(d) => d.value}
-                cornerRadius={3}
-                padAngle={0}
-                fillOpacity={0.8}
-                outerRadius={radius}
-                innerRadius={radius - thickness}
-              >
-                {(pie) => {
-                  return pie.arcs.map((arc, i) => {
-                    return (
-                      <g key={`letters-${arc.data.label}`}>
-                        <path
-                          className='slice'
-                          d={pie.path(arc)}
-                          fill={arc.data.color}
-                        />
-                      </g>
-                    );
-                  });
-                }}
-              </Pie>
-            </Group>
-          </svg>
-          <p>
-            {formatThousands(nonPlasticPlacesCount)} of&nbsp;
-            {formatThousands(surveyedPlacesCount)}
-            &nbsp; surveyed restaurants offer plastic-free
-            options.
-          </p>
-          <PanelStats>
-            <PanelStat>
+              {formatThousands(nonPlasticPlacesCount)} of&nbsp;
               {formatThousands(surveyedPlacesCount)}
-              <span>
-                Restaurants
-                <br />
-                Surveyed
-              </span>
-            </PanelStat>
-            <PanelStat>
-              {formatThousands(surveyorsCount)}
-              <span>Surveyors</span>
-            </PanelStat>
-            <PanelStat>
-              {formatThousands(placesCount - surveyedPlacesCount)}
-              <span>
-                Restaurants to
-                <br />
-                Survey
-              </span>
-            </PanelStat>
-          </PanelStats>
-          <Button
-            useIcon='map'
-            variation='base-raised-dark'
-            as={StyledLink}
-            onClick={() => handleMapClick()}
-          >
-            Show me the map
-          </Button>
-          <Modal
-            id='introExpanded'
-            revealed={showCampaignSelector}
-            onCloseClick={() => setShowCampaignSelector(false)}
-            headerComponent={<ModalHeader>Select a city</ModalHeader>}
-            bodyComponent={<ModalBody>{renderCampaigns()}</ModalBody>}
-          />
-          {isMobile && (
+              &nbsp; surveyed restaurants offer plastic-free
+              options.
+            </p>
+            <PanelStats>
+              <PanelStat>
+                {formatThousands(surveyedPlacesCount)}
+                <span>
+                  Restaurants
+                  <br />
+                  Surveyed
+                </span>
+              </PanelStat>
+              <PanelStat>
+                {formatThousands(surveyorsCount)}
+                <span>Surveyors</span>
+              </PanelStat>
+              <PanelStat>
+                {formatThousands(placesCount - surveyedPlacesCount)}
+                <span>
+                  Restaurants to
+                  <br />
+                  Survey
+                </span>
+              </PanelStat>
+            </PanelStats>
             <Button
-              useIcon={['chevron-down--small', 'after']}
-              variation='primary-raised-light'
-              onClick={() => {
-                scroll(topSurveyorsRef);
-              }}
+              useIcon='map'
+              variation='base-raised-dark'
+              as={StyledLink}
+              onClick={() => this.handleMapBtnClick()}
+              to={campaignSlug && `/explore/${campaignSlug}`}
             >
-              Surveyor Trends
+              Show me the map
             </Button>
-          )}
-        </InnerPanel>
-        <InnerPanel ref={topSurveyorsRef}>
-          {renderTopSurveyors()}
-          {isMobile && (
-            <Button
-              useIcon={['chevron-up--small', 'after']}
-              variation='primary-raised-light'
-              onClick={() => {
-                scroll(cityTrendsRef);
-              }}
-            >
-              City Trends
-            </Button>
-          )}
-        </InnerPanel>
-      </TwoPanelLayout>
-    </App>
-  );
+            <Modal
+              id='introExpanded'
+              revealed={this.state.showCampaignSelector}
+              onCloseClick={() => this.handleMapBtnClick()}
+              headerComponent={<ModalHeader>Select a city</ModalHeader>}
+              bodyComponent={<ModalBody>{this.renderCampaignButtons()}</ModalBody>}
+            />
+            {isMobile && (
+              <Button
+                useIcon={['chevron-down--small', 'after']}
+                variation='primary-raised-light'
+                onClick={() => {
+                  this.scroll(this.topSurveyors);
+                }}
+              >
+                Surveyor Trends
+              </Button>
+            )}
+          </InnerPanel>
+          <InnerPanel ref={this.topSurveyors}>
+            {this.renderTopSurveyors()}
+            {isMobile && (
+              <Button
+                useIcon={['chevron-up--small', 'after']}
+                variation='primary-raised-light'
+                onClick={() => {
+                  this.scroll(this.cityTrends);
+                }}
+              >
+                City Trends
+              </Button>
+            )}
+          </InnerPanel>
+        </TwoPanelLayout>
+      </App>
+    );
+  }
 }
 
 if (environment !== 'production') {
   Trends.propTypes = {
     stats: T.object,
     topSurveyors: T.object,
+    fetchCampaigns: T.func,
     fetchStats: T.func,
     fetchTopSurveyors: T.func,
     isMobile: T.bool,
     campaigns: T.object,
-    fetchCampaigns: T.func,
     match: T.object
   };
 }
@@ -370,16 +519,16 @@ function mapStateToProps (state) {
   return {
     stats: wrapApiResult(getFromState(state, `trends.stats`)),
     topSurveyors: wrapApiResult(getFromState(state, `trends.topSurveyors`)),
-    campaigns: wrapApiResult(state.campaigns)
+    campaigns: wrapApiResult(getFromState(state, 'campaigns'))
   };
 }
 
 function dispatcher (dispatch) {
   return {
+    fetchCampaigns: (...args) => dispatch(fetchCampaigns(...args)),
     fetchStats: (...args) => dispatch(actions.fetchStats(...args)),
     fetchTopSurveyors: (...args) =>
-      dispatch(actions.fetchTopSurveyors(...args)),
-    fetchCampaigns: (...args) => dispatch(fetchCampaigns(...args))
+      dispatch(actions.fetchTopSurveyors(...args))
   };
 }
 
