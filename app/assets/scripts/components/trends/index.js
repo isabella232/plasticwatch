@@ -324,7 +324,7 @@ class Trends extends React.Component {
 
   render () {
     const { stats, isMobile } = this.props;
-
+    const campaignSlug = get(this.props, 'match.params.campaignSlug');
     if (!stats.isReady()) return <div />;
 
     const {
@@ -459,6 +459,7 @@ class Trends extends React.Component {
               variation='base-raised-dark'
               as={StyledLink}
               onClick={() => this.handleMapBtnClick()}
+              to={campaignSlug && `/explore/${campaignSlug}`}
             >
               Show me the map
             </Button>
