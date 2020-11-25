@@ -53,7 +53,7 @@ const UserInfo = styled.div`
 `;
 
 const UserName = styled.h2`
-  flex-basis: 100%;
+  width: 100%;
   text-align: center;
   ${media.mediumUp`
     text-align: left;
@@ -61,7 +61,7 @@ const UserName = styled.h2`
 `;
 
 const Avatar = styled.img`
-  margin-right: 1rem;
+  margin: 1rem;
   border-radius: 50%;
   max-width: 150px;
   border: 0.5rem solid ${themeVal('color.shadow')};
@@ -69,7 +69,8 @@ const Avatar = styled.img`
 
 const UserData = styled.div`
   display: flex;
-  flex-flow: row nowrap;
+  flex-flow: row wrap;
+  justify-content: center;
   flex: 1;
   ${media.mediumUp`
     flex-flow: column nowrap;
@@ -92,9 +93,6 @@ const BadgeItem = styled.li`
   flex-direction: column;
   align-items: center;
   position: relative;
-  ${media.mediumUp`
-    align-items: flex-start;
-  `}
 `;
 
 const BadgeName = styled.h3`
@@ -162,9 +160,9 @@ function UserView(props) {
       <FullPagePanel>
         <InnerPanel>
           <UserInfo>
-            <UserName>{user.displayName}</UserName>
             <Avatar src={profileImageSrc} />
             <UserData>
+              <UserName>{user.displayName}</UserName>
               {observations.length === 0 ? (
                 <PanelStat>
                   <span>No surveys yet</span>
