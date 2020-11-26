@@ -224,7 +224,7 @@ function UserView(props) {
                   {
                     !user.osmDisplayName &&
                     <small>
-                      Plasticwatch uses Gravatar for your user profile photo. Click the link above to sign in to Gravatar and edit your profile.
+                      PlasticWatch uses Gravatar for your user profile photo. Click the link above to sign in to Gravatar and edit your profile.
                     </small>
                   }
                 </>
@@ -252,7 +252,7 @@ function UserView(props) {
             ) : (
               <BadgeGrid>
                 {badges.map((b) => (
-                  <BadgeItem key={b.id}>
+                  <BadgeItem key={b.badgeId}>
                     <BadgeHolder>
                       <BadgeImg src={`data:image/svg+xml;base64,${b.image}`} />
                     </BadgeHolder>
