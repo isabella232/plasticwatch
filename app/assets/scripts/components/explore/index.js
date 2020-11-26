@@ -118,7 +118,11 @@ class Explore extends React.Component {
       (!isEqual(prevProps.mapViewport, mapViewport) ||
         !isEqual(prevProps.filters, filters))
     ) {
-      await this.props.updatePlacesList();
+      // Do not query tiles if mapViewport bounds isn't available.
+      if (mapViewport.bounds) {
+        await this.props.updatePlacesList();
+      }
+
       this.updateQuerystring();
     }
   }
@@ -221,7 +225,7 @@ class Explore extends React.Component {
     if (isMobile && activeMobileTab !== 'map') displayMap = false;
 
     return (
-      <App pageTitle='About' hideFooter>
+      <App pageTitle='Explore' hideFooter>
         <SidebarWrapper>
           {isMobile && this.renderCampaignSelector(displayMap)}
           <Route exact path='/explore/:campaignSlug' component={PlacesIndex} />

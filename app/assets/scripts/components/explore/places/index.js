@@ -33,7 +33,11 @@ import {
 import { hideScrollbars } from '../../../styles/skins';
 import Rating from './rating';
 import { Panel } from '../../../styles/panel';
-import { withRouter } from 'react-router-dom';
+import { FormCheckable } from '../../../styles/form/checkable';
+import { withRouter, matchPath } from 'react-router-dom';
+import turfCentroid from '@turf/centroid';
+import { geojsonBbox } from '../../../utils/geo';
+import { feature } from '@turf/helpers';
 
 const Results = styled.ul`
   ${listReset()};
@@ -56,13 +60,27 @@ const ResultsItem = styled.li`
   }
 `;
 
+const FilterLabelWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+`;
+
+const SearchCheckable = styled(FormCheckable)`
+  font-size: 0.875rem;
+  margin-left: 2.5rem;
+`;
+
 class PlacesIndex extends Component {
   constructor (props) {
     super(props);
     this.state = {
       filtersOpened: false,
-      searchString: props.filters.searchString || ''
+      searchString: props.filters.searchString || '',
+      isSearchCityChecked: false
     };
+
     this.toggleFilters = this.toggleFilters.bind(this);
     this.handleNameSearchChange = this.handleNameSearchChange.bind(this);
   }
@@ -126,9 +144,27 @@ class PlacesIndex extends Component {
   }
 
   handleSearchStringChange (searchString) {
-    this.props.updateFilters({
-      searchString
-    });
+    // read the state of checkbox
+    if (this.state.isSearchCityChecked) {
+      const aoi = JSON.parse(this.props.campaign.aoi);
+      const bbox = geojsonBbox(feature(aoi));
+      const center = turfCentroid(aoi);
+      this.props.updateFiltersAndMapViewport({
+        filters: {
+          searchString
+        },
+        mapViewport: {
+          zoom: 12,
+          bounds: [[bbox[0], bbox[1]], [bbox[2], bbox[3]]],
+          lng: center.geometry.coordinates[0],
+          lat: center.geometry.coordinates[1]
+        }
+      });
+    } else {
+      this.props.updateFilters({
+        searchString
+      });
+    }
   }
 
   handleSearchReset () {
@@ -141,8 +177,15 @@ class PlacesIndex extends Component {
     });
   }
 
+  toggleCitySearch () {
+    const currentValue = this.state.isSearchCityChecked;
+    this.setState({
+      isSearchCityChecked: !currentValue
+    });
+  }
+
   render () {
-    const { filtersOpened } = this.state;
+    const { filtersOpened, isSearchCityChecked } = this.state;
     const { isMobile, filters, activeMobileTab } = this.props;
     const { isReady, getData, hasError } = this.props.places;
     const { campaignSlug } = this.props.match.params;
@@ -160,10 +203,23 @@ class PlacesIndex extends Component {
       <Panel>
         <Filters>
           <FilterToolbar>
-            <InputWrapper>
+            <FilterLabelWrapper>
               <FilterLabel htmlFor='placeSearch'>
-                Search in the list
+                {isMobile ? 'Search in the list' : (isSearchCityChecked ? 'Search City' : 'Search current view')}
               </FilterLabel>
+              <SearchCheckable
+                textPlacement='right'
+                type='checkbox'
+                name='search-city-checkbox'
+                id='city-yes'
+                size='small'
+                checked={isSearchCityChecked}
+                onChange={() => { this.toggleCitySearch(); }}
+              >
+                Expand search to city
+              </SearchCheckable>
+            </FilterLabelWrapper>
+            <InputWrapper>
               <InputWithIcon
                 type='text'
                 id='placeSearch'
@@ -260,24 +316,42 @@ if (environment !== 'production') {
     places: T.object,
     match: T.object,
     updateFilters: T.func,
+    updateFiltersAndMapViewport: T.func,
     filters: T.object,
     isMobile: T.bool,
-    mapViewport: T.object
+    mapViewport: T.object,
+    campaign: T.object
   };
 }
 
-function mapStateToProps (state) {
+function mapStateToProps (state, props) {
+  const {
+    params: { campaignSlug }
+  } = matchPath(props.location.pathname, {
+    path: [
+      '/explore/:campaignSlug',
+      '/explore/:campaignSlug/:type/:id',
+      '/explore/:campaignSlug/:type/:id/survey'
+    ],
+    exact: true
+  });
+
+  const campaigns = wrapApiResult(state.campaigns);
+  const campaign = campaigns.getData()[campaignSlug];
+
   return {
     filters: getFromState(state, `explore.filters`),
     places: wrapApiResult(getFromState(state, `places.list`)),
     activeMobileTab: getFromState(state, `explore.activeMobileTab`),
-    mapViewport: getFromState(state, `explore.mapViewport`)
+    mapViewport: getFromState(state, `explore.mapViewport`),
+    campaign
   };
 }
 
 function dispatcher (dispatch) {
   return {
-    updateFilters: (...args) => dispatch(exploreActions.updateFilters(...args))
+    updateFilters: (...args) => dispatch(exploreActions.updateFilters(...args)),
+    updateFiltersAndMapViewport: (...args) => dispatch(exploreActions.updateFiltersAndMapViewport(...args))
   };
 }
 
