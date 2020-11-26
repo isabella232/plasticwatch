@@ -179,7 +179,7 @@ function UserView(props) {
 
   // Use gravatar > use OSM profile photo > use placeholder
   const profileImageSrc = gravatar
-    ? `https://www.gravatar.com/avatar/${gravatar}?s=200`
+    ? `https://www.gravatar.com/avatar/${gravatar}?s=200&d=mp`
     : (osmImgUrl || `https://via.placeholder.com/150/EDEDED/3D4B74?text=${user.displayName}`);
 
   return (
