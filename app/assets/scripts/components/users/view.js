@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { PropTypes as T } from 'prop-types';
 import get from 'lodash.get';
@@ -139,26 +139,34 @@ function UserView(props) {
     props.fetchUser(props.match.params.id);
   }, []);
 
+  const [osmImgUrl, setOsmImgUrl] = useState(null);
+
+  useEffect(() => {
+    if (!props.user.isReady() || props.user.hasError()) return;
+    const user = props.user.getData();
+
+    async function fetchProfilePicUrl() {
+      if (user.osmId && gravatar === null) {
+        try {
+          const res = await fetch(
+            `https://www.openstreetmap.org/api/0.6/user/${user.osmId}.json`
+          ).then((res) => res.json());
+          setOsmImgUrl(get(res, 'user.img.href'));
+        } catch (error) {
+          // eslint-disable-next-line
+          console.log('Could not fetch OSM Profile Picture.');
+        }
+      }
+    }
+    fetchProfilePicUrl();
+  }, [props.user.isReady()]);
+
   // Get user data, if available
   if (!props.user.isReady()) return <></>;
   if (props.user.hasError()) return <UhOh />;
   const user = props.user.getData();
   const { badges, observations, gravatar } = user;
   const { id: authId } = props.authenticatedUser.getData();
-
-  // Fetch osm display image if gravatar doesn't exists
-  let osmImg;
-  if (user.osmId && gravatar === null) {
-    fetch(`https://www.openstreetmap.org/api/0.6/user/${user.osmId}`)
-      .then(response => response.text())
-      .then(str => (new window.DOMParser()).parseFromString(str, 'text/xml'))
-      .then(data => {
-        osmImg = data.getElementsByTagName('img')[0].getAttribute('href');
-        return osmImg;
-      })
-      // eslint-disable-next-line no-console
-      .catch(err => console.log(err));
-  }
 
   const lastSurveyDate = observations
     .map((o) => o.createdAt)
@@ -172,7 +180,7 @@ function UserView(props) {
   // Use gravatar > use OSM profile photo > use placeholder
   const profileImageSrc = gravatar
     ? `https://www.gravatar.com/avatar/${gravatar}?s=200`
-    : (osmImg || `https://via.placeholder.com/150/EDEDED/3D4B74?text=${user.displayName}`);
+    : (osmImgUrl || `https://via.placeholder.com/150/EDEDED/3D4B74?text=${user.displayName}`);
 
   return (
     <App pageTitle='User Profile'>
