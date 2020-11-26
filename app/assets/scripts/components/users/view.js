@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { PropTypes as T } from 'prop-types';
+import get from 'lodash.get';
 
 import { environment } from '../../config';
 import { connect } from 'react-redux';
@@ -15,6 +16,7 @@ import { ScrollWrap } from '../../styles/table';
 import App from '../common/app';
 import UhOh from '../uhoh';
 import { InnerPanel, Panel, PanelStats, PanelStat } from '../../styles/panel';
+import Button from '../../styles/button/button';
 
 const FullPagePanel = styled(Panel)`
   ${InnerPanel} {
@@ -33,7 +35,7 @@ const FullPagePanel = styled(Panel)`
     grid-gap: 2rem;
     height: 100vh;
     overflow: hidden;
-    width: max-content;
+    width: 36rem;
     ${InnerPanel} {
       max-height: calc(100vh - 6rem);
       &:not(:last-of-type) {
@@ -61,22 +63,23 @@ const UserName = styled.h2`
 `;
 
 const Avatar = styled.img`
-  margin: 1rem;
+  margin: 1rem 2rem 1rem 1rem;
   border-radius: 50%;
   max-width: 150px;
-  border: 0.5rem solid ${themeVal('color.shadow')};
+  border: 2px solid ${themeVal('color.primary')};
+  box-shadow: 0 0 0 0.5rem ${themeVal('color.base')};
+  margin-bottom: 1rem;
 `;
 
 const UserData = styled.div`
   display: flex;
-  flex-flow: row wrap;
-  justify-content: center;
+  flex-flow: column nowrap;
   flex: 1;
-  ${media.mediumUp`
-    flex-flow: column nowrap;
-  `}
   ${PanelStat} {
     border-right: none;
+  }
+  small {
+    margin-top: 1rem;
   }
 `;
 
@@ -136,11 +139,34 @@ function UserView(props) {
     props.fetchUser(props.match.params.id);
   }, []);
 
+  const [osmImgUrl, setOsmImgUrl] = useState(null);
+
+  useEffect(() => {
+    if (!props.user.isReady() || props.user.hasError()) return;
+    const user = props.user.getData();
+
+    async function fetchProfilePicUrl() {
+      if (user.osmId && gravatar === null) {
+        try {
+          const res = await fetch(
+            `https://www.openstreetmap.org/api/0.6/user/${user.osmId}.json`
+          ).then((res) => res.json());
+          setOsmImgUrl(get(res, 'user.img.href'));
+        } catch (error) {
+          // eslint-disable-next-line
+          console.log('Could not fetch OSM Profile Picture.');
+        }
+      }
+    }
+    fetchProfilePicUrl();
+  }, [props.user.isReady()]);
+
   // Get user data, if available
   if (!props.user.isReady()) return <></>;
   if (props.user.hasError()) return <UhOh />;
   const user = props.user.getData();
   const { badges, observations, gravatar } = user;
+  const { id: authId } = props.authenticatedUser.getData();
 
   const lastSurveyDate = observations
     .map((o) => o.createdAt)
@@ -151,9 +177,10 @@ function UserView(props) {
     new Set(observations.map((o) => o.campaignId))
   ).length;
 
+  // Use gravatar > use OSM profile photo > use placeholder
   const profileImageSrc = gravatar
-    ? `https://www.gravatar.com/avatar/${gravatar}?s=200`
-    : `https://via.placeholder.com/150/EDEDED/3D4B74?text=${user.displayName}`;
+    ? `https://www.gravatar.com/avatar/${gravatar}?s=200&d=mp`
+    : (osmImgUrl || `https://via.placeholder.com/150/EDEDED/3D4B74?text=${user.displayName}`);
 
   return (
     <App pageTitle='User Profile'>
@@ -180,6 +207,28 @@ function UserView(props) {
                   </PanelStat> */}
                 </>
               )}
+              {
+                // Only render Edit button on a user's own profile
+                authId === user.id &&
+                <>
+                  <Button
+                    as='a'
+                    size='small'
+                    variation='primary-raised-light'
+                    href={user.osmDisplayName
+                      ? `https://www.openstreetmap.org/user/${user.osmDisplayName}/account`
+                      : 'https://www.gravatar.com'}
+                  >
+                    Edit profile
+                  </Button>
+                  {
+                    !user.osmDisplayName &&
+                    <small>
+                      PlasticWatch uses Gravatar for your user profile photo. Click the link above to sign in to Gravatar and edit your profile.
+                    </small>
+                  }
+                </>
+              }
             </UserData>
           </UserInfo>
           <PanelStats>
@@ -203,7 +252,7 @@ function UserView(props) {
             ) : (
               <BadgeGrid>
                 {badges.map((b) => (
-                  <BadgeItem key={b.id}>
+                  <BadgeItem key={b.badgeId}>
                     <BadgeHolder>
                       <BadgeImg src={`data:image/svg+xml;base64,${b.image}`} />
                     </BadgeHolder>
@@ -227,7 +276,8 @@ if (environment !== 'production') {
   UserView.propTypes = {
     fetchUser: T.func,
     match: T.object,
-    user: T.object
+    user: T.object,
+    authenticatedUser: T.object
   };
 }
 
@@ -235,7 +285,9 @@ function mapStateToProps(state, props) {
   const { id } = props.match.params;
 
   return {
-    user: wrapApiResult(getFromState(state, `users.individual.${id}`))
+    user: wrapApiResult(getFromState(state, `users.individual.${id}`)),
+    authenticatedUser: wrapApiResult(state.authenticatedUser),
+    accessToken: get(state, 'authenticatedUser.data.accessToken')
   };
 }
 
