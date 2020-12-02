@@ -194,13 +194,12 @@ function PageFooter(props) {
           <FooterMenu>
             <li>
               <FooterMenuLink
-                as={NavLinkFilter}
-                exact
-                to='/trends'
-                useIcon='chart-pie'
-                title='View trends page'
+                useIcon='map'
+                isActive={activeMobileTab === 'map'}
+                onClick={() => handleTabClick('map')}
+                title='Go to the map'
               >
-                <span>Trends</span>
+                <span>Map</span>
               </FooterMenuLink>
             </li>
             <li>
@@ -215,12 +214,13 @@ function PageFooter(props) {
             </li>
             <li>
               <FooterMenuLink
-                useIcon='map'
-                isActive={activeMobileTab === 'map'}
-                onClick={() => handleTabClick('map')}
-                title='Go to the map'
+                as={NavLinkFilter}
+                exact
+                to='/trends'
+                useIcon='chart-pie'
+                title='View trends page'
               >
-                <span>Map</span>
+                <span>Trends</span>
               </FooterMenuLink>
             </li>
           </FooterMenu>
