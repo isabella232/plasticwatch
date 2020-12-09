@@ -227,7 +227,7 @@ class Explore extends React.Component {
     return (
       <App pageTitle='Explore' hideFooter>
         <SidebarWrapper>
-          {isMobile && this.renderCampaignSelector(displayMap)}
+          {isMobile && activeMobileTab !== 'list' && this.renderCampaignSelector(displayMap)}
           <Route exact path='/explore/:campaignSlug' component={PlacesIndex} />
           <Route
             exact
