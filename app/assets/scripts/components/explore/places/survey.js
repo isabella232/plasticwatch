@@ -256,16 +256,6 @@ class SubmitSurvey extends Component {
     // Get survey data
     if (!surveyMeta.getData()) return <div>No survey is available.</div>;
 
-    // Check if survey was already answered
-    if (surveyAnswers.getData()) {
-      return (
-        <div>
-          You have already submitted a survey for this location. Only 1 user
-          survey per location is currently permitted.
-        </div>
-      );
-    }
-
     const data = {
       survey: surveyMeta.getData(),
       place: place.getData()

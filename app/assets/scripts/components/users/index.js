@@ -300,6 +300,9 @@ class Users extends React.Component {
             <th scope='col'>
               {this.renderColumnHead('Mapper Since', 'createdAt')}
             </th>
+            <th scope='col'>
+              {this.renderColumnHead('surveys', 'observations')}
+            </th>
             <th scope='col' style={{ textAlign: 'center' }}>
               {this.renderColumnHead('Admin', 'isAdmin')}
             </th>
@@ -337,6 +340,7 @@ class Users extends React.Component {
             )}
           </td>
           <td>{getUTCDate(user.createdAt)}</td>
+          <td>{user.observations}</td>
           <td style={{ textAlign: 'center' }}>
             {user.isAdmin && (
               <Button useIcon='tick' size='small' hideText>

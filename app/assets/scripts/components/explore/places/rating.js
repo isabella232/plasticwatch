@@ -49,7 +49,7 @@ class Rating extends Component {
               }
             </RatingType>
             <PlaceSurveys>
-              {totalTrue > totalFalse ? totalTrue : totalFalse} out of {total} people
+              {totalTrue > totalFalse ? totalTrue : totalFalse} out of {total} surveys
             </PlaceSurveys>
           </>
         ) : (

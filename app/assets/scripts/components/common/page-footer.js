@@ -75,6 +75,7 @@ const FooterMenuLink = styled.a.attrs({
   text-align: center;
   transition: all 0.24s ease 0s;
   text-decoration: none;
+  ${({ isDisabled }) => (isDisabled ? 'pointer-events: none;' : '')}
   span {
     font-size: 0.75rem;
     margin-top: 0.25rem;
@@ -87,7 +88,8 @@ const FooterMenuLink = styled.a.attrs({
   }
   &,
   &:visited {
-    color: inherit;
+    color: ${({ isDisabled }) =>
+    isDisabled ? themeVal('color.smoke') : 'inherit'};
   }
   &:hover {
     color: ${themeVal('color.link')};
@@ -120,7 +122,7 @@ const propsToFilter = ['variation', 'size', 'hideText', 'useIcon', 'active'];
 const NavLinkFilter = filterComponentProps(NavLink, propsToFilter);
 
 function PageFooter(props) {
-  const { activeMobileTab, campaigns } = props;
+  const { activeMobileTab, campaigns, mapViewport } = props;
   const {
     params: { campaignSlug }
   } = props.match;
@@ -180,6 +182,8 @@ function PageFooter(props) {
     );
   }
 
+  const hasViewport = mapViewport && typeof mapViewport.bounds !== 'undefined';
+
   return (
     <PageFoot>
       <Modal
@@ -194,19 +198,19 @@ function PageFooter(props) {
           <FooterMenu>
             <li>
               <FooterMenuLink
-                as={NavLinkFilter}
-                exact
-                to='/trends'
-                useIcon='chart-pie'
-                title='View trends page'
+                useIcon='map'
+                isActive={activeMobileTab === 'map'}
+                onClick={() => handleTabClick('map')}
+                title='Go to the map'
               >
-                <span>Trends</span>
+                <span>Map</span>
               </FooterMenuLink>
             </li>
             <li>
               <FooterMenuLink
                 onClick={() => handleTabClick('list')}
                 useIcon='list'
+                isDisabled={!hasViewport}
                 isActive={activeMobileTab === 'list'}
                 title='Go to the list'
               >
@@ -215,12 +219,13 @@ function PageFooter(props) {
             </li>
             <li>
               <FooterMenuLink
-                useIcon='map'
-                isActive={activeMobileTab === 'map'}
-                onClick={() => handleTabClick('map')}
-                title='Go to the map'
+                as={NavLinkFilter}
+                exact
+                to='/trends'
+                useIcon='chart-pie'
+                title='View trends page'
               >
-                <span>Map</span>
+                <span>Trends</span>
               </FooterMenuLink>
             </li>
           </FooterMenu>
@@ -235,6 +240,7 @@ if (environment !== 'production') {
     activeMobileTab: T.string,
     campaigns: T.object,
     fetchCampaigns: T.func,
+    mapViewport: T.object,
     updateActiveMobileTab: T.func,
     match: T.object
   };
@@ -243,7 +249,8 @@ if (environment !== 'production') {
 function mapStateToProps(state) {
   return {
     activeMobileTab: getFromState(state, `explore.activeMobileTab`),
-    campaigns: wrapApiResult(state.campaigns)
+    campaigns: wrapApiResult(state.campaigns),
+    mapViewport: getFromState(state, `explore.mapViewport`)
   };
 }
 
